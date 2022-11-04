@@ -159,6 +159,20 @@ def main(scr):
             backgroundLoc = size.backgroundLoc
 
         return screen, background, backgroundLoc
+    
+    def kill_alien(Alien, aliensLeftThisWave, score) :
+        aliensLeftThisWave -= 1
+        if Alien.pType == 'green' :
+            score += 1
+        elif Alien.pType == 'blue' :
+            score += 2
+        elif Alien.pType == 'white' :
+            score += 3
+        elif Alien.pType == 'red' :
+            score += 2
+        elif Alien.pType == 'yellow' :
+            score += 5
+        return aliensLeftThisWave, score
 
     # Initialize everything
     pygame.mixer.pre_init(11025, -16, 2, 512)
@@ -835,8 +849,7 @@ def main(scr):
                     Explosion.position(alien.rect.center)
                     missilesFired += 1
                     if aliensLeftThisWave>0 :
-                        aliensLeftThisWave -= 1
-                        score += 1
+                        aliensLeftThisWave, score = kill_alien(alien, aliensLeftThisWave, score)
                     else :
                         aliensLeftThisWave = 0
                     if soundFX:
@@ -848,8 +861,7 @@ def main(scr):
                     missile.table()
                     Explosion.position(alien.rect.center)
                     if aliensLeftThisWave>0 :
-                        aliensLeftThisWave -= 1
-                        score += 1
+                        aliensLeftThisWave, score = kill_alien(alien, aliensLeftThisWave, score)
                         missilesFired += 1
                     else :
                         aliensLeftThisWave = 0
@@ -861,8 +873,7 @@ def main(scr):
                     alien.table()
                     Explosion.position(alien.rect.center)
                     if aliensLeftThisWave>0 :
-                        aliensLeftThisWave -= 1
-                        score += 1
+                        aliensLeftThisWave, score = kill_alien(alien, aliensLeftThisWave, score)
                     ship.shieldUp = False
                 else: ### 쉴드 없을때
                     if life == 1:
