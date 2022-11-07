@@ -1,6 +1,3 @@
-### 파일들 가져오기위한 메소드들이 작성된 파일 ######
-###### 사용법 : load_00000(파일명) #####
-
 import os
 import pygame
 
@@ -38,6 +35,4 @@ def load_image(name, colorkey=None):
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, pygame.RLEACCEL)
-        ###set_colorkey : 해당 surface에 colorkey를 반환 -> RGB or None
-        
     return image, image.get_rect()
