@@ -617,11 +617,6 @@ class Menu:
                                     for x in range(3)])
                 self.highScorePos.extend([self.highScoreTexts[x].get_rect(
                     topleft=self.highScorePos[x].bottomleft) for x in range(-3, 0)])
-            for hs in self.timeHiScores:
-                self.timeHighScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
-                                    for x in range(3)])
-                self.timeHighScorePos.extend([self.timeHighScoreTexts[x].get_rect(
-                    topleft=self.timeHighScorePos[x].bottomleft) for x in range(-3, 0)])
 
             if showSingleScores:
                 menu, menuRect = load_image("menu.png")
