@@ -50,7 +50,8 @@ while inInitMenu:
     flag=True
     while flag:   
         if userSelection==1 or userSelection==2: # log in/sign up
-            pageResult, screen_size=Menu(screen_size).login_sign_page(userSelection)
+            pageResult, screen_size=Menu(screen_size).inMenu_page()
+            # DB 연결 수정되면 Menu(screen_size).login_sign_page(userSelection)으로 변경
             if pageResult==BACK: # back
                 flag=False  
             else: 
