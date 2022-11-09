@@ -70,6 +70,16 @@ class Database(object):
 
 
     
+    # 게임 종료 시 데이터베이스에 점수 추가
+    def add_score_data(self,game_mode,user_id,score):
+        curs=self.score_db.cursor()
+        if game_mode == 'single':
+            sql='INSERT INTO single_score(user_id,score) VALUES (%s,%s)'
+        elif game_mode =='two':
+            sql='INSERT INTO two_score(user_id,score) VALUES (%s,%s)'
+        curs.execute(sql,(user_id,score))
+        self.score_db.commit()
+        curs.close()
 
 
     
