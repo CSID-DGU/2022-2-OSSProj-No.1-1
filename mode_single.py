@@ -3,9 +3,10 @@ import random
 import sys
 from pygame.locals import *
 
-from sprites import (MasterSprite, Ship, Alien, Missile, BombPowerup,
-                     ShieldPowerup, HalfPowerup, Coin, Explosion, Siney, Spikey, Fasty,
-                     Roundy, Crawly)
+from sprites import (MasterSprite, 
+                     Kirin, Friendkirin, Bear, Leaf, Explosion,
+                     BombPowerup, ShieldPowerup, DoubleleafPowerup, FriendPowerup, LifePowerup,
+                     Green, Brown, Stone, Sunglasses, Panda)
 from database import Database
 from load import load_image, load_sound, load_music
 from menu import *
@@ -58,11 +59,11 @@ class Single():
         life3, life3Rect = load_image('heart3.png')
 
         # Sounds
-        leaf_sound = load_sound('leaf.ogg')
+        missile_sound = load_sound('missile.ogg')
         bomb_sound = load_sound('bomb.ogg')
-        bear_explode_sound = load_sound('bear_explode.ogg')
-        kirin_explode_sound = load_sound('kirin_explode.ogg')
-        load_music('menu_music_loop.ogg')
+        alien_explode_sound = load_sound('alien_explode.ogg')
+        ship_explode_sound = load_sound('ship_explode.ogg')
+        load_music('music_loop.ogg')
         soundFX = Database().getSound()
         music = Database().getSound(music=True)
         if music and pygame.mixer: 
@@ -248,7 +249,7 @@ class Single():
                             Leaf.position(kirin.rect.midtop)
                             leafFired += 1
                         if soundFX:
-                            leaf_sound.play()
+                            missile_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_b):
@@ -305,7 +306,7 @@ class Single():
                                     elif selection == 3:
                                         soundFX = not soundFX
                                         if soundFX:
-                                            leaf_sound.play()
+                                            missile_sound.play()
                                         Database.setSound(int(soundFX))
                                     elif selection == 4 and pygame.mixer:
                                         music = not music
