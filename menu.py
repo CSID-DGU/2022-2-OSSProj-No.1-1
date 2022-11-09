@@ -24,6 +24,10 @@ class Keyboard(object):
 
 class Menu:
     def __init__(self, screen_size):
+
+        # For score setting
+        self.database=Database()
+
         missile_sound = load_sound('missile.ogg')
         bomb_sound = load_sound('bomb.ogg')
         alien_explode_sound = load_sound('alien_explode.ogg')
@@ -442,13 +446,12 @@ class Menu:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
 
-
+    # time mode지우기 
     def select_game_page(self):
         main_menu, main_menuRect = load_image("main_menu.png")
         main_menuRect.midtop = self.screen.get_rect().midtop
         inSelectMenu=True
         showSingleMode = False
-        showTimeMode = False
         showPvpMode = False
         
         while inSelectMenu:
@@ -474,8 +477,6 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     if showSingleMode:
                         showSingleMode = False
-                    elif showTimeMode:
-                        showTimeMode = False
                     elif showPvpMode:
                         showPvpMode = False
                     elif self.selection == 1:
@@ -484,13 +485,9 @@ class Menu:
                         return selectMode, self.screen_size
                     elif self.selection == 2:
                         inSelectMenu = False
-                        selectMode = 'TimeMode'
-                        return selectMode, self.screen_size
-                    elif self.selection == 3:
-                        inSelectMenu = False
                         selectMode = 'PvpMode'
                         return selectMode, self.screen_size
-                    elif self.selection == 4:
+                    elif self.selection == 3:
                         inSelectMenu = False
                         return BACK, self.screen_size
                 elif (event.type == pygame.KEYDOWN
@@ -512,19 +509,17 @@ class Menu:
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
             self.singleText = self.font.render('SINGLE', 1, BLACK)
             self.singlePos = self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, BLACK)
-            self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
             self.pvpText = self.font.render('PVP', 1, BLACK)
             self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
             self.backText=self.font.render('BACK',1,BLACK)
             self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
             
-            self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
+            self.selectModeDict = {1:self.singlePos,2:self.pvpPos,3:self.backPos}
             self.selectText = self.font.render('*', 1, BLACK)
             self.selectPos = self.selectText.get_rect(topright=self.selectModeDict[self.selection].topleft)
 
-            textOverlays = zip([self.blankText,self.singleText,self.timeText,self.pvpText,self.selectText,self.backText],
-            [self.blankPos,self.singlePos,self.timePos,self.pvpPos,self.selectPos,self.backPos])
+            textOverlays = zip([self.blankText,self.singleText,self.pvpText,self.selectText,self.backText],
+            [self.blankPos,self.singlePos,self.pvpPos,self.selectPos,self.backPos])
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             
@@ -636,3 +631,5 @@ class Menu:
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
+
+   
