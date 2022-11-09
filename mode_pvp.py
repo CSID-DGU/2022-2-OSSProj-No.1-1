@@ -3,9 +3,10 @@ import random
 import sys
 from pygame.locals import *
 
-from sprites import (MasterSprite, Ship, Alien, Missile, BombPowerup,
-                     ShieldPowerup, HalfPowerup, Coin, Explosion, Siney, Spikey, Fasty,
-                     Roundy, Crawly)
+from sprites import (MasterSprite, 
+                     Kirin, Friendkirin, Bear, Leaf, Explosion,
+                     BombPowerup, ShieldPowerup, DoubleleafPowerup, FriendPowerup, LifePowerup,
+                     Green, Brown, Stone, Sunglasses, Panda)
 from database import Database
 from load import load_image, load_sound, load_music
 from menu import *
