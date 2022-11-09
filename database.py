@@ -57,11 +57,11 @@ class Database(object):
         decode_hash_pw=hashed_password.decode('utf-8') # 데이터베이스에 저장하기 위해 bytes-> string형으로 바꿈 
     
         curs = self.score_db.cursor()
-        # pw update
+        # pw 저장
         sql = "UPDATE users SET user_password= %s WHERE user_id=%s"
         curs.execute(sql,(decode_hash_pw,user_id))
         self.score_db.commit()  #commit으로 데이터베이스에 반영
-        # coin update
+        # coin initialize
         curs = self.score_db.cursor()
         sql = "UPDATE users SET user_coin= %s WHERE user_id=%s"
         curs.execute(sql, (initial_coin, user_id))
