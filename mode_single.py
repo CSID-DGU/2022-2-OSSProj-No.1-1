@@ -90,7 +90,10 @@ class Single():
         
         bombs = pygame.sprite.Group()
         powerups = pygame.sprite.Group()
-
+        
+        # Ship Selection
+        ship_selection = Ship_selection_check() 
+        
         # Score Function
         def kill_bear(bear, bearsLeftThisWave, score) :
             bearsLeftThisWave -= 1
@@ -202,8 +205,29 @@ class Single():
             kirin.alive = True
             kirin.life = 3
             kirin.initializeKeys()
+            
+            if ship_selection.get_ship_selection() == 1:
+                kirin.image, kirin.rect = load_image('ship.png', -1)
+                kirin.original = kirin.image
+                kirin.shield, kirin.rect = load_image('ship_shield.png', -1)
+    
+            elif ship_selection.get_ship_selection() == 2:
+                kirin.image, kirin.rect = load_image('ship2.png', -1)
+                kirin.original = kirin.image
+                kirin.shield, kirin.rect = load_image('ship2_shield.png', -1)
+ 
+            elif ship_selection.get_ship_selection() == 3:
+                kirin.image, kirin.rect = load_image('ship3.png', -1)
+                kirin.original = kirin.image
+                kirin.shield, kirin.rect = load_image('ship3_shield.png', -1)
 
-
+            elif ship_selection.get_ship_selection() == 4:
+                kirin.image, kirin.rect = load_image('ship4.png', -1)
+                kirin.original = kirin.image
+                kirin.shield, kirin.rect = load_image('ship4_shield.png', -1)
+            
+            kirin.showChange_ship = False
+            
         # Start Game
             while kirin.alive:
                 clock.tick(clockTime)

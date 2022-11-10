@@ -3,15 +3,13 @@ import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music
 from database import Database
+from coin import *
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
 BACK=0
-
-
-
 
 class Keyboard(object):
     keys = {pygame.K_a: 'A', pygame.K_b: 'B', pygame.K_c: 'C', pygame.K_d: 'D',
@@ -21,6 +19,16 @@ class Keyboard(object):
             pygame.K_q: 'Q', pygame.K_r: 'R', pygame.K_s: 'S', pygame.K_t: 'T',
             pygame.K_u: 'U', pygame.K_v: 'V', pygame.K_w: 'W', pygame.K_x: 'X',
             pygame.K_y: 'Y', pygame.K_z: 'Z'}
+
+class Ship_selection_check():
+    def __init__(self):
+        self.ship_selection = 1
+    def ship_selection_plus(self):
+        self.ship_selection += 1
+    def ship_selection_minus(self):
+        self.ship_selection -= 1
+    def get_ship_selection(self) :
+        return self.ship_selection
 
 class Menu:
     def __init__(self, screen_size):
@@ -107,8 +115,10 @@ class Menu:
         self.musicOffText = self.font.render('OFF', 1, RED)
         self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
         self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
+        self.shopText = self.font.render('SHIP SHOP', 1, BLACK)
+        self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
         self.helpText=self.font.render('HELP',1,BLACK)
-        self.helpPos=self.helpText.get_rect(topleft=self.musicPos.bottomleft)
+        self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
         self.quitText = self.font.render('QUIT', 1, BLACK)
         self.selectText = self.font.render('*', 1, BLACK)
         self.selectPos = self.selectText.get_rect(topright=self.startPos.topleft)
@@ -129,7 +139,7 @@ class Menu:
         self.selectText = self.font.render('*', 1, BLACK)
         self.selextPos=''
         self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
-        self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.helpPos,6: self.quitPos}
+        self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5: self.shopPos, 6:self.helpPos, 7: self.quitPos}
         self.selectScoresDict = {1:self.singlePos,2:self.timePos,3:self.backPos}
         self.menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
         self.loginDict={}
@@ -142,11 +152,59 @@ class Menu:
         self.showHelp=False
         self.showSelectModes=False
         self.showHiScores = False
+        self.showShop = False
+        self.ship_selection = Ship_selection_check()
         self.inSelectMenu=False
         self.soundFX = Database.getSound()
         self.music = Database.getSound(music=True)
+        
+        
+        # coin
+        self.coin_Have = CoinData.load()
+        
+        # ship change 
+        self.ship1, self.ship1Rect = load_image('ship.png')
+        self.ship1Rect.bottomleft = self.screen.get_rect().inflate(-112, -300).bottomleft
 
+        if ShipData.load_unlock(2) : self.ship2, self.ship2Rect = load_image('ship2.png')
+        else : self.ship2, self.ship2Rect = load_image('ship2_lock.png')
+        self.ship2Rect.bottomleft = self.screen.get_rect().inflate(-337, -290).bottomleft 
 
+        if ShipData.load_unlock(3) : self.ship3, self.ship3Rect = load_image('ship3.png')
+        else : self.ship3, self.ship3Rect = load_image('ship3_lock.png')
+        self.ship3Rect.bottomleft = self.screen.get_rect().inflate(-562, -300).bottomleft 
+
+        if ShipData.load_unlock(4) : self.ship4, self.ship4Rect = load_image('ship4.png')
+        else : self.ship4, self.ship4Rect = load_image('ship4_lock.png')
+        self.ship4Rect.bottomleft = self.screen.get_rect().inflate(-787, -300).bottomleft 
+
+        self.shipCoin, self.shipCoinRect = load_image('coin.png')      #기체변경 창에서 코인 이미지
+        self.shipCoinRect.bottomleft = self.screen.get_rect().inflate(-112, -100).bottomleft 
+        
+        # shop variable
+        self.ship1Text = self.font.render('', 1, BLACK)
+        self.ship2Text = self.font.render('', 1, BLACK)
+        self.ship3Text = self.font.render('', 1, BLACK)
+        self.ship4Text = self.font.render('', 1, BLACK)
+        self.ship_selectText = self.font.render('SELECT', 1, BLACK)
+        self.shipUI_coinText = self.font.render(f'        : {self.coin_Have}',1 , (255,215,0))
+        self.shipUnlockText = self.font.render("UNLOCK : P", 1, RED)
+
+        self.ship1Pos = self.ship1Text.get_rect(midbottom=self.ship1Rect.inflate(0, 0).midbottom)
+        self.ship2Pos = self.ship2Text.get_rect(midbottom=self.ship2Rect.inflate(0, 0).midbottom)
+        self.ship3Pos = self.ship3Text.get_rect(midbottom=self.ship3Rect.inflate(0, 0).midbottom)
+        self.ship4Pos = self.ship4Text.get_rect(midbottom=self.ship4Rect.inflate(0, 0).midbottom)
+        self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship1Rect.inflate(0, 60).midbottom)
+        self.shipUI_coinPos = self.shipUI_coinText.get_rect(midbottom=self.ship1Rect.inflate(0, 200).midbottom)
+        self.shipUnlockPos = self.ship4Text.get_rect(midbottom=self.ship3Rect.inflate(0, 200).midbottom)
+
+        self.ship_menuDict = {1: self.ship1Pos, 2: self.ship2Pos, 3: self.ship3Pos, 4: self.ship4Pos}
+            
+        ## 상점 이미지나 배경 추가할 거면 여기 수정
+        # self.title, self.titleRect = load_image('title.png')
+        # self.titleRect.midtop = self.screen.get_rect().inflate(0, 0).midtop
+    
+        
     def init_page(self):        
         while self.ininitalMenu:
             self.clock.tick(self.clockTime) 
@@ -189,7 +247,7 @@ class Menu:
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
-                    and self.selection < len(menuDict)
+                    and self.selection < len(self.menuDict)
                     and not self.showlogin):
                     self.selection += 1
             self.blankText=self.font.render('       ',1,BLACK)
@@ -200,8 +258,8 @@ class Menu:
             self.signPos=self.signText.get_rect(topleft=self.loginPos.bottomleft)
             self.quitText=self.font.render('QUIT',1,BLACK)
             self.quitPos=self.quitText.get_rect(topleft=self.signPos.bottomleft)
-            menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
-            self.selectPos = self.selectText.get_rect(topright=menuDict[self.selection].topleft)
+            self.menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
+            self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
             self.textOverlays = zip([self.blankText,self.loginText, self.signText,self.quitText,self.selectText],
                                 [self.blankPos,self.loginPos, self.signPos,self.quitPos,self.selectPos])
 
@@ -319,7 +377,7 @@ class Menu:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
     
-
+    # 메인 메뉴
     def inMenu_page(self):
         self.inMenu = True
         cnt=0
@@ -347,7 +405,7 @@ class Menu:
                     self.ratio = (self.screen_size / 500)
                     self.font = pygame.font.Font(None, round(36*self.ratio))
                 elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_RETURN):
+                    and event.key == pygame.K_RETURN and not self.showShop):
                     if self.showSelectModes:
                         self.showSelectModes = False
                     elif self.showHelp:
@@ -363,7 +421,7 @@ class Menu:
                     elif self.selection == 3:
                         self.soundFX = not self.soundFX
                         if self.soundFX:
-                            leaf_sound.play()
+                            missile_sound.play()  ## 수정해야함
                         Database.setSound(int(self.soundFX))
                     elif self.selection == 4 and pygame.mixer:
                         self.music = not self.music
@@ -373,23 +431,105 @@ class Menu:
                             pygame.mixer.music.stop()
                         Database.setSound(int(self.music), music=True)
                     elif self.selection == 5:
+                        self.showShop = True
+                    elif self.selection == 6:
                         cnt+=1
                         self.showHelp=True                                        
-                    elif self.selection == 6:
-                        return 6, self.screen_size
+                    elif self.selection == 7:
+                        return 7, self.screen_size
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
                     and self.selection > 1
                     and not self.showHiScores
                     and not self.showSelectModes
-                    and not self.showHelp):
+                    and not self.showHelp
+                    and not self.showShop):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.menuDict)
                     and not self.showHiScores
-                    and not self.showSelectModes):
+                    and not self.showSelectModes
+                    and not self.showShop):
                     self.selection += 1
+                    
+                elif (event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_RETURN 
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection == 1):
+                    self.showShop = False
+                
+                elif (event.type == pygame.KEYDOWN          
+                    and event.key == pygame.K_RETURN 
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection() == 2
+                    and ShipData.load_unlock(2)) :
+                    self.showShop = False
+                elif (event.type == pygame.KEYDOWN          
+                    and event.key == pygame.K_RETURN 
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection() == 3
+                    and ShipData.load_unlock(3)):
+                    self.showShop = False
+                elif (event.type == pygame.KEYDOWN          
+                    and event.key == pygame.K_RETURN 
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection() == 4
+                    and ShipData.load_unlock(4)):
+                    self.showShop = False
+                elif (event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_a
+                    and self.ship_selection.get_ship_selection() > 1
+                    and not self.showHiScores
+                    and self.showShop):
+                    self.ship_selection.ship_selection_minus()
+                elif (event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_d
+                    and self.ship_selection.get_ship_selection() < len(self.ship_menuDict)
+                    and not self.showHiScores
+                    and self.showShop):
+                    self.ship_selection.ship_selection_plus()
+                elif (event.type == pygame.KEYDOWN      
+                    and event.key == pygame.K_p
+                    and not self.showHiScores
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection() == 2
+                    and not ShipData.load_unlock(2)):
+                    if self.coin_Have >= 30 :
+                        self.ship2, self.ship2Rect = load_image('ship2.png')
+                        self.ship2Rect.bottomleft = screen.get_rect().inflate(-337, -300).bottomleft
+                        CoinData.buy(30)
+                        self.coin_Have = CoinData.load()
+                        shipUI_coinText = font.render(f'        : {self.coin_Have}',1 , (255,215,0))
+                elif (event.type == pygame.KEYDOWN      
+                    and event.key == pygame.K_p
+                    and not self.showHiScores
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection() == 3
+                    and not ShipData.load_unlock(3)):
+                    if self.coin_Have >= 50 :
+                        self.ship3, self.ship3Rect = load_image('ship3.png')
+                        self.ship3Rect.bottomleft = screen.get_rect().inflate(-562, -300).bottomleft
+                        CoinData.buy(50)
+                        coin_Have = CoinData.load()
+                        # 수정해야함
+                        # shipUI_coinText = font.render(f'        : {coin_Have}',1 , (255,215,0))
+                elif (event.type == pygame.KEYDOWN      
+                    and event.key == pygame.K_p
+                    and not self.showHiScores
+                    and self.showShop
+                    and self.ship_selection.get_ship_selection() == 4
+                    and not ShipData.load_unlock(4)):
+                    if self.coin_Have >= 100 :
+                        self.ship4, self.ship4Rect = load_image('ship4.png')
+                        self.ship4Rect.bottomleft = screen.get_rect().inflate(-787, -300).bottomleft
+                        CoinData.buy(100)
+                        coin_Have = CoinData.load()
+                        shipUI_coinText = font.render(f'        : {self.coin_Have}',1 , (255,215,0))
+                    
+                
+            self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship_menuDict[self.ship_selection.get_ship_selection()].inflate(0,60).midbottom)
+            self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
             
             self.blankText=self.font.render('           ',1,BLACK)
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
@@ -409,12 +549,13 @@ class Menu:
             self.musicOffText = self.font.render('OFF', 1, RED)
             self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
             self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
+            self.shopText = self.font.render('SHIP SHOP', 1, BLACK)
+            self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
             self.helpText=self.font.render('HELP',1,BLACK)
-            self.helpPos=self.helpText.get_rect(topleft=self.musicPos.bottomleft)
+            self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
             self.quitText = self.font.render('QUIT', 1, BLACK)
             self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
-
-            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.helpPos,6: self.quitPos}
+            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos}
             self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
 
 
@@ -429,20 +570,30 @@ class Menu:
                     menuRect.midtop = self.screen.get_rect().midtop
                     menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+            
+            elif self.showShop:
+                # self.screen.blit(self.title,self.titleRect)
+                self.screen.blit(self.ship1, self.ship1Rect)
+                self.screen.blit(self.ship2, self.ship2Rect)
+                self.screen.blit(self.ship3, self.ship3Rect)
+                self.screen.blit(self.ship4, self.ship4Rect)
+                self.screen.blit(self.shipCoin, self.shipCoinRect)
+                self.textOverlays = zip([self.ship1Text,self.ship2Text,self.ship3Text,self.ship4Text,self.ship_selectText,self.shipUI_coinText,self.shipUnlockText],[self.ship1Pos,self.ship2Pos,self.ship3Pos,self.ship4Pos,self.ship_selectPos,self.shipUI_coinPos,self.shipUnlockPos])
+            
             else:
                 self.textOverlays = zip([self.blankText,self.startText, self.hiScoreText, self.helpText, self.fxText,
-                                    self.musicText, self.quitText, self.selectText,
+                                    self.musicText, self.shopText, self.quitText, self.selectText,
                                     self.fxOnText if self.soundFX else self.fxOffText,
                                     self.musicOnText if self.music else self.musicOffText],
                                 [self.blankPos,self.startPos, self.hiScorePos, self.helpPos, self.fxPos,
-                                    self.musicPos, self.quitPos, self.selectPos,
+                                    self.musicPos, self.shopPos, self.quitPos, self.selectPos,
                                     self.fxOnPos if self.soundFX else self.fxOffPos,
                                     self.musicOnPos if self.music else self.musicOffPos])
             for txt, pos in self.textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
 
-
+    # 게임 모드 선택
     def select_game_page(self):
         main_menu, main_menuRect = load_image("main_menu.png")
         main_menuRect.midtop = self.screen.get_rect().midtop
