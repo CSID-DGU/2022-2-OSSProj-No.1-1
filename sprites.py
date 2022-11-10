@@ -155,7 +155,7 @@ class Friendkirin(MasterSprite):
 class Kirin2(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('kirin.png', -1)
+        self.image, self.rect = load_image('ship.png', -1)
         self.original = self.image
         self.shield, self.rect = load_image('kirin_shield.png', -1)
         self.screen_size = screen_size
@@ -205,7 +205,7 @@ class Kirin2(MasterSprite):
 class Kirin3(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('kirin.png', -1)
+        self.image, self.rect = load_image('ship.png', -1)
         self.original = self.image
         self.shield, self.rect = load_image('kirin_shield.png', -1)
         self.screen_size = screen_size
