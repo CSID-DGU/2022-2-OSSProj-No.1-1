@@ -8,7 +8,7 @@ from sprites import (MasterSprite, Ship, Alien, Missile, BombPowerup,
                      Roundy, Crawly)
 from database import Database
 from load import load_image, load_sound, load_music
-from menu import *
+from menu2 import *
 
 if not pygame.mixer:
     print('Warning, sound disablead')
@@ -638,11 +638,11 @@ class Single():
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_RETURN
                     and len(name) > 0):
-                    if Database().name_not_exists(name,mode=SINGLE):
-                        Database().setScore(hiScores,name, score, accuracy)
+                    if Database().id_not_exists(name,mode=SINGLE):
+                        Database().setScore(hiScores,name, score)
                         return True 
                     else:
-                        print("중복된 이름 존재함")
+                        print("존재하지 않는 id입니다")
                      
             if isHiScore:
                 hiScoreText = font.render('SCORE', 1, RED)

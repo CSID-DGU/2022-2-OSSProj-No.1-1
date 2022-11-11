@@ -70,7 +70,69 @@ class Database(object):
 
 
     
+    # 게임 종료 시 데이터베이스에 점수 추가
+    def add_score_data(self,game_mode,user_id,score):
+        curs=self.score_db.cursor()
+        if game_mode == 'single':
+            sql='INSERT INTO single_score(user_id,score) VALUES (%s,%s)'
+        elif game_mode =='two':
+            sql='INSERT INTO two_score(user_id,score) VALUES (%s,%s)'
+        curs.execute(sql,(user_id,score))
+        self.score_db.commit()
+        curs.close()
 
+    # 상위 10개 점수 불러오기
+    
+    def getScores():
+        curs=self.score_db.cursor()
+        sql='SELECT * FROM single_score ORDER BY score DESC'
+        curs.execute(sql)
+        data=curs.fetchall()
+        return data
+        curs.close()
+    # 
+    def setScore(self,data,user_id,score):
+        sql="SELECT * FROM single_score WHERE user_id=%s"
+        self.curs.execute(sql,user_id)
+        data=self.curs.fetchone()
+        
+        if data: # 이미 user 점수가 있으면.. 기존 점수랑 비교 -> 더 크면 대체
+            if data['score']>score:
+                self.curs.close()
+                return 
+            else:
+                sql='UPDATE single_score SET score=%s WHERE user_id=%s' #대체만 하면됨..
+                self.curs.execute(sql,(score,user_id))
+                self.score_db.commit()
+                #self.curs.close()
+        else:
+            if len(data) >= self.numScores: # 랭킹보드가 꽉 찼으면
+                lowScoreid = data[-1][0]
+                lowScore = data[-1][1]
+                if lowScore <score:
+                    sql="DELETE FROM single_score WHERE (user_id = %s AND score = %s)"
+                    self.curs.execute(sql,(lowScoreid, lowScore))
+                    self.score_db.commit()
+                    sql="INSERT INTO single_score VALUES (%s,%s)"
+                    self.curs.execute(sql,(user_id, score))
+                    self.score_db.commit()
+            else :
+                sql="INSERT INTO single_score VALUES (%s,%s)"
+                self.curs.execute(sql,(user_id, score))
+                self.score_db.commit()
+
+                
+        self.curs.close()
+
+
+                    
+
+
+        
+           
+        
+ 
+   
 
     
 
