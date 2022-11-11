@@ -44,8 +44,8 @@ class Menu:
         self.font = pygame.font.Font(None, round(36*self.ratio))
         
         # For hiscore setting 
-        # single mode에 한해서만 점수 불러오기 
-        self.hiScores=Database().getScores()
+         
+        self.hiScores=Database().getScores() # 점수 불러오기 
         self.highScoreTexts = [self.font.render("NAME", 1, RED),
                         self.font.render("SCORE", 1, RED),
                         self.font.render("ACCURACY", 1, RED)]
@@ -56,15 +56,16 @@ class Menu:
                         self.highScoreTexts[2].get_rect(
                         topright=self.screen.get_rect().inflate(-100, -100).topright)]
         self.timeHighScoreTexts= [self.font.render("NAME", 1, RED),
-                        self.font.render("SCORE", 1, RED),
-                        self.font.render("ACCURACY", 1, RED)]
+                      #  self.font.render("SCORE", 1, RED),
+                      #  self.font.render("ACCURACY", 1, RED)]
         self.timeHighScorePos = [self.timeHighScoreTexts[0].get_rect(
-                        topleft=self.screen.get_rect().inflate(-100, -100).topleft),
-                        self.timeHighScoreTexts[1].get_rect(
-                        midtop=self.screen.get_rect().inflate(-100, -100).midtop),
-                        self.timeHighScoreTexts[2].get_rect(
-                        topright=self.screen.get_rect().inflate(-100, -100).topright)]
-        for hs in self.hiScores:
+                       # topleft=self.screen.get_rect().inflate(-100, -100).topleft),
+                       # self.timeHighScoreTexts[1].get_rect(
+                      #  midtop=self.screen.get_rect().inflate(-100, -100).midtop),
+                      #  self.timeHighScoreTexts[2].get_rect(
+                      #  topright=self.screen.get_rect().inflate(-100, -100).topright)]
+
+        for hs in self.hiScores: 
             self.highScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
                                 for x in range(3)])
             self.highScorePos.extend([self.highScoreTexts[x].get_rect(

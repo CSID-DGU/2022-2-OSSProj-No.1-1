@@ -8,7 +8,7 @@ from sprites import (MasterSprite, Ship, Alien, Missile, BombPowerup,
                      Roundy, Crawly)
 from database import Database
 from load import load_image, load_sound, load_music
-from menu import *
+from menu2 import *
 
 if not pygame.mixer: 
     print('Warning, sound disabled')

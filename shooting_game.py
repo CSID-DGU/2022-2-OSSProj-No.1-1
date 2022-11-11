@@ -2,7 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 from database import Database
-from menu import *
+from menu2 import *
 from mode_single import *
 from mode_pvp import *
 
@@ -44,13 +44,16 @@ showHiScores = False
 # Init_page = 1. log in 2. sign up 3. Quit 
 # login_page = enter ID, enter PWD, BACK
 # signup_page = enter ID, enter PWD, BACK
+# inInitMenu : 맨 처음 페이지 
+# userSelction 1부터 3까지 
+
 inInitMenu=True
 while inInitMenu:
     userSelection, screen_size=Menu(screen_size).init_page()
     flag=True
     while flag:   
         if userSelection==1 or userSelection==2: # log in/sign up
-            pageResult, screen_size=Menu(screen_size).inMenu_page()
+            pageResult, screen_size=Menu(screen_size).login_sign_page()
             # DB 연결 수정되면 Menu(screen_size).login_sign_page(userSelection)으로 변경
             if pageResult==BACK: # back
                 flag=False  
@@ -69,7 +72,8 @@ while windowShow:
 #########################
 #    Start Menu Loop    #
 #########################
-
+    # 로그인 후
+    # userSelection 1부터 6까지
     inMainMenu=True
     while inMainMenu:
         userSelection, screen_size=Menu(screen_size).inMenu_page() 
@@ -79,17 +83,17 @@ while windowShow:
                 pageResult, screen_size=Menu(screen_size).select_game_page()
                 if pageResult == BACK: # back
                     flag = False
-                elif (pageResult == 'SingleMode' or 
+                elif (pageResult == 'SingleMode' or  # select mode결과 
                     pageResult == 'TimeMode' or
                     pageResult == 'PvpMode'):
                     flag = False
-                    inMainMenu = False 
-            elif userSelection == 2:
+                    inMainMenu = False # 게임 화면 접속
+            elif userSelection == 2: # score 보는 페이지
                 pageResult, screen_size = Menu(screen_size).score_page()
                 if pageResult == BACK:
                     flag = False
-            elif userSelection == 6:
-                pygame.quit()
+            elif userSelection == 6: # main menu에서 quit 버튼 
+                pygame.quit() # pygame 자체를 종료
                 sys.exit()
 
 
