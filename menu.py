@@ -44,6 +44,7 @@ class Menu:
         self.font = pygame.font.Font(None, round(36*self.ratio))
         
         # For hiscore setting 
+        # single mode에 한해서만 점수 불러오기 
         self.hiScores=Database().getScores()
         self.highScoreTexts = [self.font.render("NAME", 1, RED),
                         self.font.render("SCORE", 1, RED),
@@ -150,7 +151,7 @@ class Menu:
         self.soundFX = Database.getSound()
         self.music = Database.getSound(music=True)
 
-
+    
     def init_page(self):        
         while self.ininitalMenu:
             self.clock.tick(self.clockTime) 
@@ -494,14 +495,14 @@ class Menu:
                     and event.key == pygame.K_UP
                     and self.selection > 1
                     and not showSingleMode
-                    and not showTimeMode
+                    
                     and not showPvpMode):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.selectModeDict)
                     and not showSingleMode
-                    and not showTimeMode
+                
                     and not showPvpMode):
                     self.selection += 1
             
