@@ -81,6 +81,21 @@ class Database(object):
         self.score_db.commit()
         curs.close()
 
+    # 점수 데이터 불러오기
+
+    def load_data(self, game_mode): 
+        self.database.__init__()
+        curs = self.database.score_db.cursor(pymysql.cursors.DictCursor)
+        if game_mode == 'singlemode': # mode 이름 뭐로 설정했는지 확인
+            sql = "SELECT * FROM single_score ORDER BY score DESC "
+        elif game_mode == 'twomode':
+            sql = "SELECT * FROM two_score ORDER BY score DESC"
+      
+        curs.execute(sql)
+        data = curs.fetchall() #리스트 안에 딕셔너리가 있는 형태
+        curs.close()
+        return data
+   
 
     
 
