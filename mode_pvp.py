@@ -4,8 +4,8 @@ import sys
 from pygame.locals import *
 
 from sprites import (MasterSprite, 
-                     Player, FriendPlayer, Player2, Player3, Monster, Leaf, Explosion,
-                     BombPowerup, ShieldPowerup, DoubleleafPowerup, FriendPowerup, LifePowerup,
+                     Player, FriendPlayer, Player2, Player3, Monster, Beam, Explosion,
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup,
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -92,7 +92,7 @@ class Pvp() :
         miniPlayer = FriendPlayer(screen_size)
 
         initialmonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoubleleafPowerup, FriendPowerup, LifePowerup)
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup)
 
         bombs = pygame.sprite.Group()
         bombs2 = pygame.sprite.Group()
@@ -153,22 +153,22 @@ class Pvp() :
             Monster.pool = pygame.sprite.Group(
                 [monster(screen_size) for monster in initialmonsterTypes for _ in range(5)])
             Monster.active = pygame.sprite.Group()
-            Leaf.pool = pygame.sprite.Group([Leaf(screen_size) for _ in range(10)]) 
-            Leaf.active = pygame.sprite.Group()
+            Beam.pool = pygame.sprite.Group([beam(screen_size) for _ in range(10)]) 
+            Beam.active = pygame.sprite.Group()
             Explosion.pool = pygame.sprite.Group([Explosion(screen_size) for _ in range(10)])
             Explosion.active = pygame.sprite.Group()
 
             # Reset game contents
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
             friendPlayer1 = False
-            doubleleaf = False
+            doublebeam = False
             bombsHeld = 3
             score = 0
             friendPlayer2 = False
-            doubleleaf2 = False
+            doublebeam2 = False
             bombsHeld2 = 3
             score2 = 0
-            leafFired = 0
+            beamFired = 0
             wave = 1
 
             # speed
@@ -188,8 +188,8 @@ class Pvp() :
             betweenDoubleCount2 = betweenDoubleTime
             friendPlayerTime = 8 * clockTime
             friendPlayerCount = friendPlayerTime
-            friendPlayerLeafTime = 0.2 * clockTime
-            friendPlayerLeafCount = friendPlayerLeafTime
+            friendPlayerbeamTime = 0.2 * clockTime
+            friendPlayerbeamCount = friendPlayerbeamTime
             
             player.alive = True
             player.life = 3
@@ -232,18 +232,18 @@ class Pvp() :
                         and event.key in direction.keys()):
                         player.horiz -= direction[event.key][0] * speed
                         player.vert -= direction[event.key][1] * speed
-                    # leaf1
+                    # beam1
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
-                        if doubleleaf :
-                            Leaf.position(player.rect.topleft)
-                            Leaf.position(player.rect.topright)
-                            leafFired += 2
+                        if doublebeam :
+                            beam.position(player.rect.topleft)
+                            beam.position(player.rect.topright)
+                            beamFired += 2
                         else : 
-                            Leaf.position(player.rect.midtop)
-                            leafFired += 1
+                            beam.position(player.rect.midtop)
+                            beamFired += 1
                         if soundFX:
-                            leaf_sound.play()
+                            beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_b):
@@ -262,18 +262,18 @@ class Pvp() :
                         and event.key in direction2.keys()):
                         player2.horiz -= direction2[event.key][0] * speed
                         player2.vert -= direction2[event.key][1] * speed
-                    # leaf2
+                    # beam2
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_m):
-                        if doubleleaf2 :
-                            Leaf.position(player2.rect.topleft)
-                            Leaf.position(player2.rect.topright)
-                            leafFired += 2
+                        if doublebeam2 :
+                            beam.position(player2.rect.topleft)
+                            beam.position(player2.rect.topright)
+                            beamFired += 2
                         else : 
-                            Leaf.position(player2.rect.midtop)
-                            leafFired += 1
+                            beam.position(player2.rect.midtop)
+                            beamFired += 1
                         if soundFX:
-                            leaf_sound.play()
+                            beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_l):
@@ -326,7 +326,7 @@ class Pvp() :
                                     elif selection == 2:
                                         soundFX = not soundFX
                                         if soundFX:
-                                            leaf_sound.play()
+                                            beam_sound.play()
                                         Database.setSound(int(soundFX))
                                     elif selection == 3 and pygame.mixer:
                                         music = not music
@@ -416,7 +416,7 @@ class Pvp() :
                                 monster.table()
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            leafFired += 1
+                            beamFired += 1
                             if soundFX:
                                 monster_explode_sound.play()
                     for bomb in bombs2:
@@ -426,13 +426,13 @@ class Pvp() :
                                 monster.table()
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
-                            leafFired += 1
+                            beamFired += 1
                             if soundFX:
                                 monster_explode_sound.play()
-                    for leaf in Leaf.active:
+                    for beam in Beam.active:
                         if pygame.sprite.collide_rect(
-                                leaf, monster) and monster in Monster.active:
-                            leaf.table()
+                                beam, monster) and monster in Monster.active:
+                            beam.table()
                             if monster.pType != 'grey' :
                                 monster.table()
                                 Explosion.position(monster.rect.center)
@@ -448,7 +448,7 @@ class Pvp() :
                             monster.table()
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            leafFired += 1
+                            beamFired += 1
                             player.shieldUp = False
                         elif player.life > 1:   # life
                             monster.table()
@@ -468,7 +468,7 @@ class Pvp() :
                             monster.table()
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
-                            leafFired += 1
+                            beamFired += 1
                             player2.shieldUp = False
                         elif player2.life > 1:   # life
                             monster.table()
@@ -491,8 +491,8 @@ class Pvp() :
                             bombsHeld += 1
                         elif powerup.pType == 'shield':
                             player.shieldUp = True
-                        elif powerup.pType == 'doubleleaf':
-                            doubleleaf = True
+                        elif powerup.pType == 'doublebeam':
+                            doublebeam = True
                         elif powerup.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
@@ -510,8 +510,8 @@ class Pvp() :
                             bombsHeld2 += 1
                         elif powerup.pType == 'shield':
                             player2.shieldUp = True
-                        elif powerup.pType == 'doubleleaf' :
-                            doubleleaf2 = True
+                        elif powerup.pType == 'doublebeam' :
+                            doublebeam2 = True
                         elif powerup.pType == 'life':
                             if player2.life < 3:
                                 player2.life += 1 
@@ -552,20 +552,20 @@ class Pvp() :
                 textposition = [wavePos, leftPos, bombPos, bombPos2]
 
             # Update using items
-                # item - doubleleaf
-                if doubleleaf:
+                # item - doublebeam
+                if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
                     elif betweenDoubleCount == 0:
-                        doubleleaf = False
+                        doublebeam = False
                         betweenDoubleCount = betweenDoubleTime
                 
-                # item - doubleleaf2
-                if doubleleaf2:
+                # item - doublebeam2
+                if doublebeam2:
                     if betweenDoubleCount2 > 0:
                         betweenDoubleCount2 -= 1
                     elif betweenDoubleCount2 == 0:
-                        doubleleaf2 = False
+                        doublebeam2 = False
                         betweenDoubleCount = betweenDoubleTime
                 
                 # item - friendPlayer
@@ -584,11 +584,11 @@ class Pvp() :
                             friendPlayer2 = False
                         miniPlayer.remove()
                         friendPlayerCount = friendPlayerTime
-                    if friendPlayerLeafCount > 0:
-                        friendPlayerLeafCount -= 1
-                    elif friendPlayerLeafCount == 0:
-                        friendPlayerLeafCount = friendPlayerLeafTime
-                        Leaf.position(miniPlayer.rect.midtop)
+                    if friendPlayerbeamCount > 0:
+                        friendPlayerbeamCount -= 1
+                    elif friendPlayerbeamCount == 0:
+                        friendPlayerbeamCount = friendPlayerbeamTime
+                        beam.position(miniPlayer.rect.midtop)
 
             # Detertmine when to move to next wave
                 if monstersLeftThisWave <= 0:

@@ -4,8 +4,8 @@ import sys
 from pygame.locals import *
 
 from sprites import (MasterSprite, 
-                     Player, FriendPlayer, Monster, Beam, Candy, Explosion,
-                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup
+                     Player, FriendPlayer, Monster, Beam, Explosion,
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -85,7 +85,7 @@ class Single():
         miniPlayer = FriendPlayer(screen_size)
         
         initialMonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup,
                         FriendPowerup, LifePowerup)
         
         bombs = pygame.sprite.Group()
@@ -199,34 +199,17 @@ class Single():
             
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
+            betweenTripleTime = 8 * clockTime
+            betweenTripleCount = betweenTripleTime
             friendPlayerTime = 8 * clockTime
             friendPlayerCount = friendPlayerTime
             friendPlayerBeamTime = 0.2 * clockTime
-            friendPlayerBeamCount = friendPlayerLeafTime
+            friendPlayerBeamCount = friendPlayerBeamTime
             
             player.alive = True
             player.life = 3
             player.initializeKeys()
             
-            if ship_selection.get_ship_selection() == 1:
-                player.image, player.rect = load_image('ship.png', -1)
-                player.original = player.image
-                player.shield, player.rect = load_image('ship_shield.png', -1)
-    
-            elif ship_selection.get_ship_selection() == 2:
-                player.image, player.rect = load_image('ship2.png', -1)
-                player.original = player.image
-                player.shield, player.rect = load_image('ship2_shield.png', -1)
- 
-            elif ship_selection.get_ship_selection() == 3:
-                player.image, player.rect = load_image('ship3.png', -1)
-                player.original = player.image
-                player.shield, player.rect = load_image('ship3_shield.png', -1)
-
-            elif ship_selection.get_ship_selection() == 4:
-                player.image, player.rect = load_image('ship4.png', -1)
-                player.original = player.image
-                player.shield, player.rect = load_image('ship4_shield.png', -1)
             
             player.showChange_ship = False
             
@@ -271,6 +254,11 @@ class Single():
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
+                        elif triplecandy :
+                            Beam.position(player.rect.topleft)
+                            Beam.position(player.rect.midtop)
+                            Beam.position(player.rect.topright)
+                            beamFired += 3
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -454,16 +442,6 @@ class Single():
                                 monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             if soundFX:
                                 monster_explode_sound.play()
-                    for candy in Candy.active:
-                        if pygame.sprite.collide_rect(
-                                candy, monster) and monster in Monster.active:
-                            candy.table()
-                            if monster.pType != 'grey' :
-                                monster.table()
-                                Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            if soundFX:
-                                monster_explode_sound.play()
                     if pygame.sprite.collide_rect(monster, player):
                         if player.shieldUp:
                             monster.table()
@@ -540,11 +518,11 @@ class Single():
                 
                 # item - triplecandy
                 if triplecandy:
-                    if betweenDoubleCount > 0:
-                        betweenDoubleCount -= 1
-                    elif betweenDoubleCount == 0:
+                    if betweenTripleCount > 0:
+                        betweenTripleCount -= 1
+                    elif betweenTripleCount == 0:
                         triplecandy = False
-                        betweenDoubleCount = betweenDoubleTime
+                        betweenTripleCount = betweenTripleTime
 
                 # item - friendPlayer
                 miniPlayer.rect.bottomright = player.rect.bottomleft
