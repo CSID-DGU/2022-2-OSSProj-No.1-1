@@ -19,7 +19,7 @@ direction = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
 # Initialize everything
 pygame.mixer.pre_init(11025, -16, 2, 512)
 pygame.init()
-screen_size = 700 # screen_size = screen_width = screen_height 
+screen_size = 500 # screen_size = screen_width = screen_height 
 # screen size 확장
 screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
 pygame.display.set_caption("Space War!!")

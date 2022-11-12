@@ -4,6 +4,7 @@ from pygame.locals import *
 from load import load_image, load_sound, load_music
 from database import Database
 from coin import *
+from sprites import Player
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -46,6 +47,8 @@ class Menu:
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.font = pygame.font.Font(None, round(36*self.ratio))
+        
+        self.player = Player(screen_size)
         
         # For hiscore setting 
         self.hiScores=Database().getScores()
@@ -431,6 +434,24 @@ class Menu:
                             pygame.mixer.music.stop()
                         Database.setSound(int(self.music), music=True)
                     elif self.selection == 5:
+                        if self.ship_selection.get_ship_selection() == 1:
+                            self.player.image, self.player.rect = load_image('ship.png', -1)
+                            self.player.original = self.player.image
+                            self.player.shield = load_image('ship_shield.png')
+                        elif self.ship_selection.get_ship_selection() == 2:
+                            self.player.image, self.player.rect = load_image('ship2.png', -1)
+                            self.player.original = self.player.image
+                            self.player.shield, self.player.rect = load_image('ship2_shield.png', -1)
+            
+                        elif self.ship_selection.get_ship_selection() == 3:
+                            self.player.image, self.player.rect = load_image('ship3.png', -1)
+                            self.player.original = self.player.image
+                            self.player.shield, self.player.rect = load_image('ship3_shield.png', -1)
+
+                        elif self.ship_selection.get_ship_selection() == 4:
+                            self.player.image, self.player.rect = load_image('ship4.png', -1)
+                            self.player.original = self.player.image
+                            self.player.shield, self.player.rect = load_image('ship4_shield.png', -1)
                         self.showShop = True
                     elif self.selection == 6:
                         cnt+=1

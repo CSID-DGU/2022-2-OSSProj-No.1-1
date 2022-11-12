@@ -38,10 +38,10 @@ class Explosion(MasterSprite):
 class Player(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('kirin.png', -1) # 캐릭터 이미지
+        self.image, self.rect = load_image('ship.png', -1) # 캐릭터 이미지
         self.original = self.image
-        self.shield, self.rect = load_image('kirin_shield.png', -1) # 쉴드 상태 캐릭터 이미지
-        self.fart, self.rect = load_image('kirin_bomb.png', -1) # 폭탄 상태 캐릭터 이미지
+        self.shield, self.rect = load_image('ship_shield.png', -1) # 쉴드 상태 캐릭터 이미지
+        self.fart, self.rect = load_image('explosion.png', -1) # 폭탄 상태 캐릭터 이미지
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 400) # 비율 변동
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
@@ -102,7 +102,7 @@ class Player(MasterSprite):
 class FriendPlayer(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('friendkirin.png', -1)
+        self.image, self.rect = load_image('friendPlayer.png', -1)
         self.original = self.image
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
@@ -118,7 +118,7 @@ class Player2(MasterSprite):
         super().__init__()
         self.image, self.rect = load_image('ship.png', -1)
         self.original = self.image
-        self.shield, self.rect = load_image('kirin_shield.png', -1)
+        self.shield, self.rect = load_image('ship_shield.png', -1)
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
@@ -168,7 +168,7 @@ class Player3(MasterSprite):
         super().__init__()
         self.image, self.rect = load_image('ship.png', -1)
         self.original = self.image
-        self.shield, self.rect = load_image('kirin_shield.png', -1)
+        self.shield, self.rect = load_image('ship_shield.png', -1)
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
@@ -318,7 +318,7 @@ class Grey(Monster):
 
 class Blue(Monster):
     def __init__(self, screen_size):
-        super().__init__('panda',screen_size)
+        super().__init__('blue',screen_size)
         self.moveFunc = lambda: (self.loc, 0)
         self.pType = 'panda'
 
@@ -372,7 +372,7 @@ class Beam(MasterSprite):
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        self.area = self.screen.get_rect()
+        self.area = self.screen.get_rect() 
 
     @classmethod
     def position(cls, loc):
@@ -463,7 +463,7 @@ class DoublebeamPowerup(Powerup):
 
 class FriendPowerup(Powerup):
     def __init__(self, screen_size):
-        super().__init__('friendkirin', screen_size)
+        super().__init__('friendPlayer', screen_size)
         self.pType = 'friendPlayer'
 
 class LifePowerup(Powerup):
