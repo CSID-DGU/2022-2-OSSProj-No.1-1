@@ -499,13 +499,13 @@ class Menu:
                     and ShipData.load_unlock(4)):
                     self.showShop = False
                 elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_a
+                    and event.key == pygame.K_LEFT
                     and self.ship_selection.get_ship_selection() > 1
                     and not self.showHiScores
                     and self.showShop):
                     self.ship_selection.ship_selection_minus()
                 elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_d
+                    and event.key == pygame.K_RIGHT
                     and self.ship_selection.get_ship_selection() < len(self.ship_menuDict)
                     and not self.showHiScores
                     and self.showShop):
