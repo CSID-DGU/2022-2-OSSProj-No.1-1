@@ -311,7 +311,7 @@ class Yellow(Monster):
 
 class Grey(Monster):
     def __init__(self, screen_size):
-        super().__init__('stone',screen_size)
+        super().__init__('grey',screen_size)
         self.moveFunc = lambda: (0, 1.5 * self.loc)
         self.pType = 'stone'
 
@@ -361,14 +361,14 @@ class Explosion(MasterSprite):
             self.remove(self.allsprites, self.active)
             self.add(self.pool)
 
-
-class Leaf(MasterSprite):
+## Item
+class Beam(MasterSprite): 
     pool = pygame.sprite.Group()
     active = pygame.sprite.Group()
 
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('leaf.png', -1)
+        self.image, self.rect = load_image('beam.png', -1)
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
@@ -377,10 +377,10 @@ class Leaf(MasterSprite):
     @classmethod
     def position(cls, loc):
         if len(cls.pool) > 0:
-            leaf = cls.pool.sprites()[0]
-            leaf.add(cls.allsprites, cls.active)
-            leaf.remove(cls.pool)
-            leaf.rect.midbottom = loc
+            beam = cls.pool.sprites()[0]
+            beam.add(cls.allsprites, cls.active)
+            beam.remove(cls.pool)
+            beam.rect.midbottom = loc
     
     def table(self):
         self.add(self.pool)
@@ -417,7 +417,7 @@ class Bomb(pygame.sprite.Sprite):
             self.kill()
 
 
-class Powerup(MasterSprite):
+class Powerup(MasterSprite): # 쉴드, 폭탄(고구마), 하트, Friend(헬퍼)
     def __init__(self, kindof, screen_size):
         super().__init__()
         self.image, self.rect = load_image(kindof + '_powerup.png', -1)
@@ -456,10 +456,10 @@ class ShieldPowerup(Powerup):
         super().__init__('shield', screen_size)
         self.pType = 'shield'
 
-class DoubleleafPowerup(Powerup):
+class DoublebeamPowerup(Powerup):
     def __init__(self, screen_size):
-        super().__init__('doubleleaf', screen_size)
-        self.pType = 'doubleleaf'
+        super().__init__('doublebeam', screen_size)
+        self.pType = 'doublebeam'
 
 class FriendPowerup(Powerup):
     def __init__(self, screen_size):
@@ -470,3 +470,8 @@ class LifePowerup(Powerup):
     def __init__(self, screen_size):
         super().__init__('life', screen_size)
         self.pType = 'life'
+        
+class TriplecandyPowerup(Powerup):
+    def __init__(self, screen_size):
+        super().__init__('triplecandy', screen_size)
+        self.pType = 'triplecandy'

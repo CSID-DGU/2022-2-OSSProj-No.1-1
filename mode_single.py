@@ -4,8 +4,8 @@ import sys
 from pygame.locals import *
 
 from sprites import (MasterSprite, 
-                     Player, FriendPlayer, Monster, Leaf, Explosion,
-                     BombPowerup, ShieldPowerup, DoubleleafPowerup, FriendPowerup, LifePowerup,
+                     Player, FriendPlayer, Monster, Beam, Candy, Explosion,
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -85,7 +85,7 @@ class Single():
         miniPlayer = FriendPlayer(screen_size)
         
         initialMonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoubleleafPowerup, 
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup
                         FriendPowerup, LifePowerup)
         
         bombs = pygame.sprite.Group()
@@ -169,18 +169,20 @@ class Single():
             Monster.pool = pygame.sprite.Group(
                 [monster(screen_size) for monster in initialMonsterTypes for _ in range(5)])
             Monster.active = pygame.sprite.Group()
-            Leaf.pool = pygame.sprite.Group([Leaf(screen_size) for _ in range(10)]) 
-            Leaf.active = pygame.sprite.Group()
+            Beam.pool = pygame.sprite.Group([Beam(screen_size) for _ in range(10)]) 
+            Beam.active = pygame.sprite.Group()
             Explosion.pool = pygame.sprite.Group([Explosion(screen_size) for _ in range(10)])
             Explosion.active = pygame.sprite.Group()
 
             # Reset game contents
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
             friendPlayer = False
-            doubleleaf = False
+            doublebeam = False
+            triplecandy = False
             bombsHeld = 3
             score = 0
-            leafFired = 0
+            beamFired = 0
+            candyFired = 0
             wave = 1
 
             # speed
@@ -199,8 +201,8 @@ class Single():
             betweenDoubleCount = betweenDoubleTime
             friendPlayerTime = 8 * clockTime
             friendPlayerCount = friendPlayerTime
-            friendPlayerLeafTime = 0.2 * clockTime
-            friendPlayerLeafCount = friendPlayerLeafTime
+            friendPlayerBeamTime = 0.2 * clockTime
+            friendPlayerBeamCount = friendPlayerLeafTime
             
             player.alive = True
             player.life = 3
@@ -262,16 +264,16 @@ class Single():
                         and event.key in direction.keys()):
                         player.horiz -= direction[event.key][0] * speed
                         player.vert -= direction[event.key][1] * speed
-                    # Leaf
+                    # Beam
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
-                        if doubleleaf :
-                            Leaf.position(player.rect.topleft)
-                            Leaf.position(player.rect.topright)
-                            leafFired += 2
+                        if doublebeam :
+                            Beam.position(player.rect.topleft)
+                            Beam.position(player.rect.topright)
+                            beamFired += 2
                         else : 
-                            Leaf.position(player.rect.midtop)
-                            leafFired += 1
+                            Beam.position(player.rect.midtop)
+                            beamFired += 1
                         if soundFX:
                             missile_sound.play()
                     # Bomb
@@ -439,13 +441,23 @@ class Single():
                                 monster.table()
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            leafFired += 1
+                            beamFired += 1
                             if soundFX:
                                 monster_explode_sound.play()
-                    for leaf in Leaf.active:
+                    for beam in Beam.active:
                         if pygame.sprite.collide_rect(
-                                leaf, monster) and monster in Monster.active:
-                            leaf.table()
+                                beam, monster) and monster in Monster.active:
+                            beam.table()
+                            if monster.pType != 'grey' :
+                                monster.table()
+                                Explosion.position(monster.rect.center)
+                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                            if soundFX:
+                                monster_explode_sound.play()
+                    for candy in Candy.active:
+                        if pygame.sprite.collide_rect(
+                                candy, monster) and monster in Monster.active:
+                            candy.table()
                             if monster.pType != 'grey' :
                                 monster.table()
                                 Explosion.position(monster.rect.center)
@@ -457,7 +469,7 @@ class Single():
                             monster.table()
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            leafFired += 1
+                            beamFired += 1
                             player.shieldUp = False
                         elif player.life > 1:   # life
                             monster.table()
@@ -480,8 +492,10 @@ class Single():
                             bombsHeld += 1
                         elif powerup.pType == 'shield':
                             player.shieldUp = True
-                        elif powerup.pType == 'doubleleaf' :
-                            doubleleaf = True
+                        elif powerup.pType == 'doublebeam' :
+                            doublebeam = True
+                        elif powerup.pType == 'triplecandy':
+                            triplecandy = True
                         elif powerup.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
@@ -516,12 +530,20 @@ class Single():
                 textposition = [wavePos, leftPos, scorePos, bombPos]
 
             # Update using items
-                # item - doubleleaf
-                if doubleleaf:
+                # item - doubleBeam
+                if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
                     elif betweenDoubleCount == 0:
-                        doubleleaf = False
+                        doublebeam = False
+                        betweenDoubleCount = betweenDoubleTime
+                
+                # item - triplecandy
+                if triplecandy:
+                    if betweenDoubleCount > 0:
+                        betweenDoubleCount -= 1
+                    elif betweenDoubleCount == 0:
+                        triplecandy = False
                         betweenDoubleCount = betweenDoubleTime
 
                 # item - friendPlayer
@@ -534,12 +556,12 @@ class Single():
                         friendPlayer = False
                         miniPlayer.remove()
                         friendPlayerCount = friendPlayerTime
-                    # friendPlayer's leaf
-                    if friendPlayerLeafCount > 0:
-                        friendPlayerLeafCount -= 1
-                    elif friendPlayerLeafCount == 0:
-                        friendPlayerLeafCount = friendPlayerLeafTime
-                        Leaf.position(miniPlayer.rect.midtop)
+                    # friendPlayer's Beam
+                    if friendPlayerBeamCount > 0:
+                        friendPlayerBeamCount -= 1
+                    elif friendPlayerBeamCount == 0:
+                        friendPlayerBeamCount = friendPlayerBeamTime
+                        Beam.position(miniPlayer.rect.midtop)
 
             # betweenWaveCount - Detertmine when to move to next wave
                 if monstersLeftThisWave <= 0:
@@ -618,7 +640,7 @@ class Single():
 
 
         # Data for Highscore
-            accuracy = round(score / leafFired, 4) if leafFired > 0 else 0.0
+            accuracy = round(score / beamFired, 4) if beamFired > 0 else 0.0
             isHiScore = len(hiScores) < Database().numScores or score > hiScores[-1][1]
             name = ''
             nameBuffer = []
