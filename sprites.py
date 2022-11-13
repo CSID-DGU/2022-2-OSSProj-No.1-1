@@ -373,6 +373,22 @@ class Beam(MasterSprite):
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect() 
+        # self.dt = 2 #공의 이동 거리, 속도
+        # self.x = x  #공의 현재 x 좌표 
+        # self.y = y  #공의 현재 y 좌표 
+        # self.dirx = 1   
+        # self.diry = 1
+        # self.angle = - 45
+        # self.angle = - 135
+        # self.dx = math.cos(angle) * self.speed
+        # self.dy = math.sin(angle) * self.speed
+        # self.x = x  # x방향 설정하는 기능
+        # self.y = y  # y방향 설정하는 기능
+        # self.dx2 = math.cos(angle2) * self.speed
+        # self.dy2 = math.sin(angle2) * self.speed
+        # self.x2 = x2  # x방향 설정하는 기능
+        # self.y2 = y2  # y방향 설정하는 기능
+
 
     @classmethod
     def position(cls, loc):
@@ -381,6 +397,8 @@ class Beam(MasterSprite):
             beam.add(cls.allsprites, cls.active)
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
+
+    
     
     def table(self):
         self.add(self.pool)
@@ -392,7 +410,24 @@ class Beam(MasterSprite):
         self.rect = newpos
         if self.rect.top < self.area.top:
             self.table()
+    
+    #주어진 각도로 공을 움직임    
+    def start(self, angle):
+        self.angle = angle
+        self.go = True
+        
+    # def move(self):
+    #     self.x = self.x + self.dx
+    #     self.y = self.y + self.dy
 
+    #     self.x2 = self.x2 + self.dx2
+    #     self.y2 = self.y2 + self.dy2
+        
+    #     self.rect.x = int(self.x)
+    #     self.rect.y = int(self.y)
+        
+    #     self.rect.x2 = int(self.x2)
+    #     self.rect.y2 = int(self.y2)
 
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, Player):
