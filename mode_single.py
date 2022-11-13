@@ -639,10 +639,11 @@ class Single():
                     and event.key == pygame.K_RETURN
                     and len(name) > 0):
                     if Database().id_not_exists(name,mode=SINGLE):
-                        Database().setScore(hiScores,name, score)
-                        return True 
+                        print("존재하지 않는 id입니다") 
                     else:
-                        print("존재하지 않는 id입니다")
+                        Database().setScore(hiScores,name,score)
+                        return True
+                        
                      
             if isHiScore:
                 hiScoreText = font.render('SCORE', 1, RED)
