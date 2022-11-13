@@ -25,7 +25,7 @@ class Database(object):
             return True
 
 
-    def compare_data(self, id_text, pw_text): # 데이터베이스의 아이디와 비밀번호 비교교
+    def compare_data(self, id_text, pw_text): # 데이터베이스의 아이디와 비밀번호 비교
        # 불러 오기
         input_password=pw_text.encode('utf-8') # 입력비번 -> bytes형으로 변환
         curs = self.score_db.cursor(pymysql.cursors.DictCursor)
@@ -91,7 +91,7 @@ class Database(object):
         return data
         curs.close()
     # 
-    def setScore(self,data,user_id,score):
+    def setScore(self,hiScores,user_id,score):
         sql="SELECT * FROM single_score WHERE user_id=%s"
         self.curs.execute(sql,user_id)
         data=self.curs.fetchone()
@@ -106,9 +106,9 @@ class Database(object):
                 self.score_db.commit()
                 #self.curs.close()
         else:
-            if len(data) >= self.numScores: # 랭킹보드가 꽉 찼으면
-                lowScoreid = data[-1][0]
-                lowScore = data[-1][1]
+            if len(hiScores) >= self.numScores: # 랭킹보드가 꽉 찼으면
+                lowScoreid = hiScores[-1][0]
+                lowScore = hiScores[-1][1]
                 if lowScore <score:
                     sql="DELETE FROM single_score WHERE (user_id = %s AND score = %s)"
                     self.curs.execute(sql,(lowScoreid, lowScore))
@@ -121,7 +121,6 @@ class Database(object):
                 self.curs.execute(sql,(user_id, score))
                 self.score_db.commit()
 
-                
         self.curs.close()
 
 

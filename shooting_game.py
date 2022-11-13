@@ -2,7 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 from database import Database
-from menu2 import *
+from menu import *
 from mode_single import *
 from mode_pvp import *
 
