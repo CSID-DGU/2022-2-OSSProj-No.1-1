@@ -12,6 +12,7 @@ class Database(object):
             db='No_1_mysql',
             charset='utf8'
         )
+        self.numScores=10
 
     def id_not_exists(self,input_id): # 아이디가 데이터베이스에 존재하는지 확인
         curs = self.score_db.cursor(pymysql.cursors.DictCursor) # cursor : sql문을 실행할 수 있는 작업환경을 제공하는 객체
@@ -92,36 +93,37 @@ class Database(object):
         curs.close()
     # 
     def setScore(self,hiScores,user_id,score):
+        curs=self.score_db.cursor()
         sql="SELECT * FROM single_score WHERE user_id=%s"
-        self.curs.execute(sql,user_id)
-        data=self.curs.fetchone()
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
         
-        if data: # 이미 user 점수가 있으면.. 기존 점수랑 비교 -> 더 크면 대체
+        if data: # 이미 user 점수가 랭킹 보드에 있을 경우 -> 기존 점수 vs 새 점수
             if data['score']>score:
-                self.curs.close()
+                curs.close()
                 return 
             else:
-                sql='UPDATE single_score SET score=%s WHERE user_id=%s' #대체만 하면됨..
-                self.curs.execute(sql,(score,user_id))
+                sql='UPDATE single_score SET score=%s WHERE user_id=%s' #대체하기
+                curs.execute(sql,(score,user_id))
                 self.score_db.commit()
-                #self.curs.close()
+                #curs.close()
         else:
             if len(hiScores) >= self.numScores: # 랭킹보드가 꽉 찼으면
                 lowScoreid = hiScores[-1][0]
                 lowScore = hiScores[-1][1]
                 if lowScore <score:
                     sql="DELETE FROM single_score WHERE (user_id = %s AND score = %s)"
-                    self.curs.execute(sql,(lowScoreid, lowScore))
+                    curs.execute(sql,(lowScoreid, lowScore))
                     self.score_db.commit()
                     sql="INSERT INTO single_score VALUES (%s,%s)"
-                    self.curs.execute(sql,(user_id, score))
+                    curs.execute(sql,(user_id, score))
                     self.score_db.commit()
             else :
                 sql="INSERT INTO single_score VALUES (%s,%s)"
-                self.curs.execute(sql,(user_id, score))
+                curs.execute(sql,(user_id, score))
                 self.score_db.commit()
 
-        self.curs.close()
+        curs.close()
 
 
                     
