@@ -12,6 +12,15 @@ WHITE = (255, 255, 255)
 
 BACK=0
 
+
+class Language_check() :   ###### 게임 재 시작시 언어 상태 유지
+    def __init__(self):
+        self.state = False ######### False면 영어, True면 한국어
+    def change_language(self) :
+        self.state = not self.state
+    def get_language(self) :
+        return self.state
+
 class Keyboard(object):
     keys = {pygame.K_a: 'A', pygame.K_b: 'B', pygame.K_c: 'C', pygame.K_d: 'D',
             pygame.K_e: 'E', pygame.K_f: 'F', pygame.K_g: 'G', pygame.K_h: 'H',
@@ -33,6 +42,7 @@ class Ship_selection_check():
 
 class Menu:
     def __init__(self, screen_size):
+        self.language_checker = Language_check()
         missile_sound = load_sound('missile.ogg')
         bomb_sound = load_sound('bomb.ogg')
         alien_explode_sound = load_sound('alien_explode.ogg')
@@ -47,7 +57,7 @@ class Menu:
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.font = pygame.font.Font(None, round(36*self.ratio))
-        
+        self.font2 = pygame.font.SysFont("applegothic", round(15*self.ratio))
         self.player = Player(screen_size)
         
         # For hiscore setting 
@@ -123,8 +133,12 @@ class Menu:
         self.helpText=self.font.render('HELP',1,BLACK)
         self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
         self.quitText = self.font.render('QUIT', 1, BLACK)
+        self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
         self.selectText = self.font.render('*', 1, BLACK)
         self.selectPos = self.selectText.get_rect(topright=self.startPos.topleft)
+        self.languageText = self.font2.render('언어변경', 1, BLACK)
+        self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
+
 
         # For Select Mode setting
         self.singleText = self.font.render('SINGLE MODE', 1, BLACK)
@@ -458,6 +472,8 @@ class Menu:
                         self.showHelp=True                                        
                     elif self.selection == 7:
                         return 7, self.screen_size
+                    elif self.selection == 8:
+                        self.language_checker.change_language()
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
                     and self.selection > 1
@@ -549,34 +565,66 @@ class Menu:
                         shipUI_coinText = font.render(f'        : {self.coin_Have}',1 , (255,215,0))
                     
                 
-            self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship_menuDict[self.ship_selection.get_ship_selection()].inflate(0,60).midbottom)
-            self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
             
-            self.blankText=self.font.render('           ',1,BLACK)
-            self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-            self.startText = self.font.render('SELECT MODE', 1, BLACK)
-            self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
-            self.hiScoreText = self.font.render('HIGH SCORE', 1, BLACK)
-            self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
-            self.fxText = self.font.render('SOUND FX ', 1, BLACK)
-            self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
-            self.fxOnText = self.font.render('ON', 1, RED)
-            self.fxOffText = self.font.render('OFF', 1, RED)
-            self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
-            self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
-            self.musicText = self.font.render('MUSIC', 1, BLACK)
-            self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
-            self.musicOnText = self.font.render('ON', 1, RED)
-            self.musicOffText = self.font.render('OFF', 1, RED)
-            self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
-            self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-            self.shopText = self.font.render('SHIP SHOP', 1, BLACK)
-            self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
-            self.helpText=self.font.render('HELP',1,BLACK)
-            self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
-            self.quitText = self.font.render('QUIT', 1, BLACK)
-            self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
-            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos}
+            if not self.language_checker.get_language():
+                self.blankText=self.font.render('           ',1,BLACK)
+                self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
+                self.startText = self.font.render('SELECT MODE', 1, BLACK)
+                self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
+                self.hiScoreText = self.font.render('HIGH SCORE', 1, BLACK)
+                self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
+                self.fxText = self.font.render('SOUND FX ', 1, BLACK)
+                self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
+                self.fxOnText = self.font.render('ON', 1, RED)
+                self.fxOffText = self.font.render('OFF', 1, RED)
+                self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
+                self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
+                self.musicText = self.font.render('MUSIC', 1, BLACK)
+                self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
+                self.musicOnText = self.font.render('ON', 1, RED)
+                self.musicOffText = self.font.render('OFF', 1, RED)
+                self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
+                self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
+                self.shopText = self.font.render('SHIP SHOP', 1, BLACK)
+                self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
+                self.helpText=self.font.render('HELP',1,BLACK)
+                self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
+                self.quitText = self.font.render('QUIT', 1, BLACK)
+                self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
+                self.languageText = self.font2.render('언어 변경', 1, BLACK)
+                self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
+
+
+            else:
+                self.blankText=self.font.render('           ',1,BLACK)
+                self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
+                self.startText = self.font2.render('모드 설정', 1, BLACK)
+                self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
+                self.hiScoreText = self.font2.render('점수 기록', 1, BLACK)
+                self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
+                self.fxText = self.font2.render('효과음   ', 1, BLACK)
+                self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
+                self.fxOnText = self.font2.render('켜짐', 1, RED)
+                self.fxOffText = self.font2.render('꺼짐', 1, RED)
+                self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
+                self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
+                self.musicText = self.font2.render('음악', 1, BLACK)
+                self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
+                self.musicOnText = self.font2.render('켜짐', 1, RED)
+                self.musicOffText = self.font2.render('꺼짐', 1, RED)
+                self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
+                self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
+                self.shopText = self.font2.render('비행기 상점', 1, BLACK)
+                self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
+                self.helpText=self.font2.render('도움말',1,BLACK)
+                self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
+                self.quitText = self.font2.render('게임 종료', 1, BLACK)
+                self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
+                self.languageText = self.font2.render('LANGUAGE CHANGE', 1, BLACK)
+                self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
+
+            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos, 8: self.languagePos}
+            self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship_menuDict[self.ship_selection.get_ship_selection()].inflate(0,60).midbottom)
             self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
 
 
@@ -605,11 +653,11 @@ class Menu:
                 self.textOverlays = zip([self.blankText,self.startText, self.hiScoreText, self.helpText, self.fxText,
                                     self.musicText, self.shopText, self.quitText, self.selectText,
                                     self.fxOnText if self.soundFX else self.fxOffText,
-                                    self.musicOnText if self.music else self.musicOffText],
+                                    self.musicOnText if self.music else self.musicOffText,self.languageText],
                                 [self.blankPos,self.startPos, self.hiScorePos, self.helpPos, self.fxPos,
                                     self.musicPos, self.shopPos, self.quitPos, self.selectPos,
                                     self.fxOnPos if self.soundFX else self.fxOffPos,
-                                    self.musicOnPos if self.music else self.musicOffPos])
+                                    self.musicOnPos if self.music else self.musicOffPos,self.languagePos])
             for txt, pos in self.textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
