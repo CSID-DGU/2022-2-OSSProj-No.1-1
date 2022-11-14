@@ -5,8 +5,8 @@ from pygame.locals import *
 
 from sprites import (MasterSprite, 
                      Player, FriendPlayer, Monster, Beam, Explosion,
-                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
-                     Green, Yellow, Grey, Pink, Blue)
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup,
+                     Green, Yellow, Grey, Blue, Pink)
 from database import Database
 from load import load_image, load_sound, load_music
 from menu import *
@@ -33,7 +33,7 @@ class Single():
         pygame.init()
         ratio = (screen_size / 500)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's SpaceWar!")
+        pygame.display.set_caption("Let's Player!")
         pygame.mouse.set_visible(0)
 
     # Prepare background image
@@ -82,10 +82,10 @@ class Single():
         
         # object
         player = Player(screen_size)
-        miniPlayer = FriendPlayer(screen_size)
+        miniplayer = FriendPlayer(screen_size)
         
-        initialMonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup,
+        initialBearTypes = (Green, Yellow)
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, 
                         FriendPowerup, LifePowerup)
         
         bombs = pygame.sprite.Group()
@@ -95,15 +95,15 @@ class Single():
         ship_selection = Ship_selection_check() 
         
         # Score Function
-        def kill_monster(monster, monstersLeftThisWave, score) :
+        def kill_bear(monster, monstersLeftThisWave, score) :
             monstersLeftThisWave -= 1
             if monster.pType == 'green':
                 score += 1
             elif monster.pType == 'yellow':
                 score += 2
-            elif monster.pType == 'pink':
-                score += 4
             elif monster.pType == 'blue':
+                score += 4
+            elif monster.pType == 'pink':
                 score += 8
             return monstersLeftThisWave, score
 
@@ -167,7 +167,7 @@ class Single():
             allsprites = pygame.sprite.RenderPlain((player,))
             MasterSprite.allsprites = allsprites
             Monster.pool = pygame.sprite.Group(
-                [monster(screen_size) for monster in initialMonsterTypes for _ in range(5)])
+                [monster(screen_size) for monster in initialBearTypes for _ in range(5)])
             Monster.active = pygame.sprite.Group()
             Beam.pool = pygame.sprite.Group([Beam(screen_size) for _ in range(10)]) 
             Beam.active = pygame.sprite.Group()
@@ -176,13 +176,11 @@ class Single():
 
             # Reset game contents
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
-            friendPlayer = False
+            friendplayer = False
             doublebeam = False
-            triplecandy = False
             bombsHeld = 3
             score = 0
             beamFired = 0
-            candyFired = 0
             wave = 1
 
             # speed
@@ -190,7 +188,7 @@ class Single():
             MasterSprite.speed = speed
 
             # Reset all time
-            monsterPeriod = clockTime // speed
+            bearPeriod = clockTime // speed
             curTime = 0
             powerupTime = 8 * clockTime
             powerupTimeLeft = powerupTime
@@ -199,12 +197,10 @@ class Single():
             
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
-            betweenTripleTime = 8 * clockTime
-            betweenTripleCount = betweenTripleTime
-            friendPlayerTime = 8 * clockTime
-            friendPlayerCount = friendPlayerTime
-            friendPlayerBeamTime = 0.2 * clockTime
-            friendPlayerBeamCount = friendPlayerBeamTime
+            friendplayerTime = 8 * clockTime
+            friendplayerCount = friendplayerTime
+            friendplayerBeamTime = 0.2 * clockTime
+            friendplayerBeamCount = friendplayerBeamTime
             
             player.alive = True
             player.life = 3
@@ -254,11 +250,6 @@ class Single():
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
-                        elif triplecandy :
-                            Beam.position(player.rect.topleft)
-                            Beam.position(player.rect.midtop)
-                            Beam.position(player.rect.topright)
-                            beamFired += 3
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -420,7 +411,7 @@ class Single():
                     
 
             # Collision Detection
-                # Monsters
+                # Bears
                 for monster in Monster.active:
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
@@ -428,10 +419,10 @@ class Single():
                             if monster.pType != 'grey' :
                                 monster.table()
                                 Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             if soundFX:
-                                monster_explode_sound.play()
+                                bear_explode_sound.play()
                     for beam in Beam.active:
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
@@ -439,14 +430,14 @@ class Single():
                             if monster.pType != 'grey' :
                                 monster.table()
                                 Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
                             if soundFX:
-                                monster_explode_sound.play()
+                                bear_explode_sound.play()
                     if pygame.sprite.collide_rect(monster, player):
                         if player.shieldUp:
                             monster.table()
                             Explosion.position(monster.rect.center)
-                            monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                            monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             player.shieldUp = False
                         elif player.life > 1:   # life
@@ -461,7 +452,7 @@ class Single():
                             player.remove(allsprites)
                             Explosion.position(player.rect.center)
                             if soundFX:
-                                player_explode_sound.play()
+                                kirin_explode_sound.play()
 
                 # PowerUps
                 for powerup in powerups:
@@ -472,30 +463,28 @@ class Single():
                             player.shieldUp = True
                         elif powerup.pType == 'doublebeam' :
                             doublebeam = True
-                        elif powerup.pType == 'triplecandy':
-                            triplecandy = True
                         elif powerup.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
                         elif powerup.pType == 'friendPlayer' :
-                            friendPlayer = True
-                            MasterSprite.allsprites.add(miniPlayer) 
+                            friendplayer = True
+                            MasterSprite.allsprites.add(miniplayer) 
                             allsprites.update(screen_size)
                             allsprites.draw(screen)
                         powerup.kill()
                     elif powerup.rect.top > powerup.area.bottom:
                         powerup.kill()
 
-            # Update Monsters
+            # Update Bears
                 if curTime <= 0 and monstersLeftThisWave > 0:
                     Monster.position()
-                    curTime = monsterPeriod
+                    curTime = bearPeriod
                 elif curTime > 0:
                     curTime -= 1
 
             # Update text overlays
                 waveText = font.render("Wave: " + str(wave), 1, BLACK)
-                leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, BLACK)
+                leftText = font.render("Bears Left: " + str(monstersLeftThisWave), 1, BLACK)
                 scoreText = font.render("Score: " + str(score), 1, BLACK)
                 bombText = font.render("Fart Bombs: " + str(bombsHeld), 1, BLACK)
 
@@ -508,38 +497,30 @@ class Single():
                 textposition = [wavePos, leftPos, scorePos, bombPos]
 
             # Update using items
-                # item - doubleBeam
+                # item - doublebeam
                 if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
                     elif betweenDoubleCount == 0:
                         doublebeam = False
                         betweenDoubleCount = betweenDoubleTime
-                
-                # item - triplecandy
-                if triplecandy:
-                    if betweenTripleCount > 0:
-                        betweenTripleCount -= 1
-                    elif betweenTripleCount == 0:
-                        triplecandy = False
-                        betweenTripleCount = betweenTripleTime
 
-                # item - friendPlayer
-                miniPlayer.rect.bottomright = player.rect.bottomleft
-                if friendPlayer:
-                    # friendPlayer
-                    if friendPlayerCount > 0:
-                        friendPlayerCount -= 1
-                    elif friendPlayerCount == 0:
-                        friendPlayer = False
-                        miniPlayer.remove()
-                        friendPlayerCount = friendPlayerTime
-                    # friendPlayer's Beam
-                    if friendPlayerBeamCount > 0:
-                        friendPlayerBeamCount -= 1
-                    elif friendPlayerBeamCount == 0:
-                        friendPlayerBeamCount = friendPlayerBeamTime
-                        Beam.position(miniPlayer.rect.midtop)
+                # item - friendplayer
+                miniplayer.rect.bottomright = player.rect.bottomleft
+                if friendplayer:
+                    # friendplayer
+                    if friendplayerCount > 0:
+                        friendplayerCount -= 1
+                    elif friendplayerCount == 0:
+                        friendplayer = False
+                        miniplayer.remove()
+                        friendplayerCount = friendplayerTime
+                    # friendplayer's beam
+                    if friendplayerBeamCount > 0:
+                        friendplayerBeamCount -= 1
+                    elif friendplayerBeamCount == 0:
+                        friendplayerBeamCount = friendplayerBeamTime
+                        Beam.position(miniplayer.rect.midtop)
 
             # betweenWaveCount - Detertmine when to move to next wave
                 if monstersLeftThisWave <= 0:
@@ -574,9 +555,9 @@ class Single():
                         if wave == 1:
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
-                            Monster.pool.add([Pink(screen_size) for _ in range(5)])
-                        if wave == 3:
                             Monster.pool.add([Blue(screen_size) for _ in range(5)])
+                        if wave == 3:
+                            Monster.pool.add([Pink(screen_size) for _ in range(5)])
                         wave += 1
                         betweenWaveCount = betweenWaveTime
 

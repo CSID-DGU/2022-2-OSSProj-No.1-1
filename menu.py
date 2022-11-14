@@ -4,7 +4,6 @@ from pygame.locals import *
 from load import load_image, load_sound, load_music
 from database import Database
 from coin import *
-from sprites import Player
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -59,6 +58,7 @@ class Menu:
         self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
         self.font2 = pygame.font.Font("LeeSeoyun.ttf", round(20*self.ratio))
         self.player = Player(screen_size)
+>>>>>>> 06c79dc96ffffab7bcf57b590634e1a6d5b3592c
         
         # For hiscore setting 
         self.hiScores=Database().getScores()
@@ -71,15 +71,15 @@ class Menu:
                         midtop=self.screen.get_rect().inflate(-100, -100).midtop),
                         self.highScoreTexts[2].get_rect(
                         topright=self.screen.get_rect().inflate(-100, -100).topright)]
-        self.timeHighScoreTexts= [self.font.render("NAME", 1, RED),
-                        self.font.render("SCORE", 1, RED),
-                        self.font.render("ACCURACY", 1, RED)]
-        self.timeHighScorePos = [self.timeHighScoreTexts[0].get_rect(
-                        topleft=self.screen.get_rect().inflate(-100, -100).topleft),
-                        self.timeHighScoreTexts[1].get_rect(
-                        midtop=self.screen.get_rect().inflate(-100, -100).midtop),
-                        self.timeHighScoreTexts[2].get_rect(
-                        topright=self.screen.get_rect().inflate(-100, -100).topright)]
+        # self.timeHighScoreTexts= [self.font.render("NAME", 1, RED),
+        #                 self.font.render("SCORE", 1, RED),
+        #                 self.font.render("ACCURACY", 1, RED)]
+        # self.timeHighScorePos = [self.timeHighScoreTexts[0].get_rect(
+        #                 topleft=self.screen.get_rect().inflate(-100, -100).topleft),
+        #                 self.timeHighScoreTexts[1].get_rect(
+        #                 midtop=self.screen.get_rect().inflate(-100, -100).midtop),
+        #                 self.timeHighScoreTexts[2].get_rect(
+        #                 topright=self.screen.get_rect().inflate(-100, -100).topright)]
         for hs in self.hiScores:
             self.highScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
                                 for x in range(3)])
@@ -143,11 +143,9 @@ class Menu:
         # For Select Mode setting
         self.singleText = self.font.render('SINGLE MODE', 1, WHITE)
         self.singlePos = self.singleText.get_rect(midtop=self.screen.get_rect().center)
-        self.timeText = self.font.render('TIME MODE', 1, WHITE)
-        self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
-        self.pvpText = self.font.render('PVP MODE ', 1, WHITE)
-        self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
-        self.backText=self.font.render('BACK',1,WHITE)
+        self.pvpText = self.font.render('PVP MODE ', 1, BLACK)
+        self.pvpPos = self.pvpText.get_rect(topleft=self.singlePos.bottomleft)
+        self.backText=self.font.render('BACK',1,BLACK)
         self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
         self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selectPos =self.selectText.get_rect(topright=self.singlePos.topleft)
@@ -155,9 +153,9 @@ class Menu:
         # For selection '*' setting        
         self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selextPos=''
-        self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
+        self.selectModeDict = {1:self.singlePos,2:self.pvpPos,4:self.backPos}
         self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5: self.shopPos, 6:self.helpPos, 7: self.quitPos}
-        self.selectScoresDict = {1:self.singlePos,2:self.timePos,3:self.backPos}
+        self.selectScoresDict = {1:self.singlePos,2:self.backPos}
         self.menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
         self.loginDict={}
         self.selection = 1
@@ -451,24 +449,25 @@ class Menu:
                             pygame.mixer.music.stop()
                         Database.setSound(int(self.music), music=True)
                     elif self.selection == 5:
-                        if self.ship_selection.get_ship_selection() == 1:
-                            self.player.image, self.player.rect = load_image('ship.png', -1)
-                            self.player.original = self.player.image
-                            self.player.shield = load_image('ship_shield.png')
-                        elif self.ship_selection.get_ship_selection() == 2:
-                            self.player.image, self.player.rect = load_image('ship2.png', -1)
-                            self.player.original = self.player.image
-                            self.player.shield, self.player.rect = load_image('ship2_shield.png', -1)
+                        # if ship_selection.get_ship_selection() == 1:
+                        #     player.image, player.rect = load_image('ship.png', -1)
+                        #     player.original = player.image
+                        #     player.shield, player.rect = load_image('ship_shield.png', -1)
+                
+                        # elif ship_selection.get_ship_selection() == 2:
+                        #     player.image, player.rect = load_image('ship2.png', -1)
+                        #     player.original = player.image
+                        #     player.shield, player.rect = load_image('ship2_shield.png', -1)
             
-                        elif self.ship_selection.get_ship_selection() == 3:
-                            self.player.image, self.player.rect = load_image('ship3.png', -1)
-                            self.player.original = self.player.image
-                            self.player.shield, self.player.rect = load_image('ship3_shield.png', -1)
+                        # elif ship_selection.get_ship_selection() == 3:
+                        #     player.image, player.rect = load_image('ship3.png', -1)
+                        #     player.original = player.image
+                        #     player.shield, player.rect = load_image('ship3_shield.png', -1)
 
-                        elif self.ship_selection.get_ship_selection() == 4:
-                            self.player.image, self.player.rect = load_image('ship4.png', -1)
-                            self.player.original = self.player.image
-                            self.player.shield, self.player.rect = load_image('ship4_shield.png', -1)
+                        # elif ship_selection.get_ship_selection() == 4:
+                        #     player.image, player.rect = load_image('ship4.png', -1)
+                        #     player.original = player.image
+                        #     player.shield, player.rect = load_image('ship4_shield.png', -1)
                         self.showShop = True
                     elif self.selection == 6:
                         cnt+=1
@@ -672,7 +671,6 @@ class Menu:
         main_menuRect.midtop = self.screen.get_rect().midtop
         inSelectMenu=True
         showSingleMode = False
-        showTimeMode = False
         showPvpMode = False
         
         while inSelectMenu:
@@ -698,8 +696,6 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     if showSingleMode:
                         showSingleMode = False
-                    elif showTimeMode:
-                        showTimeMode = False
                     elif showPvpMode:
                         showPvpMode = False
                     elif self.selection == 1:
@@ -708,27 +704,21 @@ class Menu:
                         return selectMode, self.screen_size
                     elif self.selection == 2:
                         inSelectMenu = False
-                        selectMode = 'TimeMode'
-                        return selectMode, self.screen_size
-                    elif self.selection == 3:
-                        inSelectMenu = False
                         selectMode = 'PvpMode'
                         return selectMode, self.screen_size
-                    elif self.selection == 4:
+                    elif self.selection == 3:
                         inSelectMenu = False
                         return BACK, self.screen_size
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
                     and self.selection > 1
                     and not showSingleMode
-                    and not showTimeMode
                     and not showPvpMode):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.selectModeDict)
                     and not showSingleMode
-                    and not showTimeMode
                     and not showPvpMode):
                     self.selection += 1
             
@@ -736,19 +726,17 @@ class Menu:
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
             self.singleText = self.font.render('SINGLE', 1, BLACK)
             self.singlePos = self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, BLACK)
-            self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
             self.pvpText = self.font.render('PVP', 1, BLACK)
-            self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
+            self.pvpPos = self.pvpText.get_rect(topleft=self.singlePos.bottomleft)
             self.backText=self.font.render('BACK',1,BLACK)
             self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
             
-            self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
+            self.selectModeDict = {1:self.singlePos,2:self.pvpPos,3:self.backPos}
             self.selectText = self.font.render('*', 1, BLACK)
             self.selectPos = self.selectText.get_rect(topright=self.selectModeDict[self.selection].topleft)
 
-            textOverlays = zip([self.blankText,self.singleText,self.timeText,self.pvpText,self.selectText,self.backText],
-            [self.blankPos,self.singlePos,self.timePos,self.pvpPos,self.selectPos,self.backPos])
+            textOverlays = zip([self.blankText,self.singleText,self.pvpText,self.selectText,self.backText],
+            [self.blankPos,self.singlePos,self.pvpPos,self.selectPos,self.backPos])
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             
@@ -786,37 +774,29 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     if showSingleScores:
                         showSingleScores = False
-                    elif showTimeScores:
-                        showTimeScores = False
                     elif self.selection == 1:
                         showSingleScores=True 
                     elif self.selection == 2:
-                        showTimeScores = True
-                    elif self.selection == 3:
                         return BACK, self.screen_size 
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
                     and self.selection > 1
-                    and not showSingleScores
-                    and not showTimeScores):
+                    and not showSingleScores):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.selectScoresDict)
-                    and not showSingleScores
-                    and not showTimeScores):
+                    and not showSingleScores):
                     self.selection += 1 
 
             self.blankText=self.font.render('      ',1,BLACK)
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
             self.singleText=self.font.render('SINGLE  ',1,BLACK)
             self.singlePos=self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, BLACK)
-            self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
             self.backText = self.font.render('BACK', 1, BLACK)
-            self.backPos = self.backText.get_rect(topleft=self.timePos.bottomleft)
+            self.backPos = self.backText.get_rect(topleft=self.singlePos.bottomleft)
 
-            selectScoresDict = {1:self.singlePos,2:self.timePos,3:self.backPos}
+            selectScoresDict = {1:self.singlePos,2:self.backPos}
             self.selectPos= self.selectText.get_rect(topright=selectScoresDict[self.selection].topleft)
 
             self.highScoreTexts = [self.font.render("NAME", 1, RED), #폰트 렌터
@@ -827,15 +807,6 @@ class Menu:
                             self.highScoreTexts[1].get_rect(
                             midtop=self.screen.get_rect().inflate(-100, -100).midtop),
                             self.highScoreTexts[2].get_rect(
-                            topright=self.screen.get_rect().inflate(-100, -100).topright)]
-            self.timeHighScoreTexts= [self.font.render("NAME", 1, RED), #폰트 렌터
-                            self.font.render("SCORE", 1, RED),
-                            self.font.render("ACCURACY", 1, RED)]
-            self.timeHighScorePos = [self.timeHighScoreTexts[0].get_rect(
-                            topleft=self.screen.get_rect().inflate(-100, -100).topleft),
-                            self.timeHighScoreTexts[1].get_rect(
-                            midtop=self.screen.get_rect().inflate(-100, -100).midtop),
-                            self.timeHighScoreTexts[2].get_rect(
                             topright=self.screen.get_rect().inflate(-100, -100).topright)]
             for hs in self.hiScores:
                 self.highScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
@@ -849,15 +820,9 @@ class Menu:
                 menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
                 self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                 textOverlays = zip(self.highScoreTexts, self.highScorePos)
-            elif showTimeScores:
-                menu, menuRect = load_image("menu.png")
-                menuRect.midtop = self.screen.get_rect().midtop
-                menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
-                self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                textOverlays = zip(self.timeHighScoreTexts, self.timeHighScorePos)
             else:
-                textOverlays = zip([self.blankText,self.singleText, self.timeText,self.backText,self.selectText],
-                                [self.blankPos,self.singlePos, self.timePos,self.backPos, self.selectPos])
+                textOverlays = zip([self.blankText,self.singleText, self.backText,self.selectText],
+                                [self.blankPos,self.singlePos, self.backPos, self.selectPos])
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
