@@ -27,6 +27,7 @@ def load_image(name, colorkey=None):
     fullname = os.path.join(data_dir, name)
     try:
         image = pygame.image.load(fullname)
+        
     except pygame.error:
         print('Cannot load image:', fullname)
         raise SystemExit(str(pygame.get_error()))
