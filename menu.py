@@ -11,9 +11,9 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
 BACK=0
+ 
 
-
-class Language_check() :   ###### 게임 재 시작시 언어 상태 유지
+class Language_check() :  
     def __init__(self):
         self.state = False ######### False면 영어, True면 한국어
     def change_language(self) :
@@ -56,8 +56,13 @@ class Menu:
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+<<<<<<< HEAD
         self.font = pygame.font.Font(None, round(36*self.ratio))
         self.font2 = pygame.font.SysFont("applegothic", round(15*self.ratio))
+=======
+        self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
+        self.font2 = pygame.font.Font("LeeSeoyun.ttf", round(20*self.ratio))
+>>>>>>> 013923c446764260736c219b65800bf6412fd1bd
         self.player = Player(screen_size)
         
         # For hiscore setting 
@@ -89,11 +94,11 @@ class Menu:
         # For init_page setting
         self.blankText=self.font.render('       ',1,BLACK)
         self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-        self.loginText = self.font.render('LOG IN', 1, BLACK)
+        self.loginText = self.font.render('LOG IN', 1, 'YELLOW')
         self.loginPos = self.loginText.get_rect(topleft=self.blankPos.bottomleft)
-        self.signText=self.font.render('SIGN UP',1,BLACK)
+        self.signText=self.font.render('SIGN UP',1,'YELLOW')
         self.signPos=self.signText.get_rect(topleft=self.loginPos.bottomleft)
-        self.quitText=self.font.render('QUIT',1,BLACK)
+        self.quitText=self.font.render('QUIT',1,'YELLOW')
         self.quitPos=self.quitText.get_rect(topleft=self.signPos.bottomleft)
         
         # For login_page setting
@@ -112,46 +117,46 @@ class Menu:
         self.secretPwd=0
 
         # For inMenu_page setting
-        self.startText = self.font.render('SELECT MODE', 1, BLACK)
+        self.startText = self.font.render('SELECT MODE', 1, 'GREEN')
         self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
-        self.hiScoreText = self.font.render('HIGH SCORE', 1, BLACK)
+        self.hiScoreText = self.font.render('HIGH SCORE', 1, 'GREEN')
         self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
-        self.fxText = self.font.render('SOUND FX ', 1, BLACK)
+        self.fxText = self.font.render('SOUND FX ', 1, 'YELLOW')
         self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
         self.fxOnText = self.font.render('ON', 1, RED)
         self.fxOffText = self.font.render('OFF', 1, RED)
         self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
         self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
-        self.musicText = self.font.render('MUSIC', 1, BLACK)
+        self.musicText = self.font.render('MUSIC', 1, 'YELLOW')
         self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
         self.musicOnText = self.font.render('ON', 1, RED)
         self.musicOffText = self.font.render('OFF', 1, RED)
         self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
         self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-        self.shopText = self.font.render('SHIP SHOP', 1, BLACK)
+        self.shopText = self.font.render('SHIP SHOP', 1, 'GREEN')
         self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
-        self.helpText=self.font.render('HELP',1,BLACK)
+        self.helpText=self.font.render('HELP',1,'YELLOW')
         self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
-        self.quitText = self.font.render('QUIT', 1, BLACK)
+        self.quitText = self.font.render('QUIT', 1, 'YELLOW')
         self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
-        self.selectText = self.font.render('*', 1, BLACK)
+        self.selectText = self.font.render('*', 1, WHITE)
         self.selectPos = self.selectText.get_rect(topright=self.startPos.topleft)
-        self.languageText = self.font2.render('언어변경', 1, BLACK)
+        self.languageText = self.font2.render('언어변경', 1, 'YELLOW')
         self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
 
         # For Select Mode setting
-        self.singleText = self.font.render('SINGLE MODE', 1, BLACK)
+        self.singleText = self.font.render('SINGLE MODE', 1, WHITE)
         self.singlePos = self.singleText.get_rect(midtop=self.screen.get_rect().center)
         self.pvpText = self.font.render('PVP MODE ', 1, BLACK)
         self.pvpPos = self.pvpText.get_rect(topleft=self.singlePos.bottomleft)
         self.backText=self.font.render('BACK',1,BLACK)
         self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
-        self.selectText = self.font.render('*', 1, BLACK)
+        self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selectPos =self.selectText.get_rect(topright=self.singlePos.topleft)
         
         # For selection '*' setting        
-        self.selectText = self.font.render('*', 1, BLACK)
+        self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selextPos=''
         self.selectModeDict = {1:self.singlePos,2:self.pvpPos,4:self.backPos}
         self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5: self.shopPos, 6:self.helpPos, 7: self.quitPos}
@@ -225,6 +230,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
             
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -267,11 +273,11 @@ class Menu:
                     self.selection += 1
             self.blankText=self.font.render('       ',1,BLACK)
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-            self.loginText = self.font.render('LOG IN', 1, BLACK)
+            self.loginText = self.font.render('LOG IN', 1, 'YELLOW')
             self.loginPos = self.loginText.get_rect(topleft=self.blankPos.bottomleft)
-            self.signText=self.font.render('SIGN UP',1,BLACK)
+            self.signText=self.font.render('SIGN UP',1,'YELLOW')
             self.signPos=self.signText.get_rect(topleft=self.loginPos.bottomleft)
-            self.quitText=self.font.render('QUIT',1,BLACK)
+            self.quitText=self.font.render('QUIT',1,'YELLOW')
             self.quitPos=self.quitText.get_rect(topleft=self.signPos.bottomleft)
             self.menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
             self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
@@ -290,6 +296,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
 
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -401,6 +408,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
             self.flag=True
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -568,58 +576,58 @@ class Menu:
             if not self.language_checker.get_language():
                 self.blankText=self.font.render('           ',1,BLACK)
                 self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-                self.startText = self.font.render('SELECT MODE', 1, BLACK)
+                self.startText = self.font.render('SELECT MODE', 1, 'GREEN')
                 self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
-                self.hiScoreText = self.font.render('HIGH SCORE', 1, BLACK)
+                self.hiScoreText = self.font.render('HIGH SCORE', 1, 'GREEN')
                 self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
-                self.fxText = self.font.render('SOUND FX ', 1, BLACK)
+                self.fxText = self.font.render('SOUND FX ', 1, 'YELLOW')
                 self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
                 self.fxOnText = self.font.render('ON', 1, RED)
                 self.fxOffText = self.font.render('OFF', 1, RED)
                 self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
                 self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
-                self.musicText = self.font.render('MUSIC', 1, BLACK)
+                self.musicText = self.font.render('MUSIC', 1, 'YELLOW')
                 self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
                 self.musicOnText = self.font.render('ON', 1, RED)
                 self.musicOffText = self.font.render('OFF', 1, RED)
                 self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
                 self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-                self.shopText = self.font.render('SHIP SHOP', 1, BLACK)
+                self.shopText = self.font.render('SHIP SHOP', 1, 'GREEN')
                 self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
-                self.helpText=self.font.render('HELP',1,BLACK)
+                self.helpText=self.font.render('HELP',1,'YELLOW')
                 self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
-                self.quitText = self.font.render('QUIT', 1, BLACK)
+                self.quitText = self.font.render('QUIT', 1, 'YELLOW')
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
-                self.languageText = self.font2.render('언어 변경', 1, BLACK)
+                self.languageText = self.font2.render('언어 변경', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
 
             else:
                 self.blankText=self.font.render('           ',1,BLACK)
                 self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-                self.startText = self.font2.render('모드 설정', 1, BLACK)
+                self.startText = self.font2.render('모드 설정', 1, 'GREEN')
                 self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
-                self.hiScoreText = self.font2.render('점수 기록', 1, BLACK)
+                self.hiScoreText = self.font2.render('점수 기록', 1, 'GREEN')
                 self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
-                self.fxText = self.font2.render('효과음   ', 1, BLACK)
+                self.fxText = self.font2.render('효과음   ', 1, 'YELLOW')
                 self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
                 self.fxOnText = self.font2.render('켜짐', 1, RED)
                 self.fxOffText = self.font2.render('꺼짐', 1, RED)
                 self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
                 self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
-                self.musicText = self.font2.render('음악', 1, BLACK)
+                self.musicText = self.font2.render('음악', 1, 'YELLOW')
                 self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
                 self.musicOnText = self.font2.render('켜짐', 1, RED)
                 self.musicOffText = self.font2.render('꺼짐', 1, RED)
                 self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
                 self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-                self.shopText = self.font2.render('비행기 상점', 1, BLACK)
+                self.shopText = self.font2.render('비행기 상점', 1,'GREEN')
                 self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
-                self.helpText=self.font2.render('도움말',1,BLACK)
+                self.helpText=self.font2.render('도움말',1,'YELLOW')
                 self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
-                self.quitText = self.font2.render('게임 종료', 1, BLACK)
+                self.quitText = self.font2.render('게임 종료', 1, 'YELLOW')
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
-                self.languageText = self.font2.render('LANGUAGE CHANGE', 1, BLACK)
+                self.languageText = self.font2.render('LANGUAGE CHANGE', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
             self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos, 8: self.languagePos}
@@ -664,6 +672,7 @@ class Menu:
     # 게임 모드 선택
     def select_game_page(self):
         main_menu, main_menuRect = load_image("main_menu.png")
+        main_menu = pygame.transform.scale(main_menu, (500, 500))
         main_menuRect.midtop = self.screen.get_rect().midtop
         inSelectMenu=True
         showSingleMode = False
@@ -741,6 +750,7 @@ class Menu:
 
     def score_page(self):
         main_menu, main_menuRect = load_image("main_menu.png")
+        main_menu = pygame.transform.scale(main_menu, (500, 500))
         main_menuRect.midtop = self.screen.get_rect().midtop
 
         inScoreMenu=True
