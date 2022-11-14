@@ -4,6 +4,7 @@ from pygame.locals import *
 from load import load_image, load_sound, load_music
 from database import Database
 from coin import *
+from sprites import *
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -58,7 +59,6 @@ class Menu:
         self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
         self.font2 = pygame.font.Font("LeeSeoyun.ttf", round(20*self.ratio))
         self.player = Player(screen_size)
->>>>>>> 06c79dc96ffffab7bcf57b590634e1a6d5b3592c
         
         # For hiscore setting 
         self.hiScores=Database().getScores()
