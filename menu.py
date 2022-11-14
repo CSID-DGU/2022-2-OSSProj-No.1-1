@@ -56,13 +56,8 @@ class Menu:
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-<<<<<<< HEAD
-        self.font = pygame.font.Font(None, round(36*self.ratio))
-        self.font2 = pygame.font.SysFont("applegothic", round(15*self.ratio))
-=======
         self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
         self.font2 = pygame.font.Font("LeeSeoyun.ttf", round(20*self.ratio))
->>>>>>> 013923c446764260736c219b65800bf6412fd1bd
         self.player = Player(screen_size)
         
         # For hiscore setting 

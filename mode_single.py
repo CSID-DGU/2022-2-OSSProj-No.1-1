@@ -254,9 +254,9 @@ class Single():
                             Beam.position(player.rect.topright)
                             beamFired += 2
                         if triplecandy :
-                            Beam.move_towards(0, 0)
-                            Beam.move_towards(250,0)
-                            Beam.move_towards(500, 0)
+                            Beam.position(player.rect.topleft)
+                            Beam.position(player.rect.midtop)
+                            Beam.position(player.rect.topright)
                             beamFired += 3
                         else : 
                             Beam.position(player.rect.midtop)
