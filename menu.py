@@ -4,6 +4,7 @@ from pygame.locals import *
 from load import load_image, load_sound, load_music
 from database import Database
 from coin import *
+from sprites import *
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -56,11 +57,8 @@ class Menu:
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.font = pygame.font.Font(None, round(36*self.ratio))
-<<<<<<< HEAD
-=======
         self.font2 = pygame.font.SysFont("applegothic", round(15*self.ratio))
         self.player = Player(screen_size)
->>>>>>> 06c79dc96ffffab7bcf57b590634e1a6d5b3592c
         
         # For hiscore setting 
         self.hiScores=Database().getScores()

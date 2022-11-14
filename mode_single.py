@@ -5,7 +5,7 @@ from pygame.locals import *
 
 from sprites import (MasterSprite, 
                      Player, FriendPlayer, Monster, Beam, Explosion,
-                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup,
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
                      Green, Yellow, Grey, Blue, Pink)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -84,8 +84,8 @@ class Single():
         player = Player(screen_size)
         miniplayer = FriendPlayer(screen_size)
         
-        initialBearTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, 
+        initialMonsterTypes = (Green, Yellow)
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup,
                         FriendPowerup, LifePowerup)
         
         bombs = pygame.sprite.Group()
@@ -167,7 +167,7 @@ class Single():
             allsprites = pygame.sprite.RenderPlain((player,))
             MasterSprite.allsprites = allsprites
             Monster.pool = pygame.sprite.Group(
-                [monster(screen_size) for monster in initialBearTypes for _ in range(5)])
+                [monster(screen_size) for monster in initialMonsterTypes for _ in range(5)])
             Monster.active = pygame.sprite.Group()
             Beam.pool = pygame.sprite.Group([Beam(screen_size) for _ in range(10)]) 
             Beam.active = pygame.sprite.Group()
@@ -178,6 +178,7 @@ class Single():
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
             friendplayer = False
             doublebeam = False
+            triplecandy = False
             bombsHeld = 3
             score = 0
             beamFired = 0
@@ -197,6 +198,8 @@ class Single():
             
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
+            betweenTripleTime = 8 * clockTime
+            betweenTripleCount = betweenTripleTime
             friendplayerTime = 8 * clockTime
             friendplayerCount = friendplayerTime
             friendplayerBeamTime = 0.2 * clockTime
@@ -250,6 +253,11 @@ class Single():
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
+                        if triplecandy :
+                            Beam.move_towards(0, 0)
+                            Beam.move_towards(250,0)
+                            Beam.move_towards(500, 0)
+                            beamFired += 3
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -463,6 +471,8 @@ class Single():
                             player.shieldUp = True
                         elif powerup.pType == 'doublebeam' :
                             doublebeam = True
+                        elif powerup.pType == 'triplecandy' :
+                            triplecandy = True
                         elif powerup.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
@@ -504,6 +514,12 @@ class Single():
                     elif betweenDoubleCount == 0:
                         doublebeam = False
                         betweenDoubleCount = betweenDoubleTime
+                if triplecandy:
+                    if betweenTripleCount > 0:
+                        betweenTripleCount -= 1
+                    elif betweenTripleCount == 0:
+                        triplecandy = False
+                        betweenTripleCount = betweenTripleTime
 
                 # item - friendplayer
                 miniplayer.rect.bottomright = player.rect.bottomleft

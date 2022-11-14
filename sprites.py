@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import uuid
 from load import load_image
 from pygame.locals import *
 
@@ -54,6 +55,17 @@ class Player(MasterSprite):
         self.vert = 0
         self.horiz = 0
         self.life = 3
+        self.speed = 4
+        self.x = self.rect.x
+        self.y = self.rect.y
+        self.theta = 0
+        self.angle = 0        
+        self.animation_frame = 0
+        self.animation_interval = 5
+        self.fire_frame = 0
+        self.fire_delay_frame = random.randint(200, 300)
+        self.aiming = True        
+        self.id = uuid.uuid4()
 
     def initializeKeys(self):
         keyState = pygame.key.get_pressed()
@@ -94,10 +106,36 @@ class Player(MasterSprite):
 
         if (not self.shieldUp or not self.fartNow) and self.image != self.original:
             self.image = self.original
-
+        
+        self.fire_frame += 1  
+        if self.aiming:
+            self.animation_frame += 1
+            ty = self.rect.centery
+            tx = self.rect.centerx
+            self.angle = math.atan2(ty - 60, tx - 60)
+            self.theta = math.degrees(self.angle) * -1
+            self.rect = self.image.get_rect()
+            self.rect.center = [self.x, self.y]            
+        
+            if self.fire_frame >= self.fire_delay_frame:
+                self.createBullet(Single.bullet_group, tx, ty, 15, self.speed)
+                self.fire_frame = 0  
 
     def bomb(self):
         return Bomb(self)
+    
+    def createBullet(self, bullet_group, tx, ty, theta, speed):
+        nway = 3
+        orig_theta = theta
+        for i in range(1, nway):
+            enemyBullet_right = NWayBeam(tx, ty, theta, speed)
+            enemyBullet_left = NWayBeam(tx, ty, theta * -1, speed)
+            bullet_group.add(enemyBullet_right)
+            bullet_group.add(enemyBullet_left)
+            theta += orig_theta
+        
+        enemyBullet = NWayBeam(sx, sy, tx, ty, 0, speed)
+        bullet_group.add(enemyBullet)
 
 class FriendPlayer(MasterSprite):
     def __init__(self, screen_size):
@@ -228,6 +266,8 @@ class Monster(MasterSprite):
         self.area = self.screen.get_rect()
         self.loc = 0
         self.radius = min(self.rect.width // 2, self.rect.height // 2)
+        self.rect = self.image.get_rect()
+        
 
     @classmethod
     def position(cls):
@@ -272,7 +312,7 @@ class Monster(MasterSprite):
 
 class Green(Monster):
     def __init__(self, screen_size):
-        super().__init__('green',screen_size)
+        super().__init__('green', screen_size)
         self.amp = random.randint(self.rect.width, 3.5 * self.rect.width) ## 적 좌우 움직임 변동
         self.freq = (1 / 20)
         self.moveFunc = lambda: (self.amp * math.sin(self.loc * self.freq), 0)
@@ -373,22 +413,10 @@ class Beam(MasterSprite):
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect() 
-        # self.dt = 2 #공의 이동 거리, 속도
-        # self.x = x  #공의 현재 x 좌표 
-        # self.y = y  #공의 현재 y 좌표 
-        # self.dirx = 1   
-        # self.diry = 1
-        # self.angle = - 45
-        # self.angle = - 135
-        # self.dx = math.cos(angle) * self.speed
-        # self.dy = math.sin(angle) * self.speed
-        # self.x = x  # x방향 설정하는 기능
-        # self.y = y  # y방향 설정하는 기능
-        # self.dx2 = math.cos(angle2) * self.speed
-        # self.dy2 = math.sin(angle2) * self.speed
-        # self.x2 = x2  # x방향 설정하는 기능
-        # self.y2 = y2  # y방향 설정하는 기능
-
+        self.degree = random.randint(0, 360)
+        self.radian = self.degree * (math.pi / 180)
+        self.dx = 7 * math.cos(self.radian)
+        self.dy = - 7 * math.sin(self.radian)
 
     @classmethod
     def position(cls, loc):
@@ -397,9 +425,39 @@ class Beam(MasterSprite):
             beam.add(cls.allsprites, cls.active)
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
+    
+class NWayBeam(MasterSprite):
+    def __init__(self, tx, ty, rad, speed):
+        pygame.sprite.Sprite.__init__(self)        
+        self.image = pygame.image.load(img_dir + "/img/circle_bullet_01.png")
+        self.rect = self.image.get_rect()
+        self.rect.center = [tx, ty]
+        self.angle = math.atan2(60, -60) + math.radians(rad)
+        self.speed = speed
+        self.max_speed = 5.0
+        self.x = tx
+        self.y = ty
 
-    
-    
+    def update(self, screen_size):
+        self.dx = math.cos(self.angle) * self.speed
+        self.dy = math.sin(self.angle) * self.speed
+        if self.max_speed > self.speed:
+            self.speed += 0.2
+
+        self.x += self.dx
+        self.y += self.dy
+        self.rect.centerx = int(self.x)
+        self.rect.centery = int(self.y)
+
+        if self.rect.y < -10:
+            self.kill()
+        elif self.rect.y > 810:
+            self.kill()
+        elif self.rect.x < -10:
+            self.kill()
+        elif self.rect.x > 810:
+            self.kill()
+
     def table(self):
         self.add(self.pool)
         self.remove(self.allsprites, self.active)
@@ -410,24 +468,7 @@ class Beam(MasterSprite):
         self.rect = newpos
         if self.rect.top < self.area.top:
             self.table()
-    
-    #주어진 각도로 공을 움직임    
-    def start(self, angle):
-        self.angle = angle
-        self.go = True
-        
-    # def move(self):
-    #     self.x = self.x + self.dx
-    #     self.y = self.y + self.dy
 
-    #     self.x2 = self.x2 + self.dx2
-    #     self.y2 = self.y2 + self.dy2
-        
-    #     self.rect.x = int(self.x)
-    #     self.rect.y = int(self.y)
-        
-    #     self.rect.x2 = int(self.x2)
-    #     self.rect.y2 = int(self.y2)
 
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, Player):
