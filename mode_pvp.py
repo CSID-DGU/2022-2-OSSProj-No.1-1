@@ -3,12 +3,13 @@ import random
 import sys
 from pygame.locals import *
 
-from sprites import (MasterSprite, Ship, Alien, Missile, BombPowerup,
-                     ShieldPowerup, HalfPowerup, Coin, Explosion, Siney, Spikey, Fasty,
-                     Roundy, Crawly)
+from sprites import (MasterSprite, 
+                     Player, FriendPlayer, Player2, Player3, Monster, Beam, Explosion,
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup,
+                     Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
-from menu2 import *
+from menu import *
 
 if not pygame.mixer: 
     print('Warning, sound disabled')
@@ -34,7 +35,7 @@ class Pvp() :
         pygame.init()
         ratio = (screen_size / 500)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's Kirin!")
+        pygame.display.set_caption("Let's Player!")
         pygame.mouse.set_visible(0)    
 
     # Prepare background image
@@ -64,11 +65,11 @@ class Pvp() :
         life_c, life_cRect = load_image('heart3.png')
 
         # Sounds
-        leaf_sound = load_sound('leaf.ogg')
+        missile_sound = load_sound('missile.ogg')
         bomb_sound = load_sound('bomb.ogg')
-        bear_explode_sound = load_sound('bear_explode.ogg')
-        kirin_explode_sound = load_sound('kirin_explode.ogg')
-        load_music('menu_music_loop.ogg')
+        alien_explode_sound = load_sound('alien_explode.ogg')
+        ship_explode_sound = load_sound('ship_explode.ogg')
+        load_music('music_loop.ogg')
         soundFX = Database().getSound()
         music = Database().getSound(music=True)
         if music and pygame.mixer: 
@@ -86,29 +87,29 @@ class Pvp() :
         MasterSprite.speed = speed
         
         # object
-        kirin = Kirin2(screen_size)
-        kirin2 = Kirin3(screen_size) 
-        minikirin = Friendkirin(screen_size)
+        player = Player2(screen_size)
+        player2 = Player3(screen_size) 
+        miniPlayer = FriendPlayer(screen_size)
 
-        initialbearTypes = (Green, Brown)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoubleleafPowerup, FriendPowerup, LifePowerup)
+        initialmonsterTypes = (Green, Yellow)
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup)
 
         bombs = pygame.sprite.Group()
         bombs2 = pygame.sprite.Group()
         powerups = pygame.sprite.Group()
 
         # Score Function
-        def kill_bear(bear, bearsLeftThisWave, score) :
-            bearsLeftThisWave -= 1
-            if bear.pType == 'green':
+        def kill_monster(monster, monstersLeftThisWave, score) :
+            monstersLeftThisWave -= 1
+            if monster.pType == 'green':
                 score += 1
-            elif bear.pType == 'brown':
+            elif monster.pType == 'yellow':
                 score += 2
-            elif bear.pType == 'sunglasses':
+            elif monster.pType == 'pink':
                 score += 4
-            elif bear.pType == 'panda':
+            elif monster.pType == 'blue':
                 score += 8
-            return bearsLeftThisWave, score
+            return monstersLeftThisWave, score
 
     # pause menu text
         blankText=font.render('            ',1,BLACK)
@@ -147,27 +148,27 @@ class Pvp() :
         # Prepare game objects : reset
             # Reset Sprite groups
             alldrawings = pygame.sprite.Group()
-            allsprites = pygame.sprite.RenderPlain((kirin,kirin2))
+            allsprites = pygame.sprite.RenderPlain((player,player2))
             MasterSprite.allsprites = allsprites
-            Bear.pool = pygame.sprite.Group(
-                [bear(screen_size) for bear in initialbearTypes for _ in range(5)])
-            Bear.active = pygame.sprite.Group()
-            Leaf.pool = pygame.sprite.Group([Leaf(screen_size) for _ in range(10)]) 
-            Leaf.active = pygame.sprite.Group()
+            Monster.pool = pygame.sprite.Group(
+                [monster(screen_size) for monster in initialmonsterTypes for _ in range(5)])
+            Monster.active = pygame.sprite.Group()
+            Beam.pool = pygame.sprite.Group([beam(screen_size) for _ in range(10)]) 
+            Beam.active = pygame.sprite.Group()
             Explosion.pool = pygame.sprite.Group([Explosion(screen_size) for _ in range(10)])
             Explosion.active = pygame.sprite.Group()
 
             # Reset game contents
-            bearsThisWave, bearsLeftThisWave, Bear.numOffScreen = 10, 10, 10
-            friendkirin1 = False
-            doubleleaf = False
+            monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
+            friendPlayer1 = False
+            doublebeam = False
             bombsHeld = 3
             score = 0
-            friendkirin2 = False
-            doubleleaf2 = False
+            friendPlayer2 = False
+            doublebeam2 = False
             bombsHeld2 = 3
             score2 = 0
-            leafFired = 0
+            beamFired = 0
             wave = 1
 
             # speed
@@ -175,7 +176,7 @@ class Pvp() :
             MasterSprite.speed = speed
 
             # Reset all time
-            bearPeriod = clockTime // 2
+            monsterPeriod = clockTime // 2
             curTime = 0
             powerupTime = 8 * clockTime
             powerupTimeLeft = powerupTime
@@ -185,20 +186,20 @@ class Pvp() :
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
             betweenDoubleCount2 = betweenDoubleTime
-            friendkirinTime = 8 * clockTime
-            friendkirinCount = friendkirinTime
-            friendkirinLeafTime = 0.2 * clockTime
-            friendkirinLeafCount = friendkirinLeafTime
+            friendPlayerTime = 8 * clockTime
+            friendPlayerCount = friendPlayerTime
+            friendPlayerbeamTime = 0.2 * clockTime
+            friendPlayerbeamCount = friendPlayerbeamTime
             
-            kirin.alive = True
-            kirin.life = 3
-            kirin.initializeKeys()
-            kirin2.alive = True
-            kirin2.life = 3
-            kirin2.initializeKeys()
+            player.alive = True
+            player.life = 3
+            player.initializeKeys()
+            player2.alive = True
+            player2.life = 3
+            player2.initializeKeys()
 
         # Start Game
-            while kirin.alive and kirin2.alive :
+            while player.alive and player2.alive :
                 clock.tick(clockTime)
 
             # Drop Items
@@ -222,63 +223,63 @@ class Pvp() :
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                         ratio = (screen_size / 500)
                         font = pygame.font.Font(None, round(36*ratio))
-                    # kirin1 Moving
+                    # Player1 Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction.keys()):
-                        kirin.horiz += direction[event.key][0] * speed
-                        kirin.vert += direction[event.key][1] * speed
+                        player.horiz += direction[event.key][0] * speed
+                        player.vert += direction[event.key][1] * speed
                     elif (event.type == pygame.KEYUP
                         and event.key in direction.keys()):
-                        kirin.horiz -= direction[event.key][0] * speed
-                        kirin.vert -= direction[event.key][1] * speed
-                    # leaf1
+                        player.horiz -= direction[event.key][0] * speed
+                        player.vert -= direction[event.key][1] * speed
+                    # beam1
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
-                        if doubleleaf :
-                            Leaf.position(kirin.rect.topleft)
-                            Leaf.position(kirin.rect.topright)
-                            leafFired += 2
+                        if doublebeam :
+                            beam.position(player.rect.topleft)
+                            beam.position(player.rect.topright)
+                            beamFired += 2
                         else : 
-                            Leaf.position(kirin.rect.midtop)
-                            leafFired += 1
+                            beam.position(player.rect.midtop)
+                            beamFired += 1
                         if soundFX:
-                            leaf_sound.play()
+                            beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_b):
                         if bombsHeld > 0:
                             bombsHeld -= 1
-                            newBomb = kirin.bomb()
+                            newBomb = player.bomb()
                             newBomb.add(bombs, alldrawings)
                             if soundFX:
                                 bomb_sound.play()
-                    # kirin2 Moving
+                    # Player2 Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction2.keys()):
-                        kirin2.horiz += direction2[event.key][0] * speed
-                        kirin2.vert += direction2[event.key][1] * speed
+                        player2.horiz += direction2[event.key][0] * speed
+                        player2.vert += direction2[event.key][1] * speed
                     elif (event.type == pygame.KEYUP
                         and event.key in direction2.keys()):
-                        kirin2.horiz -= direction2[event.key][0] * speed
-                        kirin2.vert -= direction2[event.key][1] * speed
-                    # leaf2
+                        player2.horiz -= direction2[event.key][0] * speed
+                        player2.vert -= direction2[event.key][1] * speed
+                    # beam2
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_m):
-                        if doubleleaf2 :
-                            Leaf.position(kirin2.rect.topleft)
-                            Leaf.position(kirin2.rect.topright)
-                            leafFired += 2
+                        if doublebeam2 :
+                            beam.position(player2.rect.topleft)
+                            beam.position(player2.rect.topright)
+                            beamFired += 2
                         else : 
-                            Leaf.position(kirin2.rect.midtop)
-                            leafFired += 1
+                            beam.position(player2.rect.midtop)
+                            beamFired += 1
                         if soundFX:
-                            leaf_sound.play()
+                            beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_l):
                         if bombsHeld2 > 0:
                             bombsHeld2 -= 1
-                            newBomb = kirin2.bomb()
+                            newBomb = player2.bomb()
                             newBomb.add(bombs2, alldrawings)
                             if soundFX:
                                 bomb_sound.play()
@@ -321,11 +322,11 @@ class Pvp() :
                                             showHelp=False
                                     elif selection == 1:    
                                         pauseMenu = False
-                                        kirin.alive = False
+                                        player.alive = False
                                     elif selection == 2:
                                         soundFX = not soundFX
                                         if soundFX:
-                                            leaf_sound.play()
+                                            beam_sound.play()
                                         Database.setSound(int(soundFX))
                                     elif selection == 3 and pygame.mixer:
                                         music = not music
@@ -406,191 +407,191 @@ class Pvp() :
                     
 
             # Collision Detection
-                # bears
-                for bear in Bear.active:
+                # monsters
+                for monster in Monster.active:
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
-                                bomb, bear) and bear in Bear.active:
-                            if bear.pType != 'stone' :
-                                bear.table()
-                                Explosion.position(bear.rect.center)
-                                bearsLeftThisWave, score = kill_bear(bear, bearsLeftThisWave, score)
-                            leafFired += 1
+                                bomb, monster) and monster in Monster.active:
+                            if monster.pType != 'grey' :
+                                monster.table()
+                                Explosion.position(monster.rect.center)
+                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                            beamFired += 1
                             if soundFX:
-                                bear_explode_sound.play()
+                                monster_explode_sound.play()
                     for bomb in bombs2:
                         if pygame.sprite.collide_circle(
-                                bomb, bear) and bear in Bear.active:
-                            if bear.pType != 'stone' :
-                                bear.table()
-                                Explosion.position(bear.rect.center)
-                                bearsLeftThisWave, score2 = kill_bear(bear, bearsLeftThisWave, score2)
-                            leafFired += 1
+                                bomb, monster) and monster in Monster.active:
+                            if monster.pType != 'grey' :
+                                monster.table()
+                                Explosion.position(monster.rect.center)
+                                monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
+                            beamFired += 1
                             if soundFX:
-                                bear_explode_sound.play()
-                    for leaf in Leaf.active:
+                                monster_explode_sound.play()
+                    for beam in Beam.active:
                         if pygame.sprite.collide_rect(
-                                leaf, bear) and bear in bear.active:
-                            leaf.table()
-                            if bear.pType != 'stone' :
-                                bear.table()
-                                Explosion.position(bear.rect.center)
-                                if bear.rect.center[0] < 500 :
-                                    bearsLeftThisWave, score = kill_bear(bear, bearsLeftThisWave, score)
+                                beam, monster) and monster in Monster.active:
+                            beam.table()
+                            if monster.pType != 'grey' :
+                                monster.table()
+                                Explosion.position(monster.rect.center)
+                                if monster.rect.center[0] < 500 :
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else :
-                                    bearsLeftThisWave, score2 = kill_bear(bear, bearsLeftThisWave, score2)
+                                    monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
                             if soundFX:
-                                bear_explode_sound.play()
+                                monster_explode_sound.play()
 
-                    if pygame.sprite.collide_rect(bear, kirin):
-                        if kirin.shieldUp:
-                            bear.table()
-                            Explosion.position(bear.rect.center)
-                            bearsLeftThisWave, score = kill_bear(bear, bearsLeftThisWave, score)
-                            leafFired += 1
-                            kirin.shieldUp = False
-                        elif kirin.life > 1:   # life
-                            bear.table()
-                            Explosion.position(bear.rect.center)
-                            bearsLeftThisWave -= 1
+                    if pygame.sprite.collide_rect(monster, player):
+                        if player.shieldUp:
+                            monster.table()
+                            Explosion.position(monster.rect.center)
+                            monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                            beamFired += 1
+                            player.shieldUp = False
+                        elif player.life > 1:   # life
+                            monster.table()
+                            Explosion.position(monster.rect.center)
+                            monstersLeftThisWave -= 1
                             score += 1
-                            kirin.life -= 1
+                            player.life -= 1
                         else:
                             restart = False
-                            kirin.alive = False
-                            kirin.remove(allsprites)
-                            Explosion.position(kirin.rect.center)
+                            player.alive = False
+                            player.remove(allsprites)
+                            Explosion.position(player.rect.center)
                             if soundFX:
-                                kirin_explode_sound.play()
-                    if pygame.sprite.collide_rect(bear, kirin2):
-                        if kirin2.shieldUp:
-                            bear.table()
-                            Explosion.position(bear.rect.center)
-                            bearsLeftThisWave, score2 = kill_bear(bear, bearsLeftThisWave, score2)
-                            leafFired += 1
-                            kirin2.shieldUp = False
-                        elif kirin2.life > 1:   # life
-                            bear.table()
-                            Explosion.position(bear.rect.center)
-                            bearsLeftThisWave -= 1
+                                player_explode_sound.play()
+                    if pygame.sprite.collide_rect(monster, player2):
+                        if player2.shieldUp:
+                            monster.table()
+                            Explosion.position(monster.rect.center)
+                            monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
+                            beamFired += 1
+                            player2.shieldUp = False
+                        elif player2.life > 1:   # life
+                            monster.table()
+                            Explosion.position(monster.rect.center)
+                            monstersLeftThisWave -= 1
                             score2 += 1
-                            kirin2.life -= 1
+                            player2.life -= 1
                         else:
                             restart = False
-                            kirin2.alive = False
-                            kirin2.remove(allsprites)
-                            Explosion.position(kirin2.rect.center)
+                            player2.alive = False
+                            player2.remove(allsprites)
+                            Explosion.position(player2.rect.center)
                             if soundFX:
-                                kirin_explode_sound.play()
+                                player_explode_sound.play()
 
                 # PowerUps
                 for powerup in powerups:
-                    if pygame.sprite.collide_circle(powerup, kirin):
+                    if pygame.sprite.collide_circle(powerup, player):
                         if powerup.pType == 'bomb':
                             bombsHeld += 1
                         elif powerup.pType == 'shield':
-                            kirin.shieldUp = True
-                        elif powerup.pType == 'doubleleaf':
-                            doubleleaf = True
+                            player.shieldUp = True
+                        elif powerup.pType == 'doublebeam':
+                            doublebeam = True
                         elif powerup.pType == 'life':
-                            if kirin.life < 3:
-                                kirin.life += 1 
-                        elif powerup.pType == 'friendkirin' :
-                            friendkirin1 = True
-                            MasterSprite.allsprites.add(minikirin) 
+                            if player.life < 3:
+                                player.life += 1 
+                        elif powerup.pType == 'friendPlayer' :
+                            friendPlayer1 = True
+                            MasterSprite.allsprites.add(miniPlayer) 
                             allsprites.update(screen_size)
                             allsprites.draw(screen)        
                         powerup.kill()
                     elif powerup.rect.top > powerup.area.bottom:
                         powerup.kill()
                 for powerup in powerups:
-                    if pygame.sprite.collide_circle(powerup, kirin2):
+                    if pygame.sprite.collide_circle(powerup, player2):
                         if powerup.pType == 'bomb':
                             bombsHeld2 += 1
                         elif powerup.pType == 'shield':
-                            kirin2.shieldUp = True
-                        elif powerup.pType == 'doubleleaf' :
-                            doubleleaf2 = True
+                            player2.shieldUp = True
+                        elif powerup.pType == 'doublebeam' :
+                            doublebeam2 = True
                         elif powerup.pType == 'life':
-                            if kirin2.life < 3:
-                                kirin2.life += 1 
-                        elif powerup.pType == 'friendkirin' :
-                            friendkirin2 = True
-                            MasterSprite.allsprites.add(minikirin) 
+                            if player2.life < 3:
+                                player2.life += 1 
+                        elif powerup.pType == 'friendPlayer' :
+                            friendPlayer2 = True
+                            MasterSprite.allsprites.add(miniPlayer) 
                             allsprites.update(screen_size)
                             allsprites.draw(screen)   
                         powerup.kill()
                     elif powerup.rect.top > powerup.area.bottom:
                         powerup.kill()
 
-            # Update bears
-                if curTime <= 0 and bearsLeftThisWave> 0:
-                    Bear.position()
-                    curTime = bearPeriod
+            # Update monsters
+                if curTime <= 0 and monstersLeftThisWave> 0:
+                    Monster.position()
+                    curTime = monsterPeriod
                 elif curTime > 0:
                     curTime -= 1
 
             # Update text overlays
                 waveText = font.render("Wave: " + str(wave), 1, BLACK)
-                leftText = font.render("bears: " + str(bearsLeftThisWave), 1, BLACK)
+                leftText = font.render("monsters: " + str(monstersLeftThisWave), 1, BLACK)
                 bombText = font.render("Bombs: " + str(bombsHeld), 1, BLACK)
                 bombText2 = font.render("Bombs: " + str(bombsHeld2), 1, BLACK)
-                kirin1winText = font.render('PLAYER 1 WIN!', 1, BLACK)
-                kirin2winText = font.render('PLAYER 2 WIN!', 1, BLACK)
+                Player1winText = font.render('PLAYER 1 WIN!', 1, BLACK)
+                Player2winText = font.render('PLAYER 2 WIN!', 1, BLACK)
                 drawText = font.render('DRAW!', 1, BLACK)
         
                 wavePos = waveText.get_rect(topright=screen.get_rect().midtop)
                 leftPos = leftText.get_rect(topleft=screen.get_rect().midtop)
                 bombPos = bombText.get_rect(bottomleft=screen.get_rect().bottomleft)
                 bombPos2 = bombText2.get_rect(bottomright=screen.get_rect().bottomright)
-                kirin1winPos = kirin1winText.get_rect(center=screen.get_rect().center)
-                kirin2winPos = kirin2winText.get_rect(center=screen.get_rect().center)
+                Player1winPos = Player1winText.get_rect(center=screen.get_rect().center)
+                Player2winPos = Player2winText.get_rect(center=screen.get_rect().center)
                 drawPos = drawText.get_rect(center=screen.get_rect().center)
 
                 text = [waveText, leftText, bombText, bombText2]
                 textposition = [wavePos, leftPos, bombPos, bombPos2]
 
             # Update using items
-                # item - doubleleaf
-                if doubleleaf:
+                # item - doublebeam
+                if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
                     elif betweenDoubleCount == 0:
-                        doubleleaf = False
+                        doublebeam = False
                         betweenDoubleCount = betweenDoubleTime
                 
-                # item - doubleleaf2
-                if doubleleaf2:
+                # item - doublebeam2
+                if doublebeam2:
                     if betweenDoubleCount2 > 0:
                         betweenDoubleCount2 -= 1
                     elif betweenDoubleCount2 == 0:
-                        doubleleaf2 = False
+                        doublebeam2 = False
                         betweenDoubleCount = betweenDoubleTime
                 
-                # item - friendkirin
-                if friendkirin1 :
-                    minikirin.rect.bottomright = kirin.rect.bottomleft
+                # item - friendPlayer
+                if friendPlayer1 :
+                    miniPlayer.rect.bottomright = player.rect.bottomleft
                 else :
-                    minikirin.rect.bottomright = kirin2.rect.bottomleft
+                    miniPlayer.rect.bottomright = player2.rect.bottomleft
                 
-                if friendkirin1 or friendkirin2:
-                    if friendkirinCount > 0:
-                        friendkirinCount -= 1
-                    elif friendkirinCount == 0:
-                        if friendkirin1 :
-                            friendkirin1 = False
+                if friendPlayer1 or friendPlayer2:
+                    if friendPlayerCount > 0:
+                        friendPlayerCount -= 1
+                    elif friendPlayerCount == 0:
+                        if friendPlayer1 :
+                            friendPlayer1 = False
                         else :
-                            friendkirin2 = False
-                        minikirin.remove()
-                        friendkirinCount = friendkirinTime
-                    if friendkirinLeafCount > 0:
-                        friendkirinLeafCount -= 1
-                    elif friendkirinLeafCount == 0:
-                        friendkirinLeafCount = friendkirinLeafTime
-                        Leaf.position(minikirin.rect.midtop)
+                            friendPlayer2 = False
+                        miniPlayer.remove()
+                        friendPlayerCount = friendPlayerTime
+                    if friendPlayerbeamCount > 0:
+                        friendPlayerbeamCount -= 1
+                    elif friendPlayerbeamCount == 0:
+                        friendPlayerbeamCount = friendPlayerbeamTime
+                        beam.position(miniPlayer.rect.midtop)
 
             # Detertmine when to move to next wave
-                if bearsLeftThisWave <= 0:
+                if monstersLeftThisWave <= 0:
                     if betweenWaveCount > 0:
                         betweenWaveCount -= 1
                         nextWaveText = font.render(
@@ -613,19 +614,19 @@ class Pvp() :
                         if wave % 4 == 0:
                             speed += 0.5
                             MasterSprite.speed = speed
-                            kirin.initializeKeys()
-                            kirin2.initializeKeys()
-                            bearsThisWave = 10
-                            bearsLeftThisWave = Bear.numOffScreen = bearsThisWave
+                            player.initializeKeys()
+                            player2.initializeKeys()
+                            monstersThisWave = 10
+                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
                         else:
-                            bearsThisWave *= 2
-                            bearsLeftThisWave = Bear.numOffScreen = bearsThisWave
+                            monstersThisWave *= 2
+                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
                         if wave == 1:
-                            Bear.pool.add([Stone(screen_size) for _ in range(5)])
+                            Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
-                            Bear.pool.add([Sunglasses(screen_size) for _ in range(5)])
+                            Monster.pool.add([Pink(screen_size) for _ in range(5)])
                         if wave == 3:
-                            Bear.pool.add([Panda(screen_size) for _ in range(5)])
+                            Monster.pool.add([Blue(screen_size) for _ in range(5)])
                         wave += 1
                         betweenWaveCount = betweenWaveTime
 
@@ -662,18 +663,18 @@ class Pvp() :
                 life_cRect.topleft = leftPos.topright
 
                 life_size = (round(life1.get_width() * ratio), round(life1.get_height() * ratio))
-                if kirin.life == 3:
+                if player.life == 3:
                     screen.blit(pygame.transform.scale(life3, life_size), life3Rect)
-                elif kirin.life == 2:
+                elif player.life == 2:
                     screen.blit(pygame.transform.scale(life2, life_size), life2Rect)
-                elif kirin.life == 1:
+                elif player.life == 1:
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
                 
-                if kirin2.life == 3:
+                if player2.life == 3:
                     screen.blit(pygame.transform.scale(life_c, life_size), life_cRect)
-                elif kirin2.life == 2:
+                elif player2.life == 2:
                     screen.blit(pygame.transform.scale(life_b, life_size), life_bRect)
-                elif kirin2.life == 1:
+                elif player2.life == 1:
                     screen.blit(pygame.transform.scale(life_a, life_size), life_aRect)
 
                 pygame.display.flip()
@@ -720,11 +721,11 @@ class Pvp() :
             allsprites.draw(screen)
             alldrawings.update()
 
-            if kirin.alive and not kirin2.alive :
-                screen.blit(kirin1winText, kirin1winPos)
-            elif kirin2.alive and not kirin.alive :
-                screen.blit(kirin2winText, kirin2winPos)
-            elif not kirin.alive and not kirin2.alive :
+            if player.alive and not player2.alive :
+                screen.blit(Player1winText, Player1winPos)
+            elif player2.alive and not player.alive :
+                screen.blit(Player2winText, Player2winPos)
+            elif not player.alive and not player2.alive :
                 screen.blit(drawText, drawPos)
 
             pygame.display.flip()
