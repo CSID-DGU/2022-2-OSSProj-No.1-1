@@ -1,9 +1,15 @@
 import pymysql
+import sqlite3
+import bcrypt
+import pygame
+import os
 
-
-
+pygame.mixer.init()
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+data_dir = os.path.join(main_dir, 'data')
+#커서는 한 번만 부르..
 class Database(object):
-
+    path = os.path.join(data_dir, 'hiScores.db')
     def __init__(self):
         self.score_db = pymysql.connect( # 데이터베이스와 연동
             user='root',
@@ -12,6 +18,8 @@ class Database(object):
             db='No_1_mysql',
             charset='utf8'
         )
+        self.numScores=10
+        
 
     def id_not_exists(self,input_id): # 아이디가 데이터베이스에 존재하는지 확인
         curs = self.score_db.cursor(pymysql.cursors.DictCursor) # cursor : sql문을 실행할 수 있는 작업환경을 제공하는 객체
@@ -25,7 +33,7 @@ class Database(object):
             return True
 
 
-    def compare_data(self, id_text, pw_text): # 데이터베이스의 아이디와 비밀번호 비교교
+    def compare_data(self, id_text, pw_text): # 데이터베이스의 아이디와 비밀번호 비교
        # 불러 오기
         input_password=pw_text.encode('utf-8') # 입력비번 -> bytes형으로 변환
         curs = self.score_db.cursor(pymysql.cursors.DictCursor)
@@ -83,48 +91,51 @@ class Database(object):
 
     # 상위 10개 점수 불러오기
     
-    def getScores():
+    def getScores(self):
+
         curs=self.score_db.cursor()
-        sql='SELECT * FROM single_score ORDER BY score DESC'
+        sql='SELECT * FROM single_score ORDER BY user_score DESC'
         curs.execute(sql)
         data=curs.fetchall()
+        if len(data)>self.numScores:
+            data=[data[i] for i in range(self.numScores)]
+        
         return data
         curs.close()
     # 
-    def setScore(self,data,user_id,score):
-        sql="SELECT * FROM single_score WHERE user_id=%s"
-        self.curs.execute(sql,user_id)
-        data=self.curs.fetchone()
-        
-        if data: # 이미 user 점수가 있으면.. 기존 점수랑 비교 -> 더 크면 대체
-            if data['score']>score:
-                self.curs.close()
-                return 
-            else:
-                sql='UPDATE single_score SET score=%s WHERE user_id=%s' #대체만 하면됨..
-                self.curs.execute(sql,(score,user_id))
-                self.score_db.commit()
-                #self.curs.close()
+    
+    def setScore(self,user_id,score):
+        curs=self.score_db.cursor()
+        sql = "INSERT INTO single_score (user_id, user_score) VALUES (%s, %s)"
+        curs.execute(sql,(user_id,score))
+        self.score_db.commit()
+        curs.close()
+
+    def getSound(music=False):
+        conn = sqlite3.connect(Database.path)
+        c = conn.cursor()
+        if music:
+            c.execute("CREATE TABLE if not exists music (setting integer)")
+            c.execute("SELECT * FROM music")
         else:
-            if len(data) >= self.numScores: # 랭킹보드가 꽉 찼으면
-                lowScoreid = data[-1][0]
-                lowScore = data[-1][1]
-                if lowScore <score:
-                    sql="DELETE FROM single_score WHERE (user_id = %s AND score = %s)"
-                    self.curs.execute(sql,(lowScoreid, lowScore))
-                    self.score_db.commit()
-                    sql="INSERT INTO single_score VALUES (%s,%s)"
-                    self.curs.execute(sql,(user_id, score))
-                    self.score_db.commit()
-            else :
-                sql="INSERT INTO single_score VALUES (%s,%s)"
-                self.curs.execute(sql,(user_id, score))
-                self.score_db.commit()
+            c.execute("CREATE TABLE if not exists sound (setting integer)")
+            c.execute("SELECT * FROM sound")
+        setting = c.fetchall()
+        conn.close()
+        return bool(setting[0][0]) if len(setting) > 0 else False
 
-                
-        self.curs.close()
-
-
+    @staticmethod
+    def setSound(setting, music=False):
+        conn = sqlite3.connect(Database.path)
+        c = conn.cursor()
+        if music:
+            c.execute("DELETE FROM music")
+            c.execute("INSERT INTO music VALUES (?)", (setting,))
+        else:
+            c.execute("DELETE FROM sound")
+            c.execute("INSERT INTO sound VALUES (?)", (setting,))
+        conn.commit()
+        conn.close()
                     
 
 

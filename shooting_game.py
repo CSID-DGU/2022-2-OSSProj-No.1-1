@@ -2,7 +2,7 @@ import pygame
 import sys
 from pygame.locals import *
 from database import Database
-from menu2 import *
+from menu import *
 from mode_single import *
 from mode_pvp import *
 
@@ -53,7 +53,7 @@ while inInitMenu:
     flag=True
     while flag:   
         if userSelection==1 or userSelection==2: # log in/sign up
-            pageResult, screen_size=Menu(screen_size).login_sign_page()
+            pageResult, screen_size=Menu(screen_size).login_sign_page(userSelection)
             # DB 연결 수정되면 Menu(screen_size).login_sign_page(userSelection)으로 변경
             if pageResult==BACK: # back
                 flag=False  
@@ -84,7 +84,7 @@ while windowShow:
                 if pageResult == BACK: # back
                     flag = False
                 elif (pageResult == 'SingleMode' or  # select mode결과 
-                    pageResult == 'TimeMode' or
+                    pageResult == 'TimeMode' or # time mode 삭제
                     pageResult == 'PvpMode'):
                     flag = False
                     inMainMenu = False # 게임 화면 접속
