@@ -1,6 +1,3 @@
-### 파일들 가져오기위한 메소드들이 작성된 파일 ######
-###### 사용법 : load_00000(파일명) #####
-
 import os
 import pygame
 
@@ -9,6 +6,7 @@ data_dir = os.path.join(main_dir, 'data')
 
 
 def load_music(name):
+    pygame.init()
     pygame.mixer.music.load(os.path.join(data_dir, name))
 
 
@@ -38,6 +36,14 @@ def load_image(name, colorkey=None):
         if colorkey == -1:
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey, pygame.RLEACCEL)
-        ###set_colorkey : 해당 surface에 colorkey를 반환 -> RGB or None
-        
     return image, image.get_rect()
+
+class Var:
+    user_id=''
+    initial_id=0
+    ## mode_single.py에서 게임이 종료되었음을 어떻게 알릴것인지
+    # 게임이 종료됐을 때 무조건 setScore 함수가 호출되게 해야함
+    # pygame.event로 알릴것인가? or game_over() 함수를 사용..? 
+    # tongsan 에서 game_over() 함수는 board. py에저장 어떻게 작성했는지 확인
+
+
