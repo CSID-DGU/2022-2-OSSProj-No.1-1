@@ -642,6 +642,7 @@ class Single():
                     and event.key == pygame.K_RETURN # 엔터키
                     ): # 
                     Database().setScore(Var.user_id,score)
+                    Database().setCoins(Var.user_id,score)
                     return True
 
             

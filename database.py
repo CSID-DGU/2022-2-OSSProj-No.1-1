@@ -126,9 +126,6 @@ class Database(object):
             self.score_db.commit()
             
 
-        #sql = "INSERT INTO single_score (user_id, user_score) VALUES (%s, %s)"
-        #curs.execute(sql,(user_id,score))
-        #self.score_db.commit()
         curs.close()
 
     def getSound(music=False):
@@ -156,6 +153,24 @@ class Database(object):
             c.execute("INSERT INTO sound VALUES (?)", (setting,))
         conn.commit()
         conn.close()
+
+    def setCoins(self,user_id,score):
+        newcoins=0
+        curs=self.score_db.cursor()
+        sql="SELECT * FROM users WHERE user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        newcoins=data[2]+score
+
+        curs=self.score_db.cursor()
+        sql="UPDATE users SET user_coin=%s WHERE user_id=%s"
+        curs.execute(sql,(newcoins,user_id))
+        self.score_db.commit()
+
+        curs.close()
+        
+        
+
                     
 
 
