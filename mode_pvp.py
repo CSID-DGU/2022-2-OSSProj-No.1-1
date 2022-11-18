@@ -5,7 +5,7 @@ from pygame.locals import *
 
 from sprites import (MasterSprite, 
                      Player, FriendPlayer, Player2, Player3, Monster, Beam, Explosion,
-                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup,
+                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -92,7 +92,7 @@ class Pvp() :
         miniPlayer = FriendPlayer(screen_size)
 
         initialmonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup)
+        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup, FriendPowerup, LifePowerup)
 
         bombs = pygame.sprite.Group()
         bombs2 = pygame.sprite.Group()
@@ -153,7 +153,7 @@ class Pvp() :
             Monster.pool = pygame.sprite.Group(
                 [monster(screen_size) for monster in initialmonsterTypes for _ in range(5)])
             Monster.active = pygame.sprite.Group()
-            Beam.pool = pygame.sprite.Group([beam(screen_size) for _ in range(10)]) 
+            Beam.pool = pygame.sprite.Group([Beam(screen_size) for _ in range(10)]) 
             Beam.active = pygame.sprite.Group()
             Explosion.pool = pygame.sprite.Group([Explosion(screen_size) for _ in range(10)])
             Explosion.active = pygame.sprite.Group()
@@ -162,10 +162,12 @@ class Pvp() :
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
             friendPlayer1 = False
             doublebeam = False
+            triplecandy = False
             bombsHeld = 3
             score = 0
             friendPlayer2 = False
             doublebeam2 = False
+            triplecandy2 = False
             bombsHeld2 = 3
             score2 = 0
             beamFired = 0
@@ -186,6 +188,9 @@ class Pvp() :
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
             betweenDoubleCount2 = betweenDoubleTime
+            betweenTripleTime = 8 * clockTime
+            betweenTripleCount = betweenTripleTime
+            betweenTripleCount2 = betweenTripleTime
             friendPlayerTime = 8 * clockTime
             friendPlayerCount = friendPlayerTime
             friendPlayerbeamTime = 0.2 * clockTime
@@ -236,11 +241,17 @@ class Pvp() :
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
                         if doublebeam :
-                            beam.position(player.rect.topleft)
-                            beam.position(player.rect.topright)
+                            Beam.position(player.rect.topleft)
+                            Beam.position(player.rect.topright)
                             beamFired += 2
+                        elif triplecandy:
+                            Beam.position(player.rect.topleft)
+                            Beam.position(player.rect.midtop)
+                            Beam.position(player.rect.topright)
+                            beamFired += 3
+                            
                         else : 
-                            beam.position(player.rect.midtop)
+                            Beam.position(player.rect.midtop)
                             beamFired += 1
                         if soundFX:
                             beam_sound.play()
@@ -269,6 +280,11 @@ class Pvp() :
                             beam.position(player2.rect.topleft)
                             beam.position(player2.rect.topright)
                             beamFired += 2
+                        elif triplecandy2 :
+                            beam.position(player2.rect.topleft)
+                            beam.position(player2.rect.midtop)
+                            beam.position(player2.rect.topright)
+                            beamFired += 3
                         else : 
                             beam.position(player2.rect.midtop)
                             beamFired += 1
@@ -493,6 +509,8 @@ class Pvp() :
                             player.shieldUp = True
                         elif powerup.pType == 'doublebeam':
                             doublebeam = True
+                        elif powerup.pType == 'triplecandy' :
+                            triplecandy = True
                         elif powerup.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
@@ -512,6 +530,8 @@ class Pvp() :
                             player2.shieldUp = True
                         elif powerup.pType == 'doublebeam' :
                             doublebeam2 = True
+                        elif powerup.pType == 'triplecandy' :
+                            triplecandy2 = True
                         elif powerup.pType == 'life':
                             if player2.life < 3:
                                 player2.life += 1 
@@ -567,6 +587,22 @@ class Pvp() :
                     elif betweenDoubleCount2 == 0:
                         doublebeam2 = False
                         betweenDoubleCount = betweenDoubleTime
+                
+                # item - triplecandy
+                if triplecandy:
+                    if betweenTripleCount > 0:
+                        betweenTripleCount -= 1
+                    elif betweenTripleCount == 0:
+                        triplecandy = False
+                        betweenTripleCount = betweenTripleTime
+                
+                # item - triplecandy2
+                if triplecandy2:
+                    if betweenTripleCount2 > 0:
+                        betweenTripleCount2 -= 1
+                    elif betweenTripleCount2 == 0:
+                        triplecandy2 = False
+                        betweenTripleCount = betweenTripleTime
                 
                 # item - friendPlayer
                 if friendPlayer1 :

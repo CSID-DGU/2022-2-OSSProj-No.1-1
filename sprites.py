@@ -54,6 +54,8 @@ class Player(MasterSprite):
         self.vert = 0
         self.horiz = 0
         self.life = 3
+        self.speed = None
+        self.org_speed = self.speed
 
     def initializeKeys(self):
         keyState = pygame.key.get_pressed()
@@ -98,6 +100,21 @@ class Player(MasterSprite):
 
     def bomb(self):
         return Bomb(self)
+    
+    def speedUp(self):
+        keyState = pygame.key.get_pressed()
+        if keyState[pygame.K_w]:
+            self.vert -= 2 * self.speed
+        if keyState[pygame.K_a]:
+            self.horiz -= 2 * self.speed
+        if keyState[pygame.K_s]:
+            self.vert += 2 * self.speed
+        if keyState[pygame.K_d]:
+            self.horiz += 2 * self.speed
+            
+        newpos = self.rect.move((self.horiz, self.vert))
+        newhoriz = self.rect.move((self.horiz, 0))
+        newvert = self.rect.move((0, self.vert))
 
 class FriendPlayer(MasterSprite):
     def __init__(self, screen_size):
@@ -105,7 +122,7 @@ class FriendPlayer(MasterSprite):
         self.image, self.rect = load_image('friendPlayer.png', -1)
         self.original = self.image
         self.screen_size = screen_size
-        self.ratio = (self.screen_size / 500)
+        self.ratio = (self.screen_size / 400)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect()
         self.radius = max(self.rect.width, self.rect.height)
@@ -120,7 +137,7 @@ class Player2(MasterSprite):
         self.original = self.image
         self.shield, self.rect = load_image('ship_shield.png', -1)
         self.screen_size = screen_size
-        self.ratio = (self.screen_size / 500)
+        self.ratio = (self.screen_size / 400)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect()
         self.rect.midbottom = (self.screen.get_width() * (1/4) , self.area.bottom)
@@ -170,7 +187,7 @@ class Player3(MasterSprite):
         self.original = self.image
         self.shield, self.rect = load_image('ship_shield.png', -1)
         self.screen_size = screen_size
-        self.ratio = (self.screen_size / 500)
+        self.ratio = (self.screen_size / 400)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect()
         self.rect.midbottom = (self.screen.get_width() * (3/4), self.area.bottom)
@@ -373,21 +390,6 @@ class Beam(MasterSprite):
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect() 
-        # self.dt = 2 #공의 이동 거리, 속도
-        # self.x = x  #공의 현재 x 좌표 
-        # self.y = y  #공의 현재 y 좌표 
-        # self.dirx = 1   
-        # self.diry = 1
-        # self.angle = - 45
-        # self.angle = - 135
-        # self.dx = math.cos(angle) * self.speed
-        # self.dy = math.sin(angle) * self.speed
-        # self.x = x  # x방향 설정하는 기능
-        # self.y = y  # y방향 설정하는 기능
-        # self.dx2 = math.cos(angle2) * self.speed
-        # self.dy2 = math.sin(angle2) * self.speed
-        # self.x2 = x2  # x방향 설정하는 기능
-        # self.y2 = y2  # y방향 설정하는 기능
 
 
     @classmethod
@@ -397,8 +399,6 @@ class Beam(MasterSprite):
             beam.add(cls.allsprites, cls.active)
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
-
-    
     
     def table(self):
         self.add(self.pool)
@@ -410,24 +410,14 @@ class Beam(MasterSprite):
         self.rect = newpos
         if self.rect.top < self.area.top:
             self.table()
-    
-    #주어진 각도로 공을 움직임    
-    def start(self, angle):
-        self.angle = angle
-        self.go = True
+            
+    def halfbeam(self, screen_size):
+        self.screen_size = screen_size
+        newpos = self.rect.move(0, -1 * MasterSprite.speed)
+        self.rect = newpos
+        if self.rect.top < self.area.top:
+            self.table()
         
-    # def move(self):
-    #     self.x = self.x + self.dx
-    #     self.y = self.y + self.dy
-
-    #     self.x2 = self.x2 + self.dx2
-    #     self.y2 = self.y2 + self.dy2
-        
-    #     self.rect.x = int(self.x)
-    #     self.rect.y = int(self.y)
-        
-    #     self.rect.x2 = int(self.x2)
-    #     self.rect.y2 = int(self.y2)
 
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, Player):
@@ -452,7 +442,7 @@ class Bomb(pygame.sprite.Sprite):
             self.kill()
 
 
-class Powerup(MasterSprite): # 쉴드, 폭탄(고구마), 하트, Friend(헬퍼)
+class Powerup(MasterSprite): # 쉴드, 폭탄, 하트, Friend(헬퍼)
     def __init__(self, kindof, screen_size):
         super().__init__()
         self.image, self.rect = load_image(kindof + '_powerup.png', -1)
@@ -479,6 +469,33 @@ class Powerup(MasterSprite): # 쉴드, 폭탄(고구마), 하트, Friend(헬퍼)
                 center[1] +
                 MasterSprite.speed))
 
+## broccoli, chili_pepper
+class Powerdown(MasterSprite):
+    def __init__(self, kindof, screen_size):
+        super().__init__()
+        self.image, self.rect = load_image(kindof+ '_powerdown.png', -1)
+        self.original = self.image
+        self.screen_size = screen_size
+        self.ratio = (self.screen_size / 500)
+        self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+        self.area = self.screen.get_rect()
+        self.rect.midtop = (random.randint(
+                            self.area.left + self.rect.width // 2,
+                            self.area.right - self.rect.width // 2),
+                            self.area.top)
+        self.angle = 0
+
+    def update(self, screen_size):
+        self.screen_size = screen_size
+        center = self.rect.center
+        self.angle = (self.angle + 2) % 360
+        rotate = pygame.transform.rotate
+        self.image = rotate(self.original, self.angle)
+        self.rect = self.image.get_rect(
+            center=(
+                center[0],
+                center[1] +
+                MasterSprite.speed))
 
 class BombPowerup(Powerup):
     def __init__(self, screen_size):
@@ -510,3 +527,13 @@ class TriplecandyPowerup(Powerup):
     def __init__(self, screen_size):
         super().__init__('triplecandy', screen_size)
         self.pType = 'triplecandy'
+
+class BroccoliBeamhalf(Powerdown):
+    def __init__(self, screen_size):
+        super().__init__('broccoli', screen_size)
+        self.pType = 'broccoli'
+        
+class PepperSpeedup(Powerdown):
+    def __init__(self, screen_size):
+        super().__init__('pepper_chili', screen_size)
+        self.pType = 'pepper_chili'
