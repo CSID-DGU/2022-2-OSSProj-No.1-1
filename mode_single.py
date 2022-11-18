@@ -6,6 +6,7 @@ from pygame.locals import *
 from sprites import (MasterSprite, 
                      Player, FriendPlayer, Monster, Beam, Explosion,
                      BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
+                     BroccoliBeamhalf, PepperSpeedup,
                      Green, Yellow, Grey, Blue, Pink)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -31,7 +32,7 @@ class Single():
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
-        ratio = (screen_size / 500)
+        ratio = (screen_size / 400)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         pygame.display.set_caption("Let's Player!")
         pygame.mouse.set_visible(0)
@@ -87,9 +88,10 @@ class Single():
         initialMonsterTypes = (Green, Yellow)
         powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup,
                         FriendPowerup, LifePowerup)
-        
+        powerdownTypes = (BroccoliBeamhalf, PepperSpeedup)
         bombs = pygame.sprite.Group()
         powerups = pygame.sprite.Group()
+        powerdowns = pygame.sprite.Group()
         
         # Ship Selection
         ship_selection = Ship_selection_check() 
@@ -179,6 +181,8 @@ class Single():
             friendplayer = False
             doublebeam = False
             triplecandy = False
+            broccoli = False
+            pepper_chili = False
             bombsHeld = 3
             score = 0
             beamFired = 0
@@ -186,13 +190,17 @@ class Single():
 
             # speed
             speed = 1.5 * ratio
-            MasterSprite.speed = speed
+            newspeed = 2.5 * ratio
+            org_speed = 1.5 * ratio
+            player.speed = speed
 
             # Reset all time
             bearPeriod = clockTime // speed
             curTime = 0
             powerupTime = 8 * clockTime
             powerupTimeLeft = powerupTime
+            powerdownTime = 8 * clockTime
+            powerdownTimeLeft = powerdownTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
@@ -204,6 +212,10 @@ class Single():
             friendplayerCount = friendplayerTime
             friendplayerBeamTime = 0.2 * clockTime
             friendplayerBeamCount = friendplayerBeamTime
+            broccoliTime  = 8 * clockTime
+            broccoliCount = broccoliTime
+            pepper_chiliTime  = 8 * clockTime
+            pepper_chiliCount = pepper_chiliTime
             
             player.alive = True
             player.life = 3
@@ -218,10 +230,13 @@ class Single():
                 
             # Drop Items
                 powerupTimeLeft -= 1
+                powerdownTimeLeft -= 1
                 if powerupTimeLeft <= 0:
                     powerupTimeLeft = powerupTime
                     random.choice(powerupTypes)(screen_size).add(powerups, allsprites)
-
+                elif powerdownTimeLeft <= 0:
+                    powerdownTimeLeft = powerdownTime
+                    random.choice(powerdownTypes)(screen_size).add(powerdowns, allsprites)
             # Event Handling
                 for event in pygame.event.get():
                     if (event.type == pygame.QUIT
@@ -235,17 +250,17 @@ class Single():
                         if screen_size <= 300:
                             screen_size = 300
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                        ratio = (screen_size / 500)
+                        ratio = (screen_size / 400)
                         font = pygame.font.Font(None, round(36*ratio))
                     # Player Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction.keys()):
-                        player.horiz += direction[event.key][0] * speed
-                        player.vert += direction[event.key][1] * speed
+                        player.horiz += direction[event.key][0] * player.speed
+                        player.vert += direction[event.key][1] * player.speed
                     elif (event.type == pygame.KEYUP
                         and event.key in direction.keys()):
-                        player.horiz -= direction[event.key][0] * speed
-                        player.vert -= direction[event.key][1] * speed
+                        player.horiz -= direction[event.key][0] * player.speed
+                        player.vert -= direction[event.key][1] * player.speed
                     # Beam
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
@@ -253,11 +268,18 @@ class Single():
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
-                        if triplecandy :
+                        elif triplecandy :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.midtop)
                             Beam.position(player.rect.topright)
                             beamFired += 3
+                            # broccoli 만들어야
+                        elif pepper_chili:
+                            Beam.position(player.rect.midtop)
+                            speed = newspeed
+                            player.speed = speed
+                            player.speedUp()
+                            beamFired += 1
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -419,7 +441,7 @@ class Single():
                     
 
             # Collision Detection
-                # Bears
+                # Monster
                 for monster in Monster.active:
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
@@ -460,7 +482,7 @@ class Single():
                             player.remove(allsprites)
                             Explosion.position(player.rect.center)
                             if soundFX:
-                                kirin_explode_sound.play()
+                                kirin_explode_sound.play() ## 변경사항
 
                 # PowerUps
                 for powerup in powerups:
@@ -485,7 +507,17 @@ class Single():
                     elif powerup.rect.top > powerup.area.bottom:
                         powerup.kill()
 
-            # Update Bears
+                # Powerdowns
+                for powerdown in powerdowns :
+                    if pygame.sprite.collide_circle(powerdown, player):
+                        if powerdown.pType == 'broccoli' :
+                            broccoli = True
+                        elif powerdown.pType == 'pepper_chili' :
+                            pepper_chili = True
+                        powerdown.kill()
+                    elif powerup.rect.top > powerup.area.bottom:
+                        powerdown.kill()
+            # Update Monsters
                 if curTime <= 0 and monstersLeftThisWave > 0:
                     Monster.position()
                     curTime = bearPeriod
@@ -520,7 +552,21 @@ class Single():
                     elif betweenTripleCount == 0:
                         triplecandy = False
                         betweenTripleCount = betweenTripleTime
-
+                if broccoli:
+                    if broccoliCount > 0:
+                        broccoliCount -= 1
+                    elif broccoliCount == 0:
+                        broccoli = False
+                        broccoliCount = broccoliTime
+                if pepper_chili:
+                    if pepper_chiliCount > 0:
+                        pepper_chiliCount -= 1
+                    elif pepper_chiliCount == 0:
+                        speed = org_speed
+                        player.speed = speed
+                        player.speedUp()
+                        pepper_chili = False
+                        pepper_chiliCount = pepper_chiliTime
                 # item - friendplayer
                 miniplayer.rect.bottomright = player.rect.bottomleft
                 if friendplayer:
