@@ -105,18 +105,27 @@ class Database(object):
     # 
     
     def setScore(self,user_id,score): # 기존에 저장되어 있던 점수랑 비교해야될듯 user_id가 pk라서 같은 아이디가 중복 저장되지x
+        # data가 null일때랑 아닐때
         curs=self.score_db.cursor()
         sql="SELECT * FROM single_score WHERE user_id=%s"
         curs.execute(sql,user_id)
         data=curs.fetchone()
-        if score > data[1]:
-            curs=self.score_db.cursor()
-            sql="UPDATE single_score SET user_score=%s WHERE user_id=%s"
-            curs.execute(sql,(score,user_id))
-            self.score_db.commit()
+        if data:
+            if score > data[1]:
+                curs=self.score_db.cursor()
+                sql="UPDATE single_score SET user_score=%s WHERE user_id=%s"
+                curs.execute(sql,(score,user_id))
+                self.score_db.commit()
+            else:
+                curs.close()
+                return
         else:
-            curs.close()
-            return
+            curs=self.score_db.cursor()
+            sql = "INSERT INTO single_score (user_id, user_score) VALUES (%s, %s)"
+            curs.execute(sql,(user_id,score))
+            self.score_db.commit()
+            
+
         #sql = "INSERT INTO single_score (user_id, user_score) VALUES (%s, %s)"
         #curs.execute(sql,(user_id,score))
         #self.score_db.commit()
