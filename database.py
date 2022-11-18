@@ -104,11 +104,28 @@ class Database(object):
         curs.close()
     # 
     
-    def setScore(self,user_id,score):
+    def setScore(self,user_id,score): # 기존에 저장되어 있던 점수랑 비교해야될듯 user_id가 pk라서 같은 아이디가 중복 저장되지x
+        # data가 null일때랑 아닐때
         curs=self.score_db.cursor()
-        sql = "INSERT INTO single_score (user_id, user_score) VALUES (%s, %s)"
-        curs.execute(sql,(user_id,score))
-        self.score_db.commit()
+        sql="SELECT * FROM single_score WHERE user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data:
+            if score > data[1]:
+                curs=self.score_db.cursor()
+                sql="UPDATE single_score SET user_score=%s WHERE user_id=%s"
+                curs.execute(sql,(score,user_id))
+                self.score_db.commit()
+            else:
+                curs.close()
+                return
+        else:
+            curs=self.score_db.cursor()
+            sql = "INSERT INTO single_score (user_id, user_score) VALUES (%s, %s)"
+            curs.execute(sql,(user_id,score))
+            self.score_db.commit()
+            
+
         curs.close()
 
     def getSound(music=False):
@@ -136,6 +153,24 @@ class Database(object):
             c.execute("INSERT INTO sound VALUES (?)", (setting,))
         conn.commit()
         conn.close()
+
+    def setCoins(self,user_id,score):
+        newcoins=0
+        curs=self.score_db.cursor()
+        sql="SELECT * FROM users WHERE user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        newcoins=data[2]+score
+
+        curs=self.score_db.cursor()
+        sql="UPDATE users SET user_coin=%s WHERE user_id=%s"
+        curs.execute(sql,(newcoins,user_id))
+        self.score_db.commit()
+
+        curs.close()
+        
+        
+
                     
 
 
