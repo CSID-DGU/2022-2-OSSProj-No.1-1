@@ -5,7 +5,7 @@ from pygame.locals import *
 
 from sprites import (MasterSprite, 
                      Player, FriendShip, Player2, Player3, Monster, Beam, Explosion,
-                     BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecandyPower,
+                     BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -92,7 +92,7 @@ class Pvp() :
         miniPlayer = FriendShip(screen_size)
 
         initialmonsterTypes = (Green, Yellow)
-        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecandyPower, FriendPower, LifePower)
+        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, FriendPower, LifePower)
 
         bombs = pygame.sprite.Group()
         bombs2 = pygame.sprite.Group()

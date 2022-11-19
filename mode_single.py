@@ -5,7 +5,7 @@ from pygame.locals import *
 
 from sprites import (MasterSprite, 
                      Player, FriendShip, Monster, Beam, Explosion,
-                     BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecandyPower,
+                     BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
                      BroccoliBeamfast,
                      Green, Yellow, Grey, Blue, Pink)
 from database import Database
@@ -86,7 +86,7 @@ class Single():
         miniplayer = FriendShip(screen_size)
         
         initialMonsterTypes = (Green, Yellow)
-        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecandyPower, BroccoliBeamfast,
+        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
                         FriendPower, LifePower)
         bombs = pygame.sprite.Group()
         powers = pygame.sprite.Group()
@@ -178,7 +178,7 @@ class Single():
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
             friendship = False
             doublebeam = False
-            triplecandy = False
+            triplecupcake = False
             broccoli = False
             pepper_chili = False
             bombsHeld = 3
@@ -263,7 +263,7 @@ class Single():
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
-                        elif triplecandy :
+                        elif triplecupcake :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.midtop)
                             Beam.position(player.rect.topright)
@@ -492,8 +492,8 @@ class Single():
                             player.shieldUp = True
                         elif power.pType == 'doublebeam' :
                             doublebeam = True
-                        elif power.pType == 'triplecandy' :
-                            triplecandy = True
+                        elif power.pType == 'triplecupcake' :
+                            triplecupcake = True
                         elif power.pType == 'broccoli' :
                             broccoli = True
                         elif power.pType == 'life':
@@ -537,11 +537,11 @@ class Single():
                     elif betweenDoubleCount == 0:
                         doublebeam = False
                         betweenDoubleCount = betweenDoubleTime
-                if triplecandy:
+                if triplecupcake:
                     if betweenTripleCount > 0:
                         betweenTripleCount -= 1
                     elif betweenTripleCount == 0:
-                        triplecandy = False
+                        triplecupcake = False
                         betweenTripleCount = betweenTripleTime
                 if broccoli:
                     if broccoliCount > 0:

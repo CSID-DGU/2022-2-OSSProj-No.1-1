@@ -491,10 +491,10 @@ class LifePower(Power):
         super().__init__('life', screen_size)
         self.pType = 'life'
         
-class TriplecandyPower(Power):
+class TriplecupcakePower(Power):
     def __init__(self, screen_size):
-        super().__init__('triplecandy', screen_size)
-        self.pType = 'triplecandy'
+        super().__init__('triplecupcake', screen_size)
+        self.pType = 'triplecupcake'
 
 class BroccoliBeamfast(Power):
     def __init__(self, screen_size):
