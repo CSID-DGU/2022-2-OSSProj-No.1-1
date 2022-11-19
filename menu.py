@@ -634,13 +634,15 @@ class Menu:
                 if cnt%3==1:
                     menu, menuRect = load_image("help1.png")
                     menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
+                    menu_size = (500,500)
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                    
                 elif cnt%3==2:
                     menu, menuRect = load_image("help2.png")
                     menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
+                    menu_size = (500,500)
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                    
             
             elif self.showShop:
                 # self.screen.blit(self.title,self.titleRect)

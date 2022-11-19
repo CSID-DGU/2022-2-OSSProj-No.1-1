@@ -387,14 +387,17 @@ class Single():
                             elif showHelp:
                                 if cnt%3==1:
                                     menu, menuRect = load_image("help1.png")
+                                    menu = pygame.transform.scale(menu, (500, 500))
                                     menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                                    menu_size = (500,500)
                                     screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                                    #menu = pygame.transform.scale(menu, (500, 500))
                                 elif cnt%3==2:
                                     menu, menuRect = load_image("help2.png") 
                                     menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                  
+                                    menu_size = (500,500)
+                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))  
+                                    #menu = pygame.transform.scale(menu, (500, 500))                                
                             else:
                                 textOverlays = zip([blankText,restartText, hiScoreText, helpText, fxText,
                                                     musicText, quitText, selectText,
