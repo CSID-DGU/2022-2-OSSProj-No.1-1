@@ -273,7 +273,11 @@ class Single():
                             Beam.position(player.rect.midtop)
                             Beam.position(player.rect.topright)
                             beamFired += 3
-                            # broccoli 만들어야
+                        elif broccoli :
+                            Beam.position(player.rect.midtop)
+                            Beam.halfbeam(screen_size)
+                            beamFired += 1
+                            
                         elif pepper_chili:
                             Beam.position(player.rect.midtop)
                             speed = newspeed
