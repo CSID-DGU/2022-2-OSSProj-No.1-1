@@ -4,8 +4,8 @@ import sys
 from pygame.locals import *
 
 from sprites import (MasterSprite, 
-                     Player, FriendPlayer, Player2, Player3, Monster, Beam, Explosion,
-                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
+                     Player, FriendShip, Player2, Player3, Monster, Beam, Explosion,
+                     BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecandyPower,
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -89,14 +89,14 @@ class Pvp() :
         # object
         player = Player2(screen_size)
         player2 = Player3(screen_size) 
-        miniPlayer = FriendPlayer(screen_size)
+        miniPlayer = FriendShip(screen_size)
 
         initialmonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup, FriendPowerup, LifePowerup)
+        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecandyPower, FriendPower, LifePower)
 
         bombs = pygame.sprite.Group()
         bombs2 = pygame.sprite.Group()
-        powerups = pygame.sprite.Group()
+        powers = pygame.sprite.Group()
 
         # Score Function
         def kill_monster(monster, monstersLeftThisWave, score) :
@@ -160,12 +160,12 @@ class Pvp() :
 
             # Reset game contents
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
-            friendPlayer1 = False
+            friendShip1 = False
             doublebeam = False
             triplecandy = False
             bombsHeld = 3
             score = 0
-            friendPlayer2 = False
+            friendShip2 = False
             doublebeam2 = False
             triplecandy2 = False
             bombsHeld2 = 3
@@ -180,8 +180,8 @@ class Pvp() :
             # Reset all time
             monsterPeriod = clockTime // 2
             curTime = 0
-            powerupTime = 8 * clockTime
-            powerupTimeLeft = powerupTime
+            powerTime = 8 * clockTime
+            powerTimeLeft = powerTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
@@ -191,10 +191,10 @@ class Pvp() :
             betweenTripleTime = 8 * clockTime
             betweenTripleCount = betweenTripleTime
             betweenTripleCount2 = betweenTripleTime
-            friendPlayerTime = 8 * clockTime
-            friendPlayerCount = friendPlayerTime
-            friendPlayerbeamTime = 0.2 * clockTime
-            friendPlayerbeamCount = friendPlayerbeamTime
+            friendShipTime = 8 * clockTime
+            friendShipCount = friendShipTime
+            friendShipbeamTime = 0.2 * clockTime
+            friendShipbeamCount = friendShipbeamTime
             
             player.alive = True
             player.life = 3
@@ -208,10 +208,10 @@ class Pvp() :
                 clock.tick(clockTime)
 
             # Drop Items
-                powerupTimeLeft -= 1
-                if powerupTimeLeft <= 0:
-                    powerupTimeLeft = powerupTime
-                    random.choice(powerupTypes)(screen_size).add(powerups, allsprites)
+                powerTimeLeft -= 1
+                if powerTimeLeft <= 0:
+                    powerTimeLeft = powerTime
+                    random.choice(powerTypes)(screen_size).add(powers, allsprites)
 
             # Event Handling
                 for event in pygame.event.get():
@@ -501,48 +501,48 @@ class Pvp() :
                                 player_explode_sound.play()
 
                 # PowerUps
-                for powerup in powerups:
-                    if pygame.sprite.collide_circle(powerup, player):
-                        if powerup.pType == 'bomb':
+                for power in powers:
+                    if pygame.sprite.collide_circle(power, player):
+                        if power.pType == 'bomb':
                             bombsHeld += 1
-                        elif powerup.pType == 'shield':
+                        elif power.pType == 'shield':
                             player.shieldUp = True
-                        elif powerup.pType == 'doublebeam':
+                        elif power.pType == 'doublebeam':
                             doublebeam = True
-                        elif powerup.pType == 'triplecandy' :
+                        elif power.pType == 'triplecandy' :
                             triplecandy = True
-                        elif powerup.pType == 'life':
+                        elif power.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
-                        elif powerup.pType == 'friendPlayer' :
-                            friendPlayer1 = True
+                        elif power.pType == 'friendShip' :
+                            friendShip1 = True
                             MasterSprite.allsprites.add(miniPlayer) 
                             allsprites.update(screen_size)
                             allsprites.draw(screen)        
-                        powerup.kill()
-                    elif powerup.rect.top > powerup.area.bottom:
-                        powerup.kill()
-                for powerup in powerups:
-                    if pygame.sprite.collide_circle(powerup, player2):
-                        if powerup.pType == 'bomb':
+                        power.kill()
+                    elif power.rect.top > power.area.bottom:
+                        power.kill()
+                for power in powers:
+                    if pygame.sprite.collide_circle(power, player2):
+                        if power.pType == 'bomb':
                             bombsHeld2 += 1
-                        elif powerup.pType == 'shield':
+                        elif power.pType == 'shield':
                             player2.shieldUp = True
-                        elif powerup.pType == 'doublebeam' :
+                        elif power.pType == 'doublebeam' :
                             doublebeam2 = True
-                        elif powerup.pType == 'triplecandy' :
+                        elif power.pType == 'triplecandy' :
                             triplecandy2 = True
-                        elif powerup.pType == 'life':
+                        elif power.pType == 'life':
                             if player2.life < 3:
                                 player2.life += 1 
-                        elif powerup.pType == 'friendPlayer' :
-                            friendPlayer2 = True
+                        elif power.pType == 'friendShip' :
+                            friendShip2 = True
                             MasterSprite.allsprites.add(miniPlayer) 
                             allsprites.update(screen_size)
                             allsprites.draw(screen)   
-                        powerup.kill()
-                    elif powerup.rect.top > powerup.area.bottom:
-                        powerup.kill()
+                        power.kill()
+                    elif power.rect.top > power.area.bottom:
+                        power.kill()
 
             # Update monsters
                 if curTime <= 0 and monstersLeftThisWave> 0:
@@ -604,26 +604,26 @@ class Pvp() :
                         triplecandy2 = False
                         betweenTripleCount = betweenTripleTime
                 
-                # item - friendPlayer
-                if friendPlayer1 :
+                # item - friendShip
+                if friendShip1 :
                     miniPlayer.rect.bottomright = player.rect.bottomleft
                 else :
                     miniPlayer.rect.bottomright = player2.rect.bottomleft
                 
-                if friendPlayer1 or friendPlayer2:
-                    if friendPlayerCount > 0:
-                        friendPlayerCount -= 1
-                    elif friendPlayerCount == 0:
-                        if friendPlayer1 :
-                            friendPlayer1 = False
+                if friendShip1 or friendShip2:
+                    if friendShipCount > 0:
+                        friendShipCount -= 1
+                    elif friendShipCount == 0:
+                        if friendShip1 :
+                            friendShip1 = False
                         else :
-                            friendPlayer2 = False
+                            friendShip2 = False
                         miniPlayer.remove()
-                        friendPlayerCount = friendPlayerTime
-                    if friendPlayerbeamCount > 0:
-                        friendPlayerbeamCount -= 1
-                    elif friendPlayerbeamCount == 0:
-                        friendPlayerbeamCount = friendPlayerbeamTime
+                        friendShipCount = friendShipTime
+                    if friendShipbeamCount > 0:
+                        friendShipbeamCount -= 1
+                    elif friendShipbeamCount == 0:
+                        friendShipbeamCount = friendShipbeamTime
                         beam.position(miniPlayer.rect.midtop)
 
             # Detertmine when to move to next wave
