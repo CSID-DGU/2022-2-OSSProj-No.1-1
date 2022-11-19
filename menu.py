@@ -57,8 +57,8 @@ class Menu:
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
         self.font2 = pygame.font.Font("LeeSeoyun.ttf", round(20*self.ratio))
-        self.player = Player(screen_size)
->>>>>>> 06c79dc96ffffab7bcf57b590634e1a6d5b3592c
+        #self.player = Player(screen_size)
+
         
         # For hiscore setting 
         self.hiScores=Database().getScores()
