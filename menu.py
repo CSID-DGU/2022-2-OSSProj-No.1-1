@@ -1,5 +1,5 @@
 import pygame
-import pygame_menu #해당 라이브러리 설치 필요
+#import pygame_menu #해당 라이브러리 설치 필요
 import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
