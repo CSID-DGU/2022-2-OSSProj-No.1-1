@@ -1,4 +1,5 @@
 import pygame
+import pygame_menu #해당 라이브러리 설치 필요
 import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
@@ -12,7 +13,13 @@ BACK=0
 #mixer not initialized
 pygame.init()
 
-
+class Language_check() :  
+    def __init__(self):
+        self.state = False ######### False면 영어, True면 한국어
+    def change_language(self) :
+        self.state = not self.state
+    def get_language(self) :
+        return self.state
 
 
 class Keyboard(object):
@@ -23,6 +30,7 @@ class Keyboard(object):
             pygame.K_q: 'Q', pygame.K_r: 'R', pygame.K_s: 'S', pygame.K_t: 'T',
             pygame.K_u: 'U', pygame.K_v: 'V', pygame.K_w: 'W', pygame.K_x: 'X',
             pygame.K_y: 'Y', pygame.K_z: 'Z'}
+
 
 class Ship_selection_check():
     def __init__(self):
@@ -98,6 +106,21 @@ class Menu:
         self.pwdPos =0
         self.secretPwd=0
 
+        # For select_character setting
+        self.selectchar=False
+       
+        self.char1Text=self.font.render('Ship1',1,BLACK)
+        self.char1Pos=self.char1Text.get_rect(topleft=self.blankPos.bottomleft)
+        self.char2Text=self.font.render('Ship2',1,BLACK)
+        self.char2Pos=self.char2Text.get_rect(topleft=self.char1Pos.bottomleft)
+        self.char3Text=self.font.render('Ship3',1,BLACK)
+        self.char3Pos=self.char3Text.get_rect(topleft=self.char2Pos.bottomleft)
+
+        self.charDict={1:self.char1Pos,2:self.char2Pos,3:self.char3Pos}
+        Var.go_menu=False
+        #self.go_menu=False
+
+
         # For inMenu_page setting
         self.startText = self.font.render('SELECT MODE', 1, BLACK)
         self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
@@ -153,6 +176,7 @@ class Menu:
         self.inSelectMenu=False
         self.soundFX = Database.getSound()
         self.music = Database.getSound(music=True)
+        self.showselectchar=False
 
 
     def init_page(self):        
@@ -247,11 +271,13 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     if (self.selection==1
                     or self.selection==2) :
+                        
                         if userSelection==1: # login
                             if Database().id_not_exists(self.id):
                                 print("아이디 없음")
-                            else: 
+                            else:  #로그인 시 캐릭터 불러오기
                                 if Database().compare_data(self.id, self.pwd):
+                                    Var.char=Database().load_char_data(self.id)
                                     print("로그인 성공")
                                     Var.user_id=self.id    # 아이디 저장
                                     return self.id, self.screen_size
@@ -264,6 +290,10 @@ class Menu:
                                     Database().add_id_data(self.id)
                                     Database().add_password_data(self.pwd, self.id)
                                     print("회원가입 성공")
+                                   
+
+                                    print('select character()')
+                                    
                                     return self.id, self.screen_size
                             else:
                                 print("아이디 존재함")
@@ -328,8 +358,88 @@ class Menu:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
     
+    
+    
+    def set_character(self):
+        self.selectchar=True
+        
+        while self.selectchar:
+            self.clock.tick(self.clockTime) 
+            self.flag=True
+            main_menu, main_menuRect = load_image("main_menu.png")
+            main_menuRect.midtop = self.screen.get_rect().midtop
+            main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
+            self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
+
+            for event in pygame.event.get():
+                if (event.type == pygame.QUIT
+                    or event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_ESCAPE):
+                    pygame.quit()
+                    sys.exit()
+                elif (event.type == pygame.VIDEORESIZE):
+                    self.screen_size = min(event.w, event.h)
+                    if self.screen_size <= 300:
+                        self.screen_size = 300
+                    self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+                    self.ratio = (self.screen_size / 500)
+                    self.font = pygame.font.Font(None, round(36*self.ratio))
+                elif (event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_RETURN):
+                    if self.showselectchar:
+                        self.showselectchar=False
+                    elif self.selection==1:
+                        Var.char=1
+                        Database().update_char_data(Var.char,Var.user_id)
+                        Var.lst=Var.char1_lst
+                        Var.user_id=self.id
+                        Var.go_menu=True
+                        return Var.go_menu
+                    elif self.selection==2:
+                        Var.char=2
+                        Database().update_char_data(Var.char,Var.user_id)
+                        Var.lst=Var.char2_lst
+                        Var.user_id=self.id
+                        Var.go_menu=True
+                        return Var.go_menu
+                    elif self.selection==3:
+                        Var.char=3
+                        Database().update_char_data(Var.char,Var.user_id)
+                        Var.lst=Var.char3_lst
+                        Var.user_id=self.id
+                        Var.go_menu=True
+                        return Var.go_menu
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_UP
+                    and self.selection>1 and not self.showselectchar ):
+                        self.selection-=1
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_DOWN
+                    and self.selection<len(self.charDict) and not self.showselectchar ):
+                        self.selection+=1
+
+            self.blankText=self.font.render('           ',1,BLACK)
+            self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
+            self.char1Text=self.font.render('Ship1',1,BLACK)
+            self.char1Pos=self.char1Text.get_rect(topleft=self.blankPos.bottomleft)
+            self.char2Text=self.font.render('Ship2',1,BLACK)
+            self.char2Pos=self.char2Text.get_rect(topleft=self.char1Pos.bottomleft)
+            self.char3Text=self.font.render('Ship3',1,BLACK)
+            self.char3Pos=self.char3Text.get_rect(topleft=self.char2Pos.bottomleft)
+
+            self.charDict={1:self.char1Pos,2:self.char2Pos,3:self.char3Pos}
+            self.selectPos = self.selectText.get_rect(topright=self.charDict[self.selection].topleft)
+
+            self.textOverlays=zip([self.blankText,self.char1Text,self.char2Text,self.char3Text,self.selectText],
+            [self.blankPos,self.char1Pos,self.char2Pos,self.char3Pos,self.selectPos])
+            for txt,pos in self.textOverlays:
+                self.screen.blit(txt,pos)
+            pygame.display.flip()
+                    
+                    
+
+
 
     def inMenu_page(self):
+
         self.inMenu = True
         cnt=0
 
