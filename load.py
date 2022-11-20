@@ -1,5 +1,7 @@
 import os
 import pygame
+import pygame
+import pygame_menu
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
@@ -46,4 +48,24 @@ class Var:
     # pygame.event로 알릴것인가? or game_over() 함수를 사용..? 
     # tongsan 에서 game_over() 함수는 board. py에저장 어떻게 작성했는지 확인
 
+     #메뉴 기본 테마 만들기
+   
+    
 
+  
+    path='data/'
+
+
+    char1_lst=['ship.png']
+    char2_lst=['ship2.png']
+    char3_lst=['ship3.png']
+    char4_lst=['ship4.png']
+
+
+    
+    char=1
+
+    lst=char1_lst # char img 초기화 
+
+    # 메뉴 전환을 위한 변수
+    go_menu=False
