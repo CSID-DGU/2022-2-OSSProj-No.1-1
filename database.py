@@ -42,7 +42,11 @@ class Database(object):
     @staticmethod
     def getScores(): # 점수를 데이터베이스에서 불러오는 함수
         conn = pymysql.connect(host='localhost', user='root',
+<<<<<<< HEAD
                             password='1234', db='hiScores', charset='utf8')
+=======
+                            password='00000000', db='hiScores', charset='utf8')
+>>>>>>> c4cb6bcfd462593c11faa890c763e24530b31274
         c = conn.cursor()
         c.execute('''CREATE TABLE if not exists scores
                      (name text, score integer, accuracy real)''')
@@ -54,7 +58,11 @@ class Database(object):
     @staticmethod
     def setScore(hiScores, entry): # 점수를 데이터베이스에 저장하는 함수
         conn = pymysql.connect(host='localhost', user='root',
+<<<<<<< HEAD
                                password='1234', db='hiScores', charset='utf8')
+=======
+                               password='00000000', db='hiScores', charset='utf8')
+>>>>>>> c4cb6bcfd462593c11faa890c763e24530b31274
         c = conn.cursor()
         if len(hiScores) == Database.numScores:
             lowScoreName = hiScores[-1][0]
