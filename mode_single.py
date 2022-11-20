@@ -9,7 +9,7 @@ from sprites import (MasterSprite,
                      BroccoliBeamfast,
                      Green, Yellow, Grey, Blue, Pink)
 from database import Database
-from load import load_image, load_sound, load_music
+from load import load_image, load_sound, load_music,Var
 from menu import *
 
 if not pygame.mixer:
@@ -67,9 +67,9 @@ class Single():
         ship_explode_sound = load_sound('ship_explode.ogg')
         load_music('music_loop.ogg')
         soundFX = Database().getSound()
-        music = Database().getSound(music=True)
-        if music and pygame.mixer: 
-            pygame.mixer.music.play(loops=-1)
+       # music = Database().getSound(music=True)
+        #if music and pygame.mixer: 
+         #   pygame.mixer.music.play(loops=-1)
 
         # font
         font = pygame.font.Font(None, round(36*ratio))
@@ -91,10 +91,9 @@ class Single():
                         FriendPower, LifePower)
         bombs = pygame.sprite.Group()
         powers = pygame.sprite.Group()
-        
-        # Ship Selection
+
         ship_selection = Ship_selection_check() 
-        
+
         # Score Function
         def kill_bear(monster, monstersLeftThisWave, score) :
             monstersLeftThisWave -= 1
@@ -111,44 +110,41 @@ class Single():
     # High Score
         hiScores=Database().getScores()
         highScoreTexts = [font.render("NAME", 1, RED),
-                        font.render("SCORE", 1, RED),
-                        font.render("ACCURACY", 1, RED)]
+                        font.render("SCORE", 1, RED)]
         highScorePos = [highScoreTexts[0].get_rect(
                         topleft=screen.get_rect().inflate(-100, -100).topleft),
                         highScoreTexts[1].get_rect(
-                        midtop=screen.get_rect().inflate(-100, -100).midtop),
-                        highScoreTexts[2].get_rect(
-                        topright=screen.get_rect().inflate(-100, -100).topright)]
+                        midtop=screen.get_rect().inflate(-100, -100).midtop)]
         for hs in hiScores:
             highScoreTexts.extend([font.render(str(hs[x]), 1, BLACK)
-                                for x in range(3)])
+                                for x in range(2)])
             highScorePos.extend([highScoreTexts[x].get_rect(
-                topleft=highScorePos[x].bottomleft) for x in range(-3, 0)])
+                topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
     
     # pause menu text  
         blankText=font.render('            ',1,BLACK)
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
-        restartText = font.render(' ', 1, BLACK)
+        restartText = font.render('RESTART GAME', 1, BLACK)
         restartPos = restartText.get_rect(topleft=blankPos.bottomleft)   
-        hiScoreText = font.render(' ', 1, BLACK)
+        hiScoreText = font.render('HIGH SCORES', 1, BLACK)
         hiScorePos = hiScoreText.get_rect(topleft=restartPos.bottomleft)
-        fxText = font.render('  ', 1, BLACK)
+        fxText = font.render('SOUND FX ', 1, BLACK)
         fxPos = fxText.get_rect(topleft=hiScorePos.bottomleft)
-        fxOnText = font.render(' ', 1, RED)
-        fxOffText = font.render(' ', 1, RED)
+        fxOnText = font.render('ON', 1, RED)
+        fxOffText = font.render('OFF', 1, RED)
         fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
         fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
-        musicText = font.render(' ', 1, BLACK)
+        musicText = font.render('MUSIC', 1, BLACK)
         musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
-        musicOnText = font.render(' ', 1, RED)
-        musicOffText = font.render(' ', 1, RED)
+        musicOnText = font.render('ON', 1, RED)
+        musicOffText = font.render('OFF', 1, RED)
         musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
         musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
-        helpText=font.render(' ',1,BLACK)
+        helpText=font.render('HELP',1,BLACK)
         helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
-        quitText = font.render(' ', 1, BLACK)
+        quitText = font.render('QUIT', 1, BLACK)
         quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
-        selectText = font.render(' ', 1, BLACK)
+        selectText = font.render('*', 1, BLACK)
         selectPos = selectText.get_rect(topright=restartPos.topleft)
         selection = 1
         showHiScores = False
@@ -222,7 +218,6 @@ class Single():
             
             
             player.showChange_ship = False
-            
         # Start Game
             while player.alive:
                 clock.tick(clockTime)
@@ -395,19 +390,16 @@ class Single():
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
                             highScoreTexts = [font.render("NAME", 1, RED),
-                                            font.render("SCORE", 1, RED),
-                                            font.render("ACCURACY", 1, RED)]
+                                            font.render("SCORE", 1, RED)]
                             highScorePos = [highScoreTexts[0].get_rect(
                                             topleft=screen.get_rect().inflate(-100, -100).topleft),
                                             highScoreTexts[1].get_rect(
-                                            midtop=screen.get_rect().inflate(-100, -100).midtop),
-                                            highScoreTexts[2].get_rect(
-                                            topright=screen.get_rect().inflate(-100, -100).topright)]
+                                            midtop=screen.get_rect().inflate(-100, -100).midtop)]
                             for hs in hiScores:
                                 highScoreTexts.extend([font.render(str(hs[x]), 1, BLACK)
-                                                    for x in range(3)])
+                                                    for x in range(2)])
                                 highScorePos.extend([highScoreTexts[x].get_rect(
-                                    topleft=highScorePos[x].bottomleft) for x in range(-3, 0)])
+                                    topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
 
                             if showHiScores:
                                 menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
@@ -416,17 +408,14 @@ class Single():
                             elif showHelp:
                                 if cnt%3==1:
                                     menu, menuRect = load_image("help1.png")
-                                    menu = pygame.transform.scale(menu, (500, 500))
                                     menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (500,500)
+                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
                                     screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                                    #menu = pygame.transform.scale(menu, (500, 500))
                                 elif cnt%3==2:
                                     menu, menuRect = load_image("help2.png") 
                                     menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (500,500)
-                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))  
-                                    #menu = pygame.transform.scale(menu, (500, 500))                                
+                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                  
                             else:
                                 textOverlays = zip([blankText,restartText, hiScoreText, helpText, fxText,
                                                     musicText, quitText, selectText,
@@ -444,7 +433,7 @@ class Single():
                     
 
             # Collision Detection
-                # Monster
+                # Bears
                 for monster in Monster.active:
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
@@ -655,10 +644,13 @@ class Single():
 
                 pygame.display.flip()
 
-
         # Data for Highscore
-            accuracy = round(score / beamFired, 4) if beamFired > 0 else 0.0
-            isHiScore = len(hiScores) < Database().numScores or score > hiScores[-1][1]
+            # accuracy = round(score / leafFired, 4) if leafFired > 0 else 0.0
+            # accuracy 지우기
+            # setScore 수정하고 isHiScore 지우기
+           # isHiScore = len(hiScores) < Database().numScores or score > hiScores[-1][1]
+            # 랭킹보드가 꽉 차지 않았거나, 점수가 맨 하위점수보다 높으면 
+            # 입력한 아이디가 
             name = ''
             nameBuffer = []
 
@@ -668,86 +660,48 @@ class Single():
     #########################
 
         while True:
+            # 바로 점수 저장되게
             clock.tick(clockTime)
-
+        # name 입력받는 부분 지우기
         # Event Handling
             for event in pygame.event.get():
-                if (event.type == pygame.QUIT
-                    or not isHiScore
-                    and event.type == pygame.KEYDOWN
-                        and event.key == pygame.K_ESCAPE):
-                    return False
+                if (event.type == pygame.QUIT and event.type == pygame.KEYDOWN
+                        and event.key == pygame.K_ESCAPE): # 게임 창 끔
+                        return False
                 # Resize windowSize
-                elif (event.type == pygame.VIDEORESIZE):
+                elif (event.type == pygame.VIDEORESIZE): # 사용자가 창 크기 조절
                     screen_size = min(event.w, event.h)
                     if screen_size <= 300:
                         screen_size = 300
                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                     ratio = (screen_size / 500)
                     font = pygame.font.Font(None, round(36*ratio))
-                elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_RETURN
-                    and not isHiScore):
+                elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
+                    and event.key == pygame.K_RETURN # 엔터키
+                    ): # 
+                    Database().setScore(Var.user_id,score)
+                    Database().setCoins(Var.user_id,score)
                     return True
-                elif (event.type == pygame.KEYDOWN
-                    and event.key in Keyboard.keys.keys()
-                    and len(nameBuffer) < 8):
-                    nameBuffer.append(Keyboard.keys[event.key])
-                    name = ''.join(nameBuffer)
-                elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_BACKSPACE
-                    and len(nameBuffer) > 0):
-                    nameBuffer.pop()
-                    name = ''.join(nameBuffer)
-                elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_RETURN
-                    and len(name) > 0):
-                    if Database().name_not_exists(name,mode=SINGLE):
-                        Database().setScore(hiScores,name, score, accuracy)
-                        return True 
-                    else:
-                        print("중복된 이름 존재함")
-                     
-            if isHiScore:
-                hiScoreText = font.render('SCORE', 1, RED)
-                hiScorePos = hiScoreText.get_rect(
-                    midbottom=screen.get_rect().center)
-                scoreText = font.render(str(score), 1, BLACK)
-                scorePos = scoreText.get_rect(midtop=hiScorePos.midbottom)
-                enterNameText = font.render('ENTER YOUR NAME:', 1, RED)
-                enterNamePos = enterNameText.get_rect(midtop=scorePos.midbottom)
-                nameText = font.render(name, 1, WHITE)
-                namePos = nameText.get_rect(midtop=enterNamePos.midbottom)
-                textOverlay = zip([hiScoreText, scoreText,
-                                enterNameText, nameText],
-                                [hiScorePos, scorePos,
-                                enterNamePos, namePos])
-            else:
-                gameOverText = font.render('GAME OVER', 1, BLACK)
-                gameOverPos = gameOverText.get_rect(
-                    center=screen.get_rect().center)
-                scoreText = font.render('SCORE: {}'.format(score), 1, BLACK)
-                scorePos = scoreText.get_rect(midtop=gameOverPos.midbottom)
-                textOverlay = zip([gameOverText, scoreText],
-                                [gameOverPos, scorePos])
 
+            
         # moving field         
             field1Rect.y += int(2 * ratio)
             field2Rect.y += int(2 * ratio)
+
             if field1Rect.y >= screen_size:
                 field1Rect.midbottom = field2Rect.midtop
             if field2Rect.y >= screen_size:
                 field2Rect.midbottom = field1Rect.midtop
-            
+                
             field_size = (round(field1.get_width() * ratio), round(field1.get_height() * ratio))
             screen.blit(pygame.transform.scale(field1, field_size), (0,field1Rect.y))
             screen.blit(pygame.transform.scale(field2, field_size), (0,field2Rect.y))
 
-        # Update and draw all sprites
+            # Update and draw all sprites
             allsprites.update(screen_size)
             allsprites.draw(screen)
             alldrawings.update()
-            for txt, pos in textOverlay:
+            for txt, pos in textOverlays:
                 screen.blit(txt, pos)
 
             pygame.display.flip()
