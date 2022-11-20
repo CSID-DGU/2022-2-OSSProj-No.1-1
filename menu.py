@@ -296,6 +296,7 @@ class Menu:
                                 if Database().compare_data(self.id, self.pwd):
                                     Var.char=Database().load_char_data(self.id)
                                     print("로그인 성공")
+                                    print(Var.lst)
                                     Var.user_id=self.id    # 아이디 저장
                                     return self.id, self.screen_size
                                 else:

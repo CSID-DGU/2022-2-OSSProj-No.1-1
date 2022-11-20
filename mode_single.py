@@ -4,8 +4,9 @@ import sys
 from pygame.locals import *
 
 from sprites import (MasterSprite, 
-                     Player, FriendPlayer, Monster, Beam, Explosion,
-                     BombPowerup, ShieldPowerup, DoublebeamPowerup, FriendPowerup, LifePowerup, TriplecandyPowerup,
+                     Player, FriendShip, Monster, Beam, Explosion,
+                     BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
+                     BroccoliBeamfast,
                      Green, Yellow, Grey, Blue, Pink)
 from database import Database
 from load import load_image, load_sound, load_music,Var
@@ -31,7 +32,7 @@ class Single():
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
-        ratio = (screen_size / 500)
+        ratio = (screen_size / 400)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         pygame.display.set_caption("Let's Player!")
         pygame.mouse.set_visible(0)
@@ -49,6 +50,7 @@ class Single():
 
         # pause
         pause,pauseRect = load_image('pause.png')
+        pause = pygame.transform.scale(pause, (500, 500))
         pauseRect.midtop = screen.get_rect().midtop
         pauseMenu = False 
 
@@ -65,9 +67,9 @@ class Single():
         ship_explode_sound = load_sound('ship_explode.ogg')
         load_music('music_loop.ogg')
         soundFX = Database().getSound()
-        #music = Database().getSound(music=True)
-       # if music and pygame.mixer: 
-       #     pygame.mixer.music.play(loops=-1)
+       # music = Database().getSound(music=True)
+        #if music and pygame.mixer: 
+         #   pygame.mixer.music.play(loops=-1)
 
         # font
         font = pygame.font.Font(None, round(36*ratio))
@@ -82,14 +84,13 @@ class Single():
         
         # object
         player = Player(screen_size)
-        miniplayer = FriendPlayer(screen_size)
+        miniplayer = FriendShip(screen_size)
         
         initialMonsterTypes = (Green, Yellow)
-        powerupTypes = (BombPowerup, ShieldPowerup, DoublebeamPowerup, TriplecandyPowerup,
-                        FriendPowerup, LifePowerup)
-        
+        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
+                        FriendPower, LifePower)
         bombs = pygame.sprite.Group()
-        powerups = pygame.sprite.Group()
+        powers = pygame.sprite.Group()
 
         ship_selection = Ship_selection_check() 
 
@@ -172,9 +173,11 @@ class Single():
 
             # Reset game contents
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
-            friendplayer = False
+            friendship = False
             doublebeam = False
-            triplecandy = False
+            triplecupcake = False
+            broccoli = False
+            pepper_chili = False
             bombsHeld = 3
             score = 0
             beamFired = 0
@@ -182,13 +185,17 @@ class Single():
 
             # speed
             speed = 1.5 * ratio
-            MasterSprite.speed = speed
-
+            newspeed = 2.5 * ratio
+            org_speed = 1.5 * ratio
+            player.speed = speed
+        
             # Reset all time
             bearPeriod = clockTime // speed
             curTime = 0
-            powerupTime = 8 * clockTime
-            powerupTimeLeft = powerupTime
+            powerTime = 8 * clockTime
+            powerTimeLeft = powerTime
+            powerdownTime = 8 * clockTime
+            powerdownTimeLeft = powerdownTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
@@ -196,26 +203,31 @@ class Single():
             betweenDoubleCount = betweenDoubleTime
             betweenTripleTime = 8 * clockTime
             betweenTripleCount = betweenTripleTime
-            friendplayerTime = 8 * clockTime
-            friendplayerCount = friendplayerTime
-            friendplayerBeamTime = 0.2 * clockTime
-            friendplayerBeamCount = friendplayerBeamTime
+            friendshipTime = 8 * clockTime
+            friendshipCount = friendshipTime
+            friendshipBeamTime = 0.2 * clockTime
+            friendshipBeamCount = friendshipBeamTime
+            broccoliTime  = 8 * clockTime
+            broccoliCount = broccoliTime
+            pepper_chiliTime  = 8 * clockTime
+            pepper_chiliCount = pepper_chiliTime
             
             player.alive = True
             player.life = 3
             player.initializeKeys()
-
+            
+            
             player.showChange_ship = False
         # Start Game
             while player.alive:
                 clock.tick(clockTime)
                 
             # Drop Items
-                powerupTimeLeft -= 1
-                if powerupTimeLeft <= 0:
-                    powerupTimeLeft = powerupTime
-                    random.choice(powerupTypes)(screen_size).add(powerups, allsprites)
-
+                powerTimeLeft -= 1
+                powerdownTimeLeft -= 1
+                if powerTimeLeft <= 0:
+                    powerTimeLeft = powerTime
+                    random.choice(powerTypes)(screen_size).add(powers, allsprites)
             # Event Handling
                 for event in pygame.event.get():
                     if (event.type == pygame.QUIT
@@ -229,17 +241,17 @@ class Single():
                         if screen_size <= 300:
                             screen_size = 300
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                        ratio = (screen_size / 500)
+                        ratio = (screen_size / 400)
                         font = pygame.font.Font(None, round(36*ratio))
                     # Player Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction.keys()):
-                        player.horiz += direction[event.key][0] * speed
-                        player.vert += direction[event.key][1] * speed
+                        player.horiz += direction[event.key][0] * player.speed
+                        player.vert += direction[event.key][1] * player.speed
                     elif (event.type == pygame.KEYUP
                         and event.key in direction.keys()):
-                        player.horiz -= direction[event.key][0] * speed
-                        player.vert -= direction[event.key][1] * speed
+                        player.horiz -= direction[event.key][0] * player.speed
+                        player.vert -= direction[event.key][1] * player.speed
                     # Beam
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
@@ -247,11 +259,22 @@ class Single():
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
-                        if triplecandy :
+                        elif triplecupcake :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.midtop)
                             Beam.position(player.rect.topright)
                             beamFired += 3
+                        elif broccoli :
+                            Beam.position(player.rect.midtop)
+                            beam.speed = 1.5
+                            beamFired += 1
+                            
+                        # elif pepper_chili:
+                        #     Beam.position(player.rect.midtop)
+                        #     speed = newspeed
+                        #     player.speed = speed
+                        #     player.speedUp()
+                        #     beamFired += 1
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -307,13 +330,13 @@ class Single():
                                             showHelp=False
                                     elif selection == 1:    
                                         pauseMenu = False
-                                        kirin.alive = False
+                                        player.alive = False
                                     elif selection == 2:
                                         showHiScores = True
                                     elif selection == 3:
                                         soundFX = not soundFX
                                         if soundFX:
-                                            leaf_sound.play()
+                                            missile_sound.play()
                                         Database.setSound(int(soundFX))
                                     elif selection == 4 and pygame.mixer:
                                         music = not music
@@ -341,29 +364,29 @@ class Single():
                                 
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
-                            restartText = font.render('RESTART GAME', 1, BLACK)
+                            restartText = font.render(' ', 1, BLACK)
                             restartPos = restartText.get_rect(topleft=blankPos.bottomleft)   
-                            hiScoreText = font.render('HIGH SCORES', 1, BLACK)
+                            hiScoreText = font.render(' ', 1, BLACK)
                             hiScorePos = hiScoreText.get_rect(topleft=restartPos.bottomleft)
-                            fxText = font.render('SOUND FX ', 1, BLACK)
+                            fxText = font.render('  ', 1, BLACK)
                             fxPos = fxText.get_rect(topleft=hiScorePos.bottomleft)
-                            fxOnText = font.render('ON', 1, RED)
-                            fxOffText = font.render('OFF', 1, RED)
+                            fxOnText = font.render(' ', 1, RED)
+                            fxOffText = font.render(' ', 1, RED)
                             fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
                             fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
-                            musicText = font.render('MUSIC', 1, BLACK)
+                            musicText = font.render(' ', 1, BLACK)
                             musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
-                            musicOnText = font.render('ON', 1, RED)
-                            musicOffText = font.render('OFF', 1, RED)
+                            musicOnText = font.render(' ', 1, RED)
+                            musicOffText = font.render(' ', 1, RED)
                             musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
                             musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
-                            helpText=font.render('HELP',1,BLACK)
+                            helpText=font.render(' ',1,BLACK)
                             helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
-                            quitText = font.render('QUIT', 1, BLACK)
+                            quitText = font.render(' ', 1, BLACK)
                             quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
                             pauseMenuDict = {1: restartPos, 2: hiScorePos, 3: fxPos, 
                                     4: musicPos, 5: helpPos, 6: quitPos}
-                            selectText = font.render('*', 1, BLACK)
+                            selectText = font.render(' ', 1, BLACK)
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
                             highScoreTexts = [font.render("NAME", 1, RED),
@@ -451,32 +474,34 @@ class Single():
                             player.remove(allsprites)
                             Explosion.position(player.rect.center)
                             if soundFX:
-                                kirin_explode_sound.play()
+                                kirin_explode_sound.play() ## 변경사항
 
                 # PowerUps
-                for powerup in powerups:
-                    if pygame.sprite.collide_circle(powerup, player):
-                        if powerup.pType == 'bomb':
+                for power in powers:
+                    if pygame.sprite.collide_circle(power, player):
+                        if power.pType == 'bomb':
                             bombsHeld += 1
-                        elif powerup.pType == 'shield':
+                        elif power.pType == 'shield':
                             player.shieldUp = True
-                        elif powerup.pType == 'doublebeam' :
+                        elif power.pType == 'doublebeam' :
                             doublebeam = True
-                        elif powerup.pType == 'triplecandy' :
-                            triplecandy = True
-                        elif powerup.pType == 'life':
+                        elif power.pType == 'triplecupcake' :
+                            triplecupcake = True
+                        elif power.pType == 'broccoli' :
+                            broccoli = True
+                        elif power.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
-                        elif powerup.pType == 'friendPlayer' :
-                            friendplayer = True
+                        elif power.pType == 'friendShip' :
+                            friendship = True
                             MasterSprite.allsprites.add(miniplayer) 
                             allsprites.update(screen_size)
                             allsprites.draw(screen)
-                        powerup.kill()
-                    elif powerup.rect.top > powerup.area.bottom:
-                        powerup.kill()
+                        power.kill()
+                    elif power.rect.top > power.area.bottom:
+                        power.kill()
 
-            # Update Bears
+            # Update Monsters
                 if curTime <= 0 and monstersLeftThisWave > 0:
                     Monster.position()
                     curTime = bearPeriod
@@ -497,37 +522,51 @@ class Single():
                 text = [waveText, leftText, scoreText, bombText]
                 textposition = [wavePos, leftPos, scorePos, bombPos]
 
-
             # Update using items
-                # item - doubleleaf
+                # item - doublebeam
                 if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
                     elif betweenDoubleCount == 0:
                         doublebeam = False
                         betweenDoubleCount = betweenDoubleTime
-                if triplecandy:
+                if triplecupcake:
                     if betweenTripleCount > 0:
                         betweenTripleCount -= 1
                     elif betweenTripleCount == 0:
-                        triplecandy = False
+                        triplecupcake = False
                         betweenTripleCount = betweenTripleTime
-
-                # item - friendplayer
+                if broccoli:
+                    if broccoliCount > 0:
+                        broccoliCount -= 1
+                    elif broccoliCount == 0:
+                        beam.speed = 1
+                        broccoli = False
+                        broccoliCount = broccoliTime
+                # if pepper_chili:
+                #     if pepper_chiliCount > 0:
+                #         pepper_chiliCount -= 1
+                #     elif pepper_chiliCount == 0:
+                #         speed = org_speed
+                #         player.speed = speed
+                #         player.speedUp()
+                #         pepper_chili = False
+                #         pepper_chiliCount = pepper_chiliTime
+                # item - friendship
                 miniplayer.rect.bottomright = player.rect.bottomleft
-                if friendplayer:
-                    # friendplayer
-                    if friendplayerCount > 0:
-                        friendplayerCount -= 1
-                    elif friendplayerCount == 0:
-                        friendplayer = False
+                if friendship:
+                    # friendship
+                    if friendshipCount > 0:
+                        friendshipCount -= 1
+                    elif friendshipCount == 0:
+                        friendship = False
                         miniplayer.remove()
-                        friendplayerCount = friendplayerTime
-                    # friendplayer's beam
-                    if friendplayerBeamCount > 0:
-                        friendplayerBeamCount -= 1
-                    elif friendplayerBeamCount == 0:
-                        friendplayerBeamCount = friendplayerBeamTime
+                        friendshipCount = friendshipTime
+                    # friendship's beam
+                    if friendshipBeamCount > 0:
+                        friendshipBeamCount -= 1
+                    elif friendshipBeamCount == 0:
+                        friendshipBeamCount = friendshipBeamTime
                         Beam.position(miniplayer.rect.midtop)
 
             # betweenWaveCount - Detertmine when to move to next wave
@@ -604,7 +643,6 @@ class Single():
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
 
                 pygame.display.flip()
-
 
         # Data for Highscore
             # accuracy = round(score / leafFired, 4) if leafFired > 0 else 0.0
