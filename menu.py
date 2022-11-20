@@ -105,18 +105,35 @@ class Menu:
         self.pwdText = 0
         self.pwdPos =0
         self.secretPwd=0
+        
 
         # For select_character setting
         self.selectchar=False
-       
-        self.char1Text=self.font.render('Ship1',1,BLACK)
-        self.char1Pos=self.char1Text.get_rect(topleft=self.blankPos.bottomleft)
-        self.char2Text=self.font.render('Ship2',1,BLACK)
-        self.char2Pos=self.char2Text.get_rect(topleft=self.char1Pos.bottomleft)
-        self.char3Text=self.font.render('Ship3',1,BLACK)
-        self.char3Pos=self.char3Text.get_rect(topleft=self.char2Pos.bottomleft)
+        self.ship1, self.ship1Rect = load_image('ship.png')
+        self.ship1Rect.bottomleft = self.screen.get_rect().inflate(-140, -350).bottomleft
+        self.ship2, self.ship2Rect = load_image('ship2.png')
+        self.ship2Rect.bottomleft = self.screen.get_rect().inflate(-370, -350).bottomleft 
+        self.ship3, self.ship3Rect = load_image('ship3.png')
+        self.ship3Rect.bottomleft = self.screen.get_rect().inflate(-600, -350).bottomleft
+        self.ship4, self.ship4Rect = load_image('ship4.png')
+        self.ship4Rect.bottomleft = self.screen.get_rect().inflate(-830, -350).bottomleft
 
-        self.charDict={1:self.char1Pos,2:self.char2Pos,3:self.char3Pos}
+        self.ship1text = self.font.render('Ship1', 1, RED)
+        self.ship2text = self.font.render('Ship2', 1, RED)
+        self.ship3text = self.font.render('Ship3', 1, RED)
+        self.ship4text = self.font.render('Ship4', 1, RED)
+        self.ship1Pos = self.ship1text.get_rect(midbottom=self.ship1Rect.inflate(0, 0).midbottom)
+        self.ship2Pos = self.ship2text.get_rect(midbottom=self.ship2Rect.inflate(0, 0).midbottom)
+        self.ship3Pos = self.ship3text.get_rect(midbottom=self.ship3Rect.inflate(0, 0).midbottom)
+        self.ship4Pos = self.ship4text.get_rect(midbottom=self.ship4Rect.inflate(0, 0).midbottom)
+        #self.char1Text=self.font.render('Ship1',1,BLACK)
+        #self.char1Pos=self.char1Text.get_rect(topleft=self.blankPos.bottomleft)
+        #self.char2Text=self.font.render('Ship2',1,BLACK)
+        #self.char2Pos=self.char2Text.get_rect(topleft=self.char1Pos.bottomleft)
+        #self.char3Text=self.font.render('Ship3',1,BLACK)
+        #self.char3Pos=self.char3Text.get_rect(topleft=self.char2Pos.bottomleft)
+
+        self.shipDict={1:self.ship1Pos,2:self.ship2Pos,3:self.ship3Pos,4:self.ship4Pos}
         Var.go_menu=False
         #self.go_menu=False
 
@@ -153,7 +170,7 @@ class Menu:
         self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
         self.backText=self.font.render('BACK',1,BLACK)
         self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
-        self.selectText = self.font.render('*', 1, BLACK)
+        self.selectText = self.font.render('*', 1, RED)
         self.selectPos =self.selectText.get_rect(topright=self.singlePos.topleft)
         
         # For selection '*' setting        
@@ -289,10 +306,10 @@ class Menu:
                                 if self.pwd!='':
                                     Database().add_id_data(self.id)
                                     Database().add_password_data(self.pwd, self.id)
+                                    Var.user_id=self.id
                                     print("회원가입 성공")
-                                   
-
-                                    print('select character()')
+        
+                                    print('Select your ship')
                                     
                                     return self.id, self.screen_size
                             else:
@@ -390,46 +407,59 @@ class Menu:
                         self.showselectchar=False
                     elif self.selection==1:
                         Var.char=1
-                        Database().update_char_data(Var.char,Var.user_id)
+                        
                         Var.lst=Var.char1_lst
-                        Var.user_id=self.id
+                        #Var.user_id=self.id
                         Var.go_menu=True
+                        Database().update_char_data(Var.char,Var.user_id)
                         return Var.go_menu
                     elif self.selection==2:
                         Var.char=2
-                        Database().update_char_data(Var.char,Var.user_id)
+                        
                         Var.lst=Var.char2_lst
-                        Var.user_id=self.id
+                        
                         Var.go_menu=True
+                        Database().update_char_data(Var.char,Var.user_id)
                         return Var.go_menu
                     elif self.selection==3:
                         Var.char=3
-                        Database().update_char_data(Var.char,Var.user_id)
+                        
                         Var.lst=Var.char3_lst
-                        Var.user_id=self.id
+                        
                         Var.go_menu=True
+                        Database().update_char_data(Var.char,Var.user_id)
                         return Var.go_menu
+                    elif self.selection==4:
+                        Var.char=4
+                        
+                        Var.lst=Var.char4_lst
+                        
+                        Database().update_char_data(Var.char,Var.user_id)
+                        Var.go_menu=True
+                        
+                        return Var.go_menu
+                    
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_UP
                     and self.selection>1 and not self.showselectchar ):
                         self.selection-=1
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_DOWN
-                    and self.selection<len(self.charDict) and not self.showselectchar ):
+                    and self.selection<len(self.shipDict) and not self.showselectchar ):
                         self.selection+=1
 
-            self.blankText=self.font.render('           ',1,BLACK)
-            self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-            self.char1Text=self.font.render('Ship1',1,BLACK)
-            self.char1Pos=self.char1Text.get_rect(topleft=self.blankPos.bottomleft)
-            self.char2Text=self.font.render('Ship2',1,BLACK)
-            self.char2Pos=self.char2Text.get_rect(topleft=self.char1Pos.bottomleft)
-            self.char3Text=self.font.render('Ship3',1,BLACK)
-            self.char3Pos=self.char3Text.get_rect(topleft=self.char2Pos.bottomleft)
+            #self.blankText=self.font.render('           ',1,BLACK)
+            #self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
+            # image는 로드만, text로 선택
+            self.screen.blit(self.ship1, self.ship1Rect)
+            self.screen.blit(self.ship2, self.ship2Rect)
+            self.screen.blit(self.ship3, self.ship3Rect)
+            self.screen.blit(self.ship4, self.ship4Rect)
 
-            self.charDict={1:self.char1Pos,2:self.char2Pos,3:self.char3Pos}
-            self.selectPos = self.selectText.get_rect(topright=self.charDict[self.selection].topleft)
+            self.shipDict={1:self.ship1Pos,2:self.ship2Pos,3:self.ship3Pos,4:self.ship4Pos}
+            self.selectText = self.font.render('*', 1, RED)
+            self.selectPos = self.selectText.get_rect(midbottom=self.shipDict[self.selection].midbottom)
 
-            self.textOverlays=zip([self.blankText,self.char1Text,self.char2Text,self.char3Text,self.selectText],
-            [self.blankPos,self.char1Pos,self.char2Pos,self.char3Pos,self.selectPos])
+            self.textOverlays=zip([self.ship1text,self.ship2text,self.ship3text,self.ship4text,self.selectText],
+            [self.ship1Pos,self.ship2Pos,self.ship3Pos,self.ship4Pos,self.selectPos])
             for txt,pos in self.textOverlays:
                 self.screen.blit(txt,pos)
             pygame.display.flip()

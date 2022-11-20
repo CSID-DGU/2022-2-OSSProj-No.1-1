@@ -49,45 +49,23 @@ class Var:
     # tongsan 에서 game_over() 함수는 board. py에저장 어떻게 작성했는지 확인
 
      #메뉴 기본 테마 만들기
-    menu_display_w=600
-    menu_display_h=600
-    BLACK=(0,0,0)
+   
+    
 
-    mytheme=pygame_menu.themes.THEME_ORANGE.copy()                  # 메뉴 기본 테마 설정
-    mytheme.widget_font_color=BLACK
-    # 다 필요없고 mytheme.widget_margin이랑 widget_margin_rank 가져오기
-    widget_rate_rank = 60 
-
-    menu_image = pygame_menu.baseimage.BaseImage(
-        image_path='data/menu.png',
-        drawing_mode=pygame_menu.baseimage.IMAGE_MODE_FILL	)
-    # 메뉴 위젯 폰트 컬러
-    mytheme.background_color = menu_image                           # 메뉴 배경 설정
-    mytheme.title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_NONE  # 메뉴 타이틀 바 모양 설정
-    mytheme.widget_alignment=pygame_menu.locals.ALIGN_CENTER        # 메뉴 가운데 정렬 설정
-    mytheme.widget_font =pygame_menu.font.FONT_NEVIS                # 메뉴 폰트 설정
-    mytheme.widget_margin=(0,40)
-
-    widget_margin_rank=(0,int((menu_display_h)/widget_rate_rank))           # 랭크 보기 화면
-
-    #HELP 메뉴 만들
-    #mytheme_help = pygame_menu.themes.THEME_ORANGE.copy()  # 메뉴 기본 테마 설정
-    #mytheme_help.background_color = widget_image2  # 메뉴 배경 설정
-    #mytheme_help.title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_NONE  # 메뉴 타이틀 바 모양 설정
-    # ship 이미지 여따 저장하기
+  
     path='data/'
 
 
-    char1_lst=[path+'ship.png']
-    char2_lst=[path+'ship2.png']
-    char3_lst=[path+'ship3.png']
+    char1_lst=['ship.png']
+    char2_lst=['ship2.png']
+    char3_lst=['ship3.png']
+    char4_lst=['ship4.png']
 
-    # font_sub , char 관련 변수 추기
-    font_rate_sub = 20           #서브 폰트들 리사이징 비율
-    font_sub = int((menu_display_h) / font_rate_sub)     # 메뉴 서브 폰트 사이즈
+
+    
     char=1
 
-    lst=char1_lst
+    lst=char1_lst # char img 초기화 
 
     # 메뉴 전환을 위한 변수
     go_menu=False

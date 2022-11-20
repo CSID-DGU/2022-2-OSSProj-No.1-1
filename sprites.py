@@ -1,7 +1,7 @@
 import pygame
 import random
 import math
-from load import load_image
+from load import load_image,Var
 from pygame.locals import *
 
 class MasterSprite(pygame.sprite.Sprite):
@@ -38,7 +38,7 @@ class Explosion(MasterSprite):
 class Player(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('ship.png', -1) # 캐릭터 이미지
+        self.image, self.rect = load_image(Var.lst[0], -1) # 캐릭터 이미지
         self.original = self.image
         self.shield, self.rect = load_image('ship_shield.png', -1) # 쉴드 상태 캐릭터 이미지
         self.fart, self.rect = load_image('explosion.png', -1) # 폭탄 상태 캐릭터 이미지

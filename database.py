@@ -184,7 +184,7 @@ class Database(object):
         data = curs.fetchone()  # 리스트 안에 딕셔너리가 있는 형태
         curs.close()
         print("ID : ",data['user_id'])
-        #print("EXP : ",data['user_exp'])
+        
         print("CHAR : ",data['user_character'])
         return data['user_character']
         
