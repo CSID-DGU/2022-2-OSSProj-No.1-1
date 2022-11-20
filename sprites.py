@@ -1,7 +1,7 @@
 import pygame
 import random
 import math
-from load import load_image
+from load import load_image,Var
 from pygame.locals import *
 
 class MasterSprite(pygame.sprite.Sprite):
@@ -38,7 +38,7 @@ class Explosion(MasterSprite):
 class Player(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('ship.png', -1) # 캐릭터 이미지
+        self.image, self.rect = load_image(Var.lst[0], -1) # 캐릭터 이미지
         self.original = self.image
         self.shield, self.rect = load_image('ship_shield.png', -1) # 쉴드 상태 캐릭터 이미지
         self.fart, self.rect = load_image('explosion.png', -1) # 폭탄 상태 캐릭터 이미지
@@ -54,6 +54,8 @@ class Player(MasterSprite):
         self.vert = 0
         self.horiz = 0
         self.life = 3
+        self.speed = None
+        self.org_speed = self.speed
 
     def initializeKeys(self):
         keyState = pygame.key.get_pressed()
@@ -98,14 +100,29 @@ class Player(MasterSprite):
 
     def bomb(self):
         return Bomb(self)
+    
+    def speedUp(self):
+        keyState = pygame.key.get_pressed()
+        if keyState[pygame.K_w]:
+            self.vert -= 2 * self.speed
+        if keyState[pygame.K_a]:
+            self.horiz -= 2 * self.speed
+        if keyState[pygame.K_s]:
+            self.vert += 2 * self.speed
+        if keyState[pygame.K_d]:
+            self.horiz += 2 * self.speed
+            
+        newpos = self.rect.move((self.horiz, self.vert))
+        newhoriz = self.rect.move((self.horiz, 0))
+        newvert = self.rect.move((0, self.vert))
 
-class FriendPlayer(MasterSprite):
+class FriendShip(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('friendPlayer.png', -1)
+        self.image, self.rect = load_image('friendShip.png', -1)
         self.original = self.image
         self.screen_size = screen_size
-        self.ratio = (self.screen_size / 500)
+        self.ratio = (self.screen_size / 400)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect()
         self.radius = max(self.rect.width, self.rect.height)
@@ -116,11 +133,11 @@ class FriendPlayer(MasterSprite):
 class Player2(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
-        self.image, self.rect = load_image('ship.png', -1)
+        self.image, self.rect = load_image(Var.lst[0], -1)
         self.original = self.image
         self.shield, self.rect = load_image('ship_shield.png', -1)
         self.screen_size = screen_size
-        self.ratio = (self.screen_size / 500)
+        self.ratio = (self.screen_size / 400)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect()
         self.rect.midbottom = (self.screen.get_width() * (1/4) , self.area.bottom)
@@ -170,7 +187,7 @@ class Player3(MasterSprite):
         self.original = self.image
         self.shield, self.rect = load_image('ship_shield.png', -1)
         self.screen_size = screen_size
-        self.ratio = (self.screen_size / 500)
+        self.ratio = (self.screen_size / 400)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect()
         self.rect.midbottom = (self.screen.get_width() * (3/4), self.area.bottom)
@@ -361,7 +378,7 @@ class Explosion(MasterSprite):
             self.remove(self.allsprites, self.active)
             self.add(self.pool)
 
-## Item
+## Power
 class Beam(MasterSprite): 
     pool = pygame.sprite.Group()
     active = pygame.sprite.Group()
@@ -373,21 +390,7 @@ class Beam(MasterSprite):
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
         self.area = self.screen.get_rect() 
-        # self.dt = 2 #공의 이동 거리, 속도
-        # self.x = x  #공의 현재 x 좌표 
-        # self.y = y  #공의 현재 y 좌표 
-        # self.dirx = 1   
-        # self.diry = 1
-        # self.angle = - 45
-        # self.angle = - 135
-        # self.dx = math.cos(angle) * self.speed
-        # self.dy = math.sin(angle) * self.speed
-        # self.x = x  # x방향 설정하는 기능
-        # self.y = y  # y방향 설정하는 기능
-        # self.dx2 = math.cos(angle2) * self.speed
-        # self.dy2 = math.sin(angle2) * self.speed
-        # self.x2 = x2  # x방향 설정하는 기능
-        # self.y2 = y2  # y방향 설정하는 기능
+        self.speed = 1
 
 
     @classmethod
@@ -397,8 +400,6 @@ class Beam(MasterSprite):
             beam.add(cls.allsprites, cls.active)
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
-
-    
     
     def table(self):
         self.add(self.pool)
@@ -406,28 +407,12 @@ class Beam(MasterSprite):
 
     def update(self, screen_size):
         self.screen_size = screen_size
-        newpos = self.rect.move(0, -4 * MasterSprite.speed)
+        newpos = self.rect.move(0, -4.5 * self.speed)
         self.rect = newpos
         if self.rect.top < self.area.top:
             self.table()
-    
-    #주어진 각도로 공을 움직임    
-    def start(self, angle):
-        self.angle = angle
-        self.go = True
+            
         
-    # def move(self):
-    #     self.x = self.x + self.dx
-    #     self.y = self.y + self.dy
-
-    #     self.x2 = self.x2 + self.dx2
-    #     self.y2 = self.y2 + self.dy2
-        
-    #     self.rect.x = int(self.x)
-    #     self.rect.y = int(self.y)
-        
-    #     self.rect.x2 = int(self.x2)
-    #     self.rect.y2 = int(self.y2)
 
 class Bomb(pygame.sprite.Sprite):
     def __init__(self, Player):
@@ -452,7 +437,7 @@ class Bomb(pygame.sprite.Sprite):
             self.kill()
 
 
-class Powerup(MasterSprite): # 쉴드, 폭탄(고구마), 하트, Friend(헬퍼)
+class Power(MasterSprite): # 쉴드, 폭탄, 하트, Friend(헬퍼)
     def __init__(self, kindof, screen_size):
         super().__init__()
         self.image, self.rect = load_image(kindof + '_powerup.png', -1)
@@ -480,33 +465,43 @@ class Powerup(MasterSprite): # 쉴드, 폭탄(고구마), 하트, Friend(헬퍼)
                 MasterSprite.speed))
 
 
-class BombPowerup(Powerup):
+class BombPower(Power):
     def __init__(self, screen_size):
         super().__init__('bomb', screen_size)
         self.pType = 'bomb'
 
 
-class ShieldPowerup(Powerup):
+class ShieldPower(Power):
     def __init__(self, screen_size):
         super().__init__('shield', screen_size)
         self.pType = 'shield'
 
-class DoublebeamPowerup(Powerup):
+class DoublebeamPower(Power):
     def __init__(self, screen_size):
         super().__init__('doublebeam', screen_size)
         self.pType = 'doublebeam'
 
-class FriendPowerup(Powerup):
+class FriendPower(Power):
     def __init__(self, screen_size):
-        super().__init__('friendPlayer', screen_size)
-        self.pType = 'friendPlayer'
+        super().__init__('friendShip', screen_size)
+        self.pType = 'friendShip'
 
-class LifePowerup(Powerup):
+class LifePower(Power):
     def __init__(self, screen_size):
         super().__init__('life', screen_size)
         self.pType = 'life'
         
-class TriplecandyPowerup(Powerup):
+class TriplecupcakePower(Power):
     def __init__(self, screen_size):
-        super().__init__('triplecandy', screen_size)
-        self.pType = 'triplecandy'
+        super().__init__('triplecupcake', screen_size)
+        self.pType = 'triplecupcake'
+
+class BroccoliBeamfast(Power):
+    def __init__(self, screen_size):
+        super().__init__('broccoli', screen_size)
+        self.pType = 'broccoli'
+        
+# class PepperSpeedup(Power):
+#     def __init__(self, screen_size):
+#         super().__init__('pepper_chili', screen_size)
+#         self.pType = 'pepper_chili'
