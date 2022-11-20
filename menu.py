@@ -4,6 +4,7 @@ import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
 from database import Database
+from sprites import *
 
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -43,15 +44,25 @@ class Ship_selection_check():
         return self.ship_selection
         
 class Menu:
-    def __init__(self, screen_size):   
+    def __init__(self, screen_size):
+
+        self.language_checker = Language_check()
+        missile_sound = load_sound('missile.ogg')
+        bomb_sound = load_sound('bomb.ogg')
+        alien_explode_sound = load_sound('alien_explode.ogg')
+        ship_explode_sound = load_sound('ship_explode.ogg')
+
+        load_music('music_loop.ogg')
+   
         self.speed = 1.5
         self.clockTime = 60  # maximum FPS
         self.clock = pygame.time.Clock()
         self.screen_size = screen_size
         self.ratio = (self.screen_size / 500)
         self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        self.font = pygame.font.Font(None, round(36*self.ratio))
-        
+        self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
+        self.font2 = pygame.font.Font("LeeSeoyun.ttf", round(20*self.ratio))
+        self.player = Player(screen_size)
         # For hiscore setting 
         self.hiScores=Database().getScores()
         #self.timeHiScores=Database().getTimeScores()
@@ -84,11 +95,11 @@ class Menu:
         # For init_page setting
         self.blankText=self.font.render('       ',1,BLACK)
         self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-        self.loginText = self.font.render('LOG IN', 1, BLACK)
+        self.loginText = self.font.render('LOG IN', 1, 'YELLOW')
         self.loginPos = self.loginText.get_rect(topleft=self.blankPos.bottomleft)
-        self.signText=self.font.render('SIGN UP',1,BLACK)
+        self.signText=self.font.render('SIGN UP',1,'YELLOW')
         self.signPos=self.signText.get_rect(topleft=self.loginPos.bottomleft)
-        self.quitText=self.font.render('QUIT',1,BLACK)
+        self.quitText=self.font.render('QUIT',1,'YELLOW')
         self.quitPos=self.quitText.get_rect(topleft=self.signPos.bottomleft)
         
         # For login_page setting
@@ -139,30 +150,35 @@ class Menu:
 
 
         # For inMenu_page setting
-        self.startText = self.font.render('SELECT MODE', 1, BLACK)
+        self.startText = self.font.render('SELECT MODE', 1, 'GREEN')
         self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
-        self.hiScoreText = self.font.render('HIGH SCORE', 1, BLACK)
+        self.hiScoreText = self.font.render('HIGH SCORE', 1, 'GREEN')
         self.hiScorePos = self.hiScoreText.get_rect(topleft=self.startPos.bottomleft)
-        self.fxText = self.font.render('SOUND FX ', 1, BLACK)
+        self.fxText = self.font.render('SOUND FX ', 1, 'YELLOW')
         self.fxPos = self.fxText.get_rect(topleft=self.hiScorePos.bottomleft)
         self.fxOnText = self.font.render('ON', 1, RED)
         self.fxOffText = self.font.render('OFF', 1, RED)
         self.fxOnPos = self.fxOnText.get_rect(topleft=self.fxPos.topright)
         self.fxOffPos = self.fxOffText.get_rect(topleft=self.fxPos.topright)
-        self.musicText = self.font.render('MUSIC', 1, BLACK)
+        self.musicText = self.font.render('MUSIC', 1, 'YELLOW')
         self.musicPos = self.fxText.get_rect(topleft=self.fxPos.bottomleft)
         self.musicOnText = self.font.render('ON', 1, RED)
         self.musicOffText = self.font.render('OFF', 1, RED)
         self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
         self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-        self.helpText=self.font.render('HELP',1,BLACK)
-        self.helpPos=self.helpText.get_rect(topleft=self.musicPos.bottomleft)
-        self.quitText = self.font.render('QUIT', 1, BLACK)
-        self.selectText = self.font.render('*', 1, BLACK)
+        self.shopText = self.font.render('SHIP SHOP', 1, 'GREEN')
+        self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
+        self.helpText=self.font.render('HELP',1,'YELLOW')
+        self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
+        self.quitText = self.font.render('QUIT', 1, 'YELLOW')
+        self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
+        self.selectText = self.font.render('*', 1, WHITE)
         self.selectPos = self.selectText.get_rect(topright=self.startPos.topleft)
+        self.languageText = self.font2.render('언어변경', 1, 'YELLOW')
+        self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
         # For Select Mode setting
-        self.singleText = self.font.render('SINGLE MODE', 1, BLACK)
+        self.singleText = self.font.render('SINGLE MODE', 1, WHITE)
         self.singlePos = self.singleText.get_rect(midtop=self.screen.get_rect().center)
         self.timeText = self.font.render('TIME MODE', 1, BLACK)
         self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
@@ -170,11 +186,13 @@ class Menu:
         self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
         self.backText=self.font.render('BACK',1,BLACK)
         self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
-        self.selectText = self.font.render('*', 1, RED)
+        self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selectPos =self.selectText.get_rect(topright=self.singlePos.topleft)
         
+        
+        
         # For selection '*' setting        
-        self.selectText = self.font.render('*', 1, BLACK)
+        self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selextPos=''
         self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
         self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.helpPos,6: self.quitPos}
@@ -201,6 +219,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
             
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -243,11 +262,11 @@ class Menu:
                     self.selection += 1
             self.blankText=self.font.render('       ',1,BLACK)
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-            self.loginText = self.font.render('LOG IN', 1, BLACK)
+            self.loginText = self.font.render('LOG IN', 1, 'YELLOW')
             self.loginPos = self.loginText.get_rect(topleft=self.blankPos.bottomleft)
-            self.signText=self.font.render('SIGN UP',1,BLACK)
+            self.signText=self.font.render('SIGN UP',1,'YELLOW')
             self.signPos=self.signText.get_rect(topleft=self.loginPos.bottomleft)
-            self.quitText=self.font.render('QUIT',1,BLACK)
+            self.quitText=self.font.render('QUIT',1,'YELLOW')
             self.quitPos=self.quitText.get_rect(topleft=self.signPos.bottomleft)
             menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
             self.selectPos = self.selectText.get_rect(topright=menuDict[self.selection].topleft)
@@ -266,6 +285,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
 
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -296,8 +316,16 @@ class Menu:
                                 if Database().compare_data(self.id, self.pwd):
                                     Var.char=Database().load_char_data(self.id)
                                     print("로그인 성공")
-                                    print(Var.lst)
+                                    #print(Var.lst)
                                     Var.user_id=self.id    # 아이디 저장
+                                    if Var.char==1:
+                                        Var.lst=Var.char1_lst
+                                    elif Var.char==2:
+                                        Var.lst=Var.char2_lst
+                                    elif Var.char==3:
+                                        Var.lst=Var.char3_lst
+                                    elif Var.char==4:
+                                        Var.lst=Var.char4_lst
                                     return self.id, self.screen_size
                                 else:
                                     print("비번 확인")
@@ -385,6 +413,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
             self.flag=True
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -478,6 +507,7 @@ class Menu:
             self.clock.tick(self.clockTime) 
             self.flag=True
             main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
@@ -595,6 +625,7 @@ class Menu:
 
     def select_game_page(self):
         main_menu, main_menuRect = load_image("main_menu.png")
+        main_menu = pygame.transform.scale(main_menu, (500, 500))
         main_menuRect.midtop = self.screen.get_rect().midtop
         inSelectMenu=True
         showSingleMode = False
@@ -683,6 +714,7 @@ class Menu:
 
     def score_page(self):
         main_menu, main_menuRect = load_image("main_menu.png")
+        main_menu = pygame.transform.scale(main_menu, (500, 500))
         main_menuRect.midtop = self.screen.get_rect().midtop
 
         inScoreMenu=True
