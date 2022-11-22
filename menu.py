@@ -544,8 +544,8 @@ class Menu:
             self.screen.blit(self.ship4, self.ship4Rect)
 
             self.shipDict={1:self.ship1Pos,2:self.ship2Pos,3:self.ship3Pos,4:self.ship4Pos}
-            self.selectText = self.font.render('*', 1, RED)
-            self.selectPos = self.selectText.get_rect(midbottom=self.shipDict[self.selection].midbottom)
+            self.selectText = self.font.render('SELECT', 1, RED)
+            self.selectPos = self.selectText.get_rect(midbottom=self.shipDict[self.selection].inflate(0,60).midbottom)
 
             self.textOverlays=zip([self.ship1text,self.ship2text,self.ship3text,self.ship4text,self.selectText],
             [self.ship1Pos,self.ship2Pos,self.ship3Pos,self.ship4Pos,self.selectPos])
