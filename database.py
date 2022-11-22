@@ -198,6 +198,26 @@ class Database(object):
  
    
 
-    
+    def load_char_data(self,user_id): #캐릭터정보 불러오기
+        curs = self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql = "SELECT * FROM users WHERE user_id=%s"
+        curs.execute(sql, user_id)
+        data = curs.fetchone()  # 리스트 안에 딕셔너리가 있는 형태
+        curs.close()
+        print("ID : ",data['user_id'])
+        
+        print("CHAR : ",data['user_character'])
+        return data['user_character']
+        
 
+                    
+
+
+        
+           
+        
+ 
+   
+
+    
 
