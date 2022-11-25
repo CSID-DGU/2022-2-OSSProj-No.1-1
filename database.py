@@ -161,22 +161,32 @@ class Database(object):
         curs.execute(sql,user_id)
         data=curs.fetchone()
         newcoins=data[1]+score
-
-        curs=self.score_db.cursor()
         sql="UPDATE user_info SET user_coin=%s WHERE user_id=%s"
         curs.execute(sql,(newcoins,user_id))
         self.score_db.commit()
+       
+
 
         curs.close()
 
     
         
-    def update_char_data(self,user_char,user_id): # 캐릭터 추가
+    def update_char_data(self,user_char,user_id): # 캐릭터 추가/변경
         curs = self.score_db.cursor()
-        sql = "UPDATE user_info SET user_character= %s WHERE user_id=%s"
-        print("user_char>>>>>>>>> : ",user_char)
-        curs.execute(sql, (user_char, user_id))
-        self.score_db.commit()
+        sql="SELECT * FROM user_info WHERE user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data: # 이미 등록한 유저라면
+            sql="UPDATE user_info SET user_character=%s WHERE user_id=%s"
+            print("user_char>>>>>>>>> : ",user_char)
+            curs.execute(sql,(user_char,user_id))
+            self.score_db.commit()
+        else:
+            sql="INSERT INTO user_info(user_id,user_character) VALUES (%s,%s)"
+            print("user_char>>>>>>>>> : ",user_char)
+            curs.execute(sql,(user_id,user_char))
+            self.score_db.commit()
+        
         curs.close()
 
     def load_char_data(self,user_id): #캐릭터정보 불러오기
