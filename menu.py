@@ -1,5 +1,4 @@
 import pygame
-import pygame_menu #해당 라이브러리 설치 필요
 import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
@@ -143,7 +142,8 @@ class Menu:
         self.shipDict={1:self.ship1Pos,2:self.ship2Pos,3:self.ship3Pos,4:self.ship4Pos}
         Var.go_menu=False
         
-
+        #For store_page setting
+        self.store=False
 
         # For inMenu_page setting
         self.startText = self.font.render('SELECT MODE', 1, 'GREEN')
@@ -553,7 +553,32 @@ class Menu:
                 self.screen.blit(txt,pos)
             pygame.display.flip()
                     
-                    
+    def store_page(self):
+        self.store=True
+
+        while self.store:
+            self.clock.tick(self.clockTime) 
+            self.flag=True
+            main_menu, main_menuRect = load_image("main_menu.png")
+            main_menu = pygame.transform.scale(main_menu, (500, 500))
+            main_menuRect.midtop = self.screen.get_rect().midtop
+            main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
+            self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
+            for event in pygame.event.get():
+                if (event.type == pygame.QUIT
+                    or event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_ESCAPE):
+                    pygame.quit()
+                    sys.exit()
+                # Resize windowSize
+                elif (event.type == pygame.VIDEORESIZE):
+                    self.screen_size = min(event.w, event.h)
+                    if self.screen_size <= 300:
+                        self.screen_size = 300
+                    self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+                    self.ratio = (self.screen_size / 500)
+                    self.font = pygame.font.Font(None, round(36*self.ratio))
+
 
 
 
