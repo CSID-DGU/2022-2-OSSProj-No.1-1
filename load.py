@@ -1,7 +1,7 @@
 import os
 import pygame
 import pygame
-#import pygame_menu
+import pygame_menu
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
