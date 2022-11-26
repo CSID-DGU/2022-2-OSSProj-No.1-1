@@ -512,14 +512,12 @@ class Menu:
                         return Var.go_menu
                     
 
-                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_UP
-                    and self.selection>1 and not self.showselectchar ):
-                        self.selection-=1
-                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_DOWN
-
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
                     and self.selection>1 and not self.showselectchar ):
                         self.selection-=1
+                
+
+               
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT
 
                     and self.selection<len(self.shipDict) and not self.showselectchar ):
