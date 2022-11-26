@@ -1,4 +1,12 @@
 import pygame
+<<<<<<< HEAD
+<<<<<<< HEAD
+#import pygame_menu #해당 라이브러리 설치 필요
+=======
+import pygame_menu #해당 라이브러리 설치 필요
+>>>>>>> 14f4c04a43790f2409e96a4c4bc2ee1984dcf559
+=======
+>>>>>>> jh
 import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
@@ -509,10 +517,17 @@ class Menu:
                         
                         return Var.go_menu
                     
+<<<<<<< HEAD
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_UP
+                    and self.selection>1 and not self.showselectchar ):
+                        self.selection-=1
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_DOWN
+=======
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
                     and self.selection>1 and not self.showselectchar ):
                         self.selection-=1
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT
+>>>>>>> jh
                     and self.selection<len(self.shipDict) and not self.showselectchar ):
                         self.selection+=1
 
