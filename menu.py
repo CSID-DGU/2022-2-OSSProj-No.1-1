@@ -477,7 +477,6 @@ class Menu:
                         self.showselectchar=False
                     elif self.selection==1:
                         Var.char=1
-                        
                         Var.lst=Var.char1_lst
                         #Var.user_id=self.id
                         Var.go_menu=True

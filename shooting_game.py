@@ -75,9 +75,7 @@ while inInitMenu:
                     if pageResult==True:
                         inselectchar=False
                   
-
                 
-                          
         elif userSelection==3: # Quit
             pygame.quit()
             sys.exit()
