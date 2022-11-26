@@ -1,4 +1,6 @@
 import pygame
+
+
 import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
@@ -509,10 +511,15 @@ class Menu:
                         
                         return Var.go_menu
                     
+
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
                     and self.selection>1 and not self.showselectchar ):
                         self.selection-=1
+                
+
+               
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT
+
                     and self.selection<len(self.shipDict) and not self.showselectchar ):
                         self.selection+=1
 
