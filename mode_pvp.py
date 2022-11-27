@@ -52,6 +52,8 @@ class Pvp() :
         # pause
         pause,pauseRect = load_image('pause.png')
         pauseRect.midtop = screen.get_rect().midtop
+        pause = pygame.transform.scale(pause, (600, 600))
+        pauseRect.midtop = screen.get_rect().midtop
         pauseMenu = False 
 
     # Prepare game objects
