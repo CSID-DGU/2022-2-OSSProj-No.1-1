@@ -32,7 +32,7 @@ class Keyboard(object):
             pygame.K_m: 'M', pygame.K_n: 'N', pygame.K_o: 'O', pygame.K_p: 'P',
             pygame.K_q: 'Q', pygame.K_r: 'R', pygame.K_s: 'S', pygame.K_t: 'T',
             pygame.K_u: 'U', pygame.K_v: 'V', pygame.K_w: 'W', pygame.K_x: 'X',
-            pygame.K_y: 'Y', pygame.K_z: 'Z'}
+            pygame.K_y: 'Y', pygame.K_z: 'Z', pygame.K_KP_ENTER: 'ENTER'}
 
 
 class Ship_selection_check():
@@ -665,7 +665,9 @@ class Menu:
                         self.showShop = True
                     elif self.selection == 6:
                         cnt+=1
-                        self.showHelp=True                                        
+                        self.showHelp=True 
+                        if event.key == pygame.K_KP_ENTER:
+                            return BACK, self.screen_size                                       
                     elif self.selection == 7:
                         return 7, self.screen_size
                     elif self.selection == 8:
@@ -825,17 +827,44 @@ class Menu:
 
 
             if self.showHelp:
-                if cnt%3==1:
+                if True:
                     menu, menuRect = load_image("help1.png")
                     menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (500,500)
+                    menu_size = (600,600)
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                    self.blankText = self.font.render('         ', 1, BLACK)
+                    self.blankPos = self.blankText.get_rect(topright=self.screen.get_rect().center)
+                    self.blankText2 = self.font.render('         ', 1, BLACK)
+                    self.blankPos2 = self.blankText2.get_rect(topright=self.blankPos.bottomright)
+                    self.blankText3 = self.font.render('         ', 1, BLACK)
+                    self.blankPos3 = self.blankText3.get_rect(topright=self.blankPos2.bottomright)
+                    self.blankText4 = self.font.render('         ', 1, BLACK)
+                    self.blankPos4 = self.blankText4.get_rect(topright=self.blankPos3.bottomright)
+                    self.blankText5 = self.font.render('         ', 1, BLACK)
+                    self.blankPos5 = self.blankText5.get_rect(topright=self.blankPos4.bottomright)
+                    self.blankText6 = self.font.render('         ', 1, BLACK)
+                    self.blankPos6 = self.blankText6.get_rect(topright=self.blankPos5.bottomright)
+                    self.blankText7 = self.font.render('         ', 1, BLACK)
+                    self.blankPos7 = self.blankText5.get_rect(topright=self.blankPos6.bottomright)
+                    self.blankText8 = self.font.render('         ', 1, BLACK)
+                    self.blankPos8 = self.blankText6.get_rect(topright=self.blankPos7.bottomright)
+                    self.backText = self.font.render('BACK : press ENTER', 1, 'YELLOW')
+                    self.backtxtPos = self.backText.get_rect(topright=self.blankPos8.bottomright)
                     
-                elif cnt%3==2:
-                    menu, menuRect = load_image("help2.png")
-                    menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (500,500)
-                    self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+
+                textOverlays = zip([self.backText],
+                [self.backtxtPos])
+                for txt, pos in textOverlays:
+                    self.screen.blit(txt, pos)
+                
+                pygame.display.flip()
+                    
+                    
+                # elif cnt%3==2:
+                #     menu, menuRect = load_image("help2.png")
+                #     menuRect.midtop = self.screen.get_rect().midtop
+                #     menu_size = (600,600)
+                #     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                     
             
             elif self.showShop:
@@ -984,6 +1013,8 @@ class Menu:
                         showTimeScores = False
                     elif self.selection == 1:
                         showSingleScores=True 
+                        if event.key == pygame.K_KP_ENTER:
+                            return BACK, self.screen_size
                     elif self.selection == 2:
                         showTimeScores = True
                     elif self.selection == 3:
@@ -1048,6 +1079,12 @@ class Menu:
                 menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
                 self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                 textOverlays = zip(self.highScoreTexts, self.highScorePos)
+                self.backText = self.font.render('BACK : press ENTER', 1, 'YELLOW')
+                background = pygame.display.set_mode((600,600))
+                background.blit(self.backText, (50,500))
+                pygame.display.update()
+                
+
             #elif showTimeScores:
                 #menu, menuRect = load_image("menu.png")
                 #menuRect.midtop = self.screen.get_rect().midtop
@@ -1060,3 +1097,5 @@ class Menu:
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
+            
+            
