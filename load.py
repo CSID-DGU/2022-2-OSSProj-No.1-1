@@ -50,22 +50,23 @@ class Var:
 
      #메뉴 기본 테마 만들기
    
-    
-
-  
     path='data/'
-
 
     char1_lst=['ship.png']
     char2_lst=['ship2.png']
     char3_lst=['ship3.png']
     char4_lst=['ship4.png']
 
-
-    
     char=1
-
     lst=char1_lst # char img 초기화 
-
     # 메뉴 전환을 위한 변수
     go_menu=False
+    # 상점기능
+    char1_price=50
+    char2_price=70
+    char3_price=100
+    char4_price=200
+
+    coin=0
+
+

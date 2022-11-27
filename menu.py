@@ -516,8 +516,6 @@ class Menu:
                     and self.selection>1 and not self.showselectchar ):
                         self.selection-=1
                 
-
-               
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT
 
                     and self.selection<len(self.shipDict) and not self.showselectchar ):
@@ -571,6 +569,7 @@ class Menu:
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
+
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT
                     or event.type == pygame.KEYDOWN
@@ -585,6 +584,106 @@ class Menu:
                     self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                     self.ratio = (self.screen_size / 500)
                     self.font = pygame.font.Font(None, round(36*self.ratio))
+
+                elif (event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_RETURN):
+                    Var.char=Database().load_char_data(Var.user_id) # 캐릭터 정보 불러오기
+                    Var.coin=Database().load_coin(Var.user_id)
+                    if self.store:
+                        self.store=False
+                    elif self.selection==1:
+                        if Var.char==1:
+                            print('이미 구입한 우주선입니다')
+                        else:
+                            if Var.coin < Var.char1_price:
+                                print('코인이 부족합니다')
+                            else:
+                                # 구입해서 user coin 업데이트
+                                Var.coin=Database().buy_char(Var.user_id,Var.char1_price)
+                                # character 업데이트
+                                Var.char=Database().update_char_data(Var.user_id)
+                                Var.lst=Var.char1_lst
+
+                    elif self.selection==2:
+                        if Var.char==2:
+                            print('이미 구입한 우주선입니다')
+                        else:
+                            if Var.coin < Var.char2_price:
+                                print('코인이 부족합니다')
+                            else:
+                                # 구입해서 user coin 업데이트
+                                Var.coin=Database().buy_char(Var.user_id,Var.char2_price)
+                                # character 업데이트
+                                Var.char=Database().update_char_data(Var.user_id)
+                                Var.lst=Var.char2_lst
+
+                    elif self.selection==3:
+                        if Var.char==3:
+                            print('이미 구입한 우주선입니다')
+                        else:
+                            if Var.coin < Var.char3_price:
+                                print('코인이 부족합니다')
+                            else:
+                                # 구입해서 user coin 업데이트
+                                Var.coin=Database().buy_char(Var.user_id,Var.char3_price)
+                                # character 업데이트
+                                Var.char=Database().update_char_data(Var.user_id)
+                                Var.lst=Var.char3_lst
+
+                    elif self.selection==4:
+                        if Var.char==4:
+                            print('이미 구입한 우주선입니다')
+                        else:
+                            if Var.coin < Var.char4_price:
+                                print('코인이 부족합니다')
+                            else:
+                                # 구입해서 user coin 업데이트
+                                Var.coin=Database().buy_char(Var.user_id,Var.char4_price)
+                                # character 업데이트
+                                Var.char=Database().update_char_data(Var.user_id)
+                                Var.lst=Var.char4_lst
+                    elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
+                        and self.selection>1 and not self.store ):
+                            self.selection-=1
+
+                    elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT
+                        and self.selection<len(self.shipDict) and not self.store):
+                            self.selection+=1
+
+            self.ship1, self.ship1Rect = load_image('ship.png')
+            self.ship1Rect.bottomleft = self.screen.get_rect().inflate(-140, -350).bottomleft
+            self.ship2, self.ship2Rect = load_image('ship2.png')
+            self.ship2Rect.bottomleft = self.screen.get_rect().inflate(-370, -350).bottomleft 
+            self.ship3, self.ship3Rect = load_image('ship3.png')
+            self.ship3Rect.bottomleft = self.screen.get_rect().inflate(-600, -350).bottomleft
+            self.ship4, self.ship4Rect = load_image('ship4.png')
+            self.ship4Rect.bottomleft = self.screen.get_rect().inflate(-830, -350).bottomleft
+
+            self.ship1text = self.font.render('Ship1', 1, RED)
+            self.ship2text = self.font.render('Ship2', 1, RED)
+            self.ship3text = self.font.render('Ship3', 1, RED)
+            self.ship4text = self.font.render('Ship4', 1, RED)
+            self.ship1Pos = self.ship1text.get_rect(midbottom=self.ship1Rect.inflate(0, 0).midbottom)
+            self.ship2Pos = self.ship2text.get_rect(midbottom=self.ship2Rect.inflate(0, 0).midbottom)
+            self.ship3Pos = self.ship3text.get_rect(midbottom=self.ship3Rect.inflate(0, 0).midbottom)
+            self.ship4Pos = self.ship4text.get_rect(midbottom=self.ship4Rect.inflate(0, 0).midbottom)
+
+
+            self.screen.blit(self.ship1, self.ship1Rect)
+            self.screen.blit(self.ship2, self.ship2Rect)
+            self.screen.blit(self.ship3, self.ship3Rect)
+            self.screen.blit(self.ship4, self.ship4Rect)
+
+            self.shipDict={1:self.ship1Pos,2:self.ship2Pos,3:self.ship3Pos,4:self.ship4Pos}
+            self.selectText = self.font.render('SELECT', 1, RED)
+            self.selectPos = self.selectText.get_rect(midbottom=self.shipDict[self.selection].inflate(0,60).midbottom)
+
+            self.textOverlays=zip([self.ship1text,self.ship2text,self.ship3text,self.ship4text,self.selectText],
+            [self.ship1Pos,self.ship2Pos,self.ship3Pos,self.ship4Pos,self.selectPos])
+            for txt,pos in self.textOverlays:
+                self.screen.blit(txt,pos)
+
+            pygame.display.flip()
 
 
 

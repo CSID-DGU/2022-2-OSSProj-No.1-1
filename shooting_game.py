@@ -111,6 +111,10 @@ while windowShow:
                 pageResult, screen_size = Menu(screen_size).score_page()
                 if pageResult == BACK:
                     flag = False
+            elif userSelection==5:
+                pageResult,screen_size=Menu(screen_size).store_page()
+                if pageResult==BACK:
+                    flag=False
             elif userSelection == 6: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
                 sys.exit()
