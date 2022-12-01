@@ -146,6 +146,7 @@ class Menu:
         
         #For store_page setting
         self.store=False
+        self.buychar=False
 
         # For inMenu_page setting
         self.startText = self.font.render('SELECT MODE', 1, 'GREEN')
@@ -255,6 +256,7 @@ class Menu:
         self.showselectchar=False
         self.ship_selection = Ship_selection_check()
         self.showShop = False
+        
 
     def init_page(self):        
         while self.ininitalMenu:
@@ -560,7 +562,7 @@ class Menu:
                     
     def store_page(self):
         self.store=True
-
+        Var.go_menu=False
         while self.store:
             self.clock.tick(self.clockTime) 
             self.flag=True
@@ -569,6 +571,10 @@ class Menu:
             main_menuRect.midtop = self.screen.get_rect().midtop
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
+            # 캐릭터, 코인 정보
+            Var.char=Database().load_char_data(Var.user_id) # 캐릭터 정보 불러오기
+            Var.coin=Database().load_coin(Var.user_id)
+            # 없는 걸 unlock식으로 
 
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT
@@ -589,8 +595,9 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     Var.char=Database().load_char_data(Var.user_id) # 캐릭터 정보 불러오기
                     Var.coin=Database().load_coin(Var.user_id)
-                    if self.store:
-                        self.store=False
+                    print(Var.char,Var.coin)
+                    if self.buychar:
+                        self.buychar=False
                     elif self.selection==1:
                         if Var.char==1:
                             print('이미 구입한 우주선입니다')
@@ -601,8 +608,11 @@ class Menu:
                                 # 구입해서 user coin 업데이트
                                 Var.coin=Database().buy_char(Var.user_id,Var.char1_price)
                                 # character 업데이트
-                                Var.char=Database().update_char_data(Var.user_id)
+                                Database().update_char_data(1,Var.user_id) 
+                                Var.char=Database().load_char_data(Var.user_id) # 바뀐 캐릭터 대입
                                 Var.lst=Var.char1_lst
+                                Var.go_menu=True
+                                return Var.go_menu
 
                     elif self.selection==2:
                         if Var.char==2:
@@ -614,8 +624,11 @@ class Menu:
                                 # 구입해서 user coin 업데이트
                                 Var.coin=Database().buy_char(Var.user_id,Var.char2_price)
                                 # character 업데이트
-                                Var.char=Database().update_char_data(Var.user_id)
+                                Database().update_char_data(2,Var.user_id)
+                                Var.char=Database().load_char_data(Var.user_id)
                                 Var.lst=Var.char2_lst
+                                Var.go_menu=True
+                                return Var.go_menu
 
                     elif self.selection==3:
                         if Var.char==3:
@@ -627,8 +640,11 @@ class Menu:
                                 # 구입해서 user coin 업데이트
                                 Var.coin=Database().buy_char(Var.user_id,Var.char3_price)
                                 # character 업데이트
-                                Var.char=Database().update_char_data(Var.user_id)
+                                Database().update_char_data(3,Var.user_id)
+                                Var.char=Database().load_char_data(Var.user_id)
                                 Var.lst=Var.char3_lst
+                                Var.go_menu=True
+                                return Var.go_menu
 
                     elif self.selection==4:
                         if Var.char==4:
@@ -640,14 +656,18 @@ class Menu:
                                 # 구입해서 user coin 업데이트
                                 Var.coin=Database().buy_char(Var.user_id,Var.char4_price)
                                 # character 업데이트
-                                Var.char=Database().update_char_data(Var.user_id)
+                                Database().update_char_data(4,Var.user_id)
+                                Var.char=Database().load_char_data(Var.user_id)
                                 Var.lst=Var.char4_lst
+                                Var.go_menu=True
+                                return Var.go_menu
+
                     elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
-                        and self.selection>1 and not self.store ):
+                        and self.selection>1 and not self.buychar ):
                             self.selection-=1
 
                     elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT
-                        and self.selection<len(self.shipDict) and not self.store):
+                        and self.selection<len(self.shipDict) and not self.buychar):
                             self.selection+=1
 
             self.ship1, self.ship1Rect = load_image('ship.png')
@@ -742,6 +762,8 @@ class Menu:
                             pygame.mixer.music.stop()
                         Database.setSound(int(self.music), music=True)
                     elif self.selection == 5:
+                        self.store=True
+                        return 5, self.screen_size
                         # if ship_selection.get_ship_selection() == 1:
                         #     player.image, player.rect = load_image('ship.png', -1)
                         #     player.original = player.image
@@ -761,7 +783,7 @@ class Menu:
                         #     player.image, player.rect = load_image('ship4.png', -1)
                         #     player.original = player.image
                         #     player.shield, player.rect = load_image('ship4_shield.png', -1)
-                        self.showShop = True
+                        #self.showShop = True
                     elif self.selection == 6:
                         cnt+=1
                         self.showHelp=True 
@@ -777,16 +799,17 @@ class Menu:
                     and not self.showHiScores
                     and not self.showSelectModes
                     and not self.showHelp
-                    and not self.showShop):
+                    and not self.store):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.menuDict)
                     and not self.showHiScores
                     and not self.showSelectModes
-                    and not self.showShop):
+                    and not self.store):
                     self.selection += 1
-                    
+                #ship 고르기
+                """
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_RETURN 
                     and self.showShop
@@ -861,7 +884,7 @@ class Menu:
                         coin_Have = CoinData.load()
                         shipUI_coinText = font.render(f'        : {self.coin_Have}',1 , (255,215,0))
                     
-                
+                """
             
             if not self.language_checker.get_language():
                 self.blankText=self.font.render('           ',1,BLACK)

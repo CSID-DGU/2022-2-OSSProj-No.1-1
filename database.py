@@ -187,6 +187,7 @@ class Database(object):
         sql="update user_info set user_coin=%s where user_id=%s"
         curs.execute(sql,(result,user_id))
         self.score_db.commit()
+
         
         curs.close()
         return result
@@ -217,10 +218,12 @@ class Database(object):
         curs.execute(sql, user_id)
         data = curs.fetchone()  # 리스트 안에 딕셔너리가 있는 형태
         curs.close()
-        print("ID : ",data['user_id'])
+        #print("ID : ",data['user_id'])
         
-        print("CHAR : ",data['user_character'])
+        #print("CHAR : ",data['user_character'])
         return data['user_character']
+
+    
 
     
         
