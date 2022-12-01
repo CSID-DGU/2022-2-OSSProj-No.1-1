@@ -258,12 +258,6 @@ class Monster(MasterSprite):
                     random.randint(
                     (monster.area.bottom * 3) // 4,
                     monster.area.bottom))
-            elif isinstance(monster, Boss):
-                monster.rect.midtop = (random.choice(
-                    (monster.area.left, monster.area.right)),
-                    random.randint(
-                    (monster.area.bottom * 3) // 4,
-                    monster.area.bottom))
             else:
                 monster.rect.midtop = (random.randint(
                     monster.area.left
@@ -360,9 +354,19 @@ class Blue(Monster):
 class Boss(Monster):
     def __init__(self, screen_size):
         super().__init__('boss', screen_size)
-        self.moveFunc = lambda: (self.loc, 0)
+        self.amp = random.randint(self.rect.width, self.rect.width)
+        self.freq = 1 / (35) # 원 움직임 변동 횟수 늘리기
+        self.moveFunc = lambda: (
+            self.amp *
+            math.sin(
+                self.loc *
+                self.freq),
+            self.amp *
+            math.cos(
+                self.loc *
+                self.freq))
         self.pType = 'boss'
-        self.health = 3
+        self.health = 5
     
     def update(self, screen_size):
         horiz, vert = self.moveFunc()
@@ -425,6 +429,14 @@ class Beam(MasterSprite):
             beam.add(cls.allsprites, cls.active)
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
+            
+    @classmethod
+    def position2(cls, loc):
+        if len(cls.pool) > 0:
+            beam = cls.pool.sprites()[0]
+            beam.add(cls.allsprites, cls.active)
+            beam.remove(cls.pool)
+            beam.rect.bottom = loc
     
     def table(self):
         self.add(self.pool)

@@ -60,6 +60,13 @@ class Single():
         life2, life2Rect = load_image('heart2.png')
         life3, life3Rect = load_image('heart3.png')
 
+        # boss life (추가해야함)        
+        # Bosslife1, Bosslife1Rect = load_image('bossheart1.png')
+        # Bosslife2, Bosslife2Rect = load_image('bossheart2.png')
+        # Bosslife3, Bosslife3Rect = load_image('bossheart3.png')
+        # Bosslife4, Bosslife4Rect = load_image('bossheart4.png')
+        # Bosslife5, Bosslife5Rect = load_image('bossheart5.png')
+
         # Sounds
         missile_sound = load_sound('missile.ogg')
         bomb_sound = load_sound('bomb.ogg')
@@ -84,6 +91,7 @@ class Single():
         # object
         player = Player(screen_size)
         miniplayer = FriendShip(screen_size)
+        boss = Boss(screen_size)
         
         initialMonsterTypes = (Green, Yellow)
         powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
@@ -151,8 +159,6 @@ class Single():
             Monster.pool = pygame.sprite.Group(
                 [monster(screen_size) for monster in initialMonsterTypes for _ in range(5)])
             Monster.active = pygame.sprite.Group()
-            Boss.pool = pygame.sprite.Group([Boss(screen_size) for _ in range(3)])
-            Boss.active = pygame.sprite.Group()
             Beam.pool = pygame.sprite.Group([Beam(screen_size) for _ in range(10)]) 
             Beam.active = pygame.sprite.Group()
             Explosion.pool = pygame.sprite.Group([Explosion(screen_size) for _ in range(10)])
@@ -169,7 +175,7 @@ class Single():
             score = 0
             beamFired = 0
             wave = 1
-            Boss.health = 3
+            health = 3
 
             # speed
             speed = 1.5 * ratio
@@ -204,6 +210,7 @@ class Single():
             player.life = 3
             player.initializeKeys()
             
+            boss.health = 5
             
             player.showChange_ship = False
         # Start Game
@@ -248,9 +255,9 @@ class Single():
                             Beam.position(player.rect.topright)
                             beamFired += 2
                         elif triplecupcake :
-                            Beam.position(player.rect.topleft)
-                            Beam.position(player.rect.midtop)
-                            Beam.position(player.rect.topright)
+                            Beam.position2(player.rect.left - 5)
+                            Beam.position2(player.rect.top)
+                            Beam.position2(player.rect.right + 5)
                             beamFired += 3
                         elif broccoli :
                             Beam.position(player.rect.midtop)
@@ -380,15 +387,16 @@ class Single():
                                 bomb, monster) and monster in Monster.active:
                             if monster.pType != 'grey' :
                                 if monster.pType == 'boss':
-                                    Boss.health -= 1
-                                    monster.table() 
-                                    if Boss.health < 0 :
-                                        Explosion.position(boss.rect.center)
-                                        monsterLeftThisWave, score = kill_monster(monster, monsterLeftThisWave, score)
+                                    if boss.health > 1 :
+                                        boss.health -= 1
+                                    else :
+                                        monster.table() 
+                                        Explosion.position(monster.rect.center)
+                                        monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else:
                                     monster.table()
                                     Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             if soundFX:
                                 bear_explode_sound.play()
@@ -397,17 +405,18 @@ class Single():
                                 beam, monster) and monster in Monster.active:
                             beam.table()
                             if monster.pType != 'grey' :
+                                beam.table()
                                 if monster.pType == 'boss':
-                                    Boss.health -= 1
-                                    beam.table()       
-                                    monster.table()
-                                    if Boss.health < 0 :                    
-                                        Explosion.position(boss.rect.center)
-                                        monsterLeftThisWave, score = kill_monster(monster, monsterLeftThisWave, score)
+                                    if boss.health > 1 :
+                                        boss.health -= 1                                 
+                                    else :         
+                                        monster.table()                  
+                                        Explosion.position(monster.rect.center)
+                                        monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else:
                                     monster.table()
                                     Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             if soundFX:
                                 bear_explode_sound.play()
                             if soundFX:
@@ -461,7 +470,6 @@ class Single():
             # Update Monsters
                 if curTime <= 0 and monstersLeftThisWave > 0 :
                     Monster.position()
-                    Boss.position()
                     curTime = bearPeriod
                 elif curTime > 0:
                     curTime -= 1
@@ -481,7 +489,7 @@ class Single():
                 textposition = [wavePos, leftPos, scorePos, bombPos]
 
             # Update using items
-                # item - doublebeam
+                # item - doublebeam, triplecupcake, broccoli
                 if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
@@ -564,7 +572,7 @@ class Single():
                         if wave == 3:
                             Monster.pool.add([Pink(screen_size) for _ in range(5)])
                         if wave == 4:
-                            Boss.pool.add([UFO(screen_size) for _ in range(5)])
+                            Monster.pool.add([Boss(screen_size) for _ in range(2)])
                         wave += 1
                         betweenWaveCount = betweenWaveTime
 
@@ -601,6 +609,25 @@ class Single():
                     screen.blit(pygame.transform.scale(life2, life_size), life2Rect)
                 elif player.life == 1:
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
+                        
+            # Update Boss life (추가해야함)
+                # Bosslife1Rect.topright = wavePos.bottomright
+                # Bosslife2Rect.topright = wavePos.bottomright
+                # Bosslife3Rect.topright = wavePos.bottomright
+                # Bosslife4Rect.topright = wavePos.bottomright
+                # Bosslife5Rect.topright = wavePos.bottomright                
+                
+                # boss_life_size = (round(bosslife1Rect.get_width() * ratio), round(bosslife1.get_height() * ratio))
+                # if boss.life == 5:
+                #     screen.blit(pygame.transform.scale(bosslife5, boss_life_size), bosslife5Rect)
+                # elif boss.life == 2:
+                #     screen.blit(pygame.transform.scale(bosslife4, boss_life_size), life4Rect)
+                # elif boss.life == 1:
+                #     screen.blit(pygame.transform.scale(bosslife3, boss_life_size), bosslife3Rect)
+                # elif boss.life == 2:
+                #     screen.blit(pygame.transform.scale(bosslife2, boss_life_size), bosslife2Rect)
+                # elif boss.life == 1:
+                #     screen.blit(pygame.transform.scale(bosslife1, boss_life_size), bosslife1Rect)
 
                 pygame.display.flip()
 
