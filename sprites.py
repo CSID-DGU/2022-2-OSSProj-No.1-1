@@ -1,8 +1,10 @@
 import pygame
 import random
 import math
+from numpy import sqrt 
 from load import load_image,Var
 from pygame.locals import *
+from sys import *
 
 class MasterSprite(pygame.sprite.Sprite):
     allsprites = None
@@ -286,7 +288,6 @@ class Monster(MasterSprite):
         self.kill()
         self.add(self.pool)
 
-
 class Green(Monster):
     def __init__(self, screen_size):
         super().__init__('green',screen_size)
@@ -330,14 +331,14 @@ class Grey(Monster):
     def __init__(self, screen_size):
         super().__init__('grey',screen_size)
         self.moveFunc = lambda: (0, 1.5 * self.loc)
-        self.pType = 'stone'
+        self.pType = 'grey'
 
 
 class Blue(Monster):
     def __init__(self, screen_size):
         super().__init__('blue',screen_size)
         self.moveFunc = lambda: (self.loc, 0)
-        self.pType = 'panda'
+        self.pType = 'blue'
 
     def update(self, screen_size):
         horiz, vert = self.moveFunc()
@@ -350,6 +351,34 @@ class Blue(Monster):
         self.rect = self.initialRect.move((horiz, vert))
         self.loc = self.loc + MasterSprite.speed
         
+class Boss(Monster):
+    def __init__(self, screen_size):
+        super().__init__('boss', screen_size)
+        self.amp = random.randint(self.rect.width, self.rect.width)
+        self.freq = 1 / (35) # 원 움직임 변동 횟수 늘리기
+        self.moveFunc = lambda: (
+            self.amp *
+            math.sin(
+                self.loc *
+                self.freq),
+            self.amp *
+            math.cos(
+                self.loc *
+                self.freq))
+        self.pType = 'boss'
+        self.health = 5
+    
+    def update(self, screen_size):
+        horiz, vert = self.moveFunc()
+        horiz = (-horiz if self.initialRect.center[0] == self.area.right
+                 else horiz)
+        if (horiz + self.initialRect.left > self.area.right
+                or horiz + self.initialRect.right < self.area.left):
+            self.table()
+            Monster.numOffScreen += 1
+        self.rect = self.initialRect.move((horiz, vert))
+        self.loc = self.loc + MasterSprite.speed
+               
 class Explosion(MasterSprite):
     pool = pygame.sprite.Group()
     active = pygame.sprite.Group()
@@ -400,6 +429,14 @@ class Beam(MasterSprite):
             beam.add(cls.allsprites, cls.active)
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
+            
+    @classmethod
+    def position2(cls, loc):
+        if len(cls.pool) > 0:
+            beam = cls.pool.sprites()[0]
+            beam.add(cls.allsprites, cls.active)
+            beam.remove(cls.pool)
+            beam.rect.bottom = loc
     
     def table(self):
         self.add(self.pool)
@@ -505,3 +542,4 @@ class BroccoliBeamfast(Power):
 #     def __init__(self, screen_size):
 #         super().__init__('pepper_chili', screen_size)
 #         self.pType = 'pepper_chili'
+
