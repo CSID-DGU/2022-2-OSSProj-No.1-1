@@ -114,6 +114,7 @@ class Single():
             elif monster.pType == 'pink':
                 score += 8
             elif monster.pType == 'boss':
+                monstersLeftThisWave -= 10
                 score += 20
             return monstersLeftThisWave, score
         
@@ -210,7 +211,7 @@ class Single():
             player.life = 3
             player.initializeKeys()
             
-            boss.health = 5
+            boss.health = 10
             
             player.showChange_ship = False
         # Start Game
@@ -387,7 +388,7 @@ class Single():
                                 bomb, monster) and monster in Monster.active:
                             if monster.pType != 'grey' :
                                 if monster.pType == 'boss':
-                                    if boss.health > 1 :
+                                    if boss.health >= 1 :
                                         boss.health -= 1
                                     else :
                                         monster.table() 
@@ -407,8 +408,8 @@ class Single():
                             if monster.pType != 'grey' :
                                 beam.table()
                                 if monster.pType == 'boss':
-                                    if boss.health > 1 :
-                                        boss.health -= 1                                 
+                                    if boss.health >= 1 :
+                                        boss.health -= 1                        
                                     else :         
                                         monster.table()                  
                                         Explosion.position(monster.rect.center)
@@ -572,7 +573,9 @@ class Single():
                         if wave == 3:
                             Monster.pool.add([Pink(screen_size) for _ in range(5)])
                         if wave == 4:
-                            Monster.pool.add([Boss(screen_size) for _ in range(2)])
+                            Monster.pool.add(boss)
+                        if wave >= 5:
+                            Monster.pool.remove(boss)
                         wave += 1
                         betweenWaveCount = betweenWaveTime
 
