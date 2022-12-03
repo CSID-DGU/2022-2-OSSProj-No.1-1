@@ -366,7 +366,7 @@ class Boss(Monster):
                 self.loc *
                 self.freq))
         self.pType = 'boss'
-        self.health = 5
+        self.health = 10
     
     def update(self, screen_size):
         horiz, vert = self.moveFunc()
