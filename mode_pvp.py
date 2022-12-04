@@ -68,12 +68,12 @@ class Pvp() :
         life_c, life_cRect = load_image('heart3.png')
 
         # Sounds
-        missile_sound = load_sound('missile.ogg')
-        bomb_sound = load_sound('bomb.ogg')
-        alien_explode_sound = load_sound('alien_explode.ogg')
-        ship_explode_sound = load_sound('ship_explode.ogg')
-        load_music('music_loop.ogg')
-        soundFX = Database().getSound()
+        # missile_sound = load_sound('missile.ogg')
+        # bomb_sound = load_sound('bomb.ogg')
+        # alien_explode_sound = load_sound('alien_explode.ogg')
+        # ship_explode_sound = load_sound('ship_explode.ogg')
+        # load_music('music_loop.ogg')
+        # soundFX = Database().getSound()
         # music = Database().getSound(music=True)
         # if music and pygame.mixer: 
         #     pygame.mixer.music.play(loops=-1)
@@ -256,8 +256,8 @@ class Pvp() :
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
-                        if soundFX:
-                            beam_sound.play()
+                        # if soundFX:
+                        #     beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_b):
@@ -265,8 +265,8 @@ class Pvp() :
                             bombsHeld -= 1
                             newBomb = player.bomb()
                             newBomb.add(bombs, alldrawings)
-                            if soundFX:
-                                bomb_sound.play()
+                            # if soundFX:
+                            #     bomb_sound.play()
                     # Player2 Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction2.keys()):
@@ -291,8 +291,8 @@ class Pvp() :
                         else : 
                             beam.position(player2.rect.midtop)
                             beamFired += 1
-                        if soundFX:
-                            beam_sound.play()
+                        # if soundFX:
+                        #     beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_l):
@@ -342,11 +342,11 @@ class Pvp() :
                                     elif selection == 1:    
                                         pauseMenu = False
                                         player.alive = False
-                                    elif selection == 2:
-                                        soundFX = not soundFX
-                                        if soundFX:
-                                            beam_sound.play()
-                                        Database.setSound(int(soundFX))
+                                    # elif selection == 2:
+                                        # soundFX = not soundFX
+                                        # if soundFX:
+                                        #     beam_sound.play()
+                                        # Database.setSound(int(soundFX))
                                     elif selection == 3 and pygame.mixer:
                                         music = not music
                                         if music:
@@ -436,8 +436,9 @@ class Pvp() :
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-                            if soundFX:
-                                monster_explode_sound.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
+
                     for bomb in bombs2:
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster.active:
@@ -446,8 +447,8 @@ class Pvp() :
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
                             beamFired += 1
-                            if soundFX:
-                                monster_explode_sound.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
                     for beam in Beam.active:
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
@@ -459,8 +460,8 @@ class Pvp() :
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else :
                                     monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
-                            if soundFX:
-                                monster_explode_sound.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
 
                     if pygame.sprite.collide_rect(monster, player):
                         if player.shieldUp:
@@ -480,8 +481,8 @@ class Pvp() :
                             player.alive = False
                             player.remove(allsprites)
                             Explosion.position(player.rect.center)
-                            if soundFX:
-                                player_explode_sound.play()
+                            # if soundFX:
+                            #     player_explode_sound.play()
                     if pygame.sprite.collide_rect(monster, player2):
                         if player2.shieldUp:
                             monster.table()
@@ -500,8 +501,8 @@ class Pvp() :
                             player2.alive = False
                             player2.remove(allsprites)
                             Explosion.position(player2.rect.center)
-                            if soundFX:
-                                player_explode_sound.play()
+                            # if soundFX:
+                            #     player_explode_sound.play()
 
                 # PowerUps
                 for power in powers:

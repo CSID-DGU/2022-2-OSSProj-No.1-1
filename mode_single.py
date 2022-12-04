@@ -234,11 +234,13 @@ class Single():
                     # Resize windowSize
                     elif (event.type == pygame.VIDEORESIZE):
                         screen_size = min(event.w, event.h)
-                        if screen_size <= 300:
-                            screen_size = 300
+                        if screen_size <= 400:
+                            screen_size = 400
+                        if screen_size >= 900:
+                            screen_size = 900
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                        ratio = (screen_size / 400)
-                        font = pygame.font.Font(None, round(36*ratio))  
+                        ratio = (screen_size / 600)
+                        font = pygame.font.Font(None, round(36*ratio))
                     # Player Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction.keys()):
@@ -307,10 +309,12 @@ class Single():
                                 # Resize windowSize
                                 elif (event.type == pygame.VIDEORESIZE):
                                     screen_size = min(event.w, event.h)
-                                    if screen_size <= 300:
-                                        screen_size = 300
+                                    if screen_size <= 400:
+                                        screen_size = 400
+                                    if screen_size >= 900:
+                                        screen_size = 900
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                                    ratio = (screen_size / 500)
+                                    ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
                                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  # unpause
                                     
@@ -652,13 +656,15 @@ class Single():
                         and event.key == pygame.K_ESCAPE): # 게임 창 끔
                         return False
                 # Resize windowSize
-                elif (event.type == pygame.VIDEORESIZE): # 사용자가 창 크기 조절
-                    screen_size = min(event.w, event.h)
-                    if screen_size <= 300:
-                        screen_size = 300
-                    screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                    ratio = (screen_size / 500)
-                    font = pygame.font.Font(None, round(36*ratio))
+                elif (event.type == pygame.VIDEORESIZE):
+                        screen_size = min(event.w, event.h)
+                        if screen_size <= 400:
+                            screen_size = 400
+                        if screen_size >= 900:
+                            screen_size = 900
+                        screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+                        ratio = (screen_size / 600)
+                        font = pygame.font.Font(None, round(36*ratio))
                 elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
                     and event.key == pygame.K_RETURN # 엔터키
                     ): # 
