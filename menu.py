@@ -174,15 +174,18 @@ class Menu:
         self.selectPos = self.selectText.get_rect(topright=self.startPos.topleft)
         self.languageText = self.font2.render('언어변경', 1, 'YELLOW')
         self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
+        self.logoutText = self.font.render('LOGOUT', 1, 'WHITE')
+        self.logoutPos = self.logoutText.get_rect(topleft=self.languagePos.bottomleft)
+
 
         # For Select Mode setting
-        self.singleText = self.font.render('SINGLE MODE', 1, WHITE)
+        self.singleText = self.font.render('SINGLE MODE', 1, 'WHITE')
         self.singlePos = self.singleText.get_rect(midtop=self.screen.get_rect().center)
-        self.timeText = self.font.render('TIME MODE', 1, BLACK)
+        self.timeText = self.font.render('TIME MODE', 1, "WHITE")
         self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
-        self.pvpText = self.font.render('PVP MODE ', 1, BLACK)
+        self.pvpText = self.font.render('PVP MODE ', 1, 'WHITE')
         self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
-        self.backText=self.font.render('BACK',1,BLACK)
+        self.backText=self.font.render('BACK',1,'WHITE')
         self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
         self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selectPos =self.selectText.get_rect(topright=self.singlePos.topleft)
@@ -397,7 +400,7 @@ class Menu:
                 elif (event.type == pygame.KEYDOWN
                     and self.selection==1
                     and event.key in Keyboard.keys.keys()
-                    and len(self.idBuffer) < 8):
+                    and len(self.idBuffer) < 9):
                     self.idBuffer.append(Keyboard.keys[event.key])
                     self.id = ''.join(self.idBuffer)
                 elif (event.type == pygame.KEYDOWN
@@ -409,7 +412,7 @@ class Menu:
                 elif (event.type == pygame.KEYDOWN
                     and self.selection==2
                     and event.key in Keyboard.keys.keys()
-                    and len(self.pwdBuffer) < 8):
+                    and len(self.pwdBuffer) < 9):
                     self.pwdBuffer.append(Keyboard.keys[event.key])
                     self.pwd = ''.join(self.pwdBuffer)
                 elif (event.type == pygame.KEYDOWN
@@ -681,6 +684,10 @@ class Menu:
                         return 7, self.screen_size
                     elif self.selection == 8:
                         self.language_checker.change_language()
+                    elif self.selection == 9:
+                        self.showlogin=True
+                        self.inSelectMenu=True
+                        
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
                     and self.selection > 1
@@ -800,6 +807,8 @@ class Menu:
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
                 self.languageText = self.font2.render('언어 변경', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
+                self.logoutText = self.font.render('LOGOUT', 1, 'SKY BLUE')
+                self.logoutPos = self.logoutText.get_rect(topleft=self.languagePos.bottomleft)
 
 
             else:
@@ -829,8 +838,12 @@ class Menu:
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
                 self.languageText = self.font2.render('LANGUAGE CHANGE', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
+                self.logoutText = self.font2.render('로그아웃', 1, 'SKY BLUE')
+                self.logoutPos = self.logoutText.get_rect(topleft=self.languagePos.bottomleft)
 
-            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos, 8: self.languagePos}
+
+
+            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos, 8: self.languagePos, 9: self.logoutPos}
             self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship_menuDict[self.ship_selection.get_ship_selection()].inflate(0,60).midbottom)
             self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
 
@@ -862,11 +875,11 @@ class Menu:
                 self.textOverlays = zip([self.blankText,self.startText, self.hiScoreText, self.helpText, self.fxText,
                                     self.musicText, self.shopText, self.quitText, self.selectText,
                                     self.fxOnText if self.soundFX else self.fxOffText,
-                                    self.musicOnText if self.music else self.musicOffText,self.languageText],
+                                    self.musicOnText if self.music else self.musicOffText,self.languageText,self.logoutText],
                                 [self.blankPos,self.startPos, self.hiScorePos, self.helpPos, self.fxPos,
                                     self.musicPos, self.shopPos, self.quitPos, self.selectPos,
                                     self.fxOnPos if self.soundFX else self.fxOffPos,
-                                    self.musicOnPos if self.music else self.musicOffPos,self.languagePos])
+                                    self.musicOnPos if self.music else self.musicOffPos,self.languagePos, self.logoutPos])
             for txt, pos in self.textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
@@ -941,17 +954,17 @@ class Menu:
             
             self.blankText=self.font.render('       ',1,BLACK)
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-            self.singleText = self.font.render('SINGLE', 1, BLACK)
+            self.singleText = self.font.render('SINGLE', 1, 'WHITE')
             self.singlePos = self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, BLACK)
+            self.timeText = self.font.render('TIME', 1, 'WHITE')
             self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
-            self.pvpText = self.font.render('PVP', 1, BLACK)
+            self.pvpText = self.font.render('PVP', 1, 'WHITE')
             self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
-            self.backText=self.font.render('BACK',1,BLACK)
+            self.backText=self.font.render('BACK',1,'WHITE')
             self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
             
             self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
-            self.selectText = self.font.render('*', 1, BLACK)
+            self.selectText = self.font.render('*', 1, 'WHITE')
             self.selectPos = self.selectText.get_rect(topright=self.selectModeDict[self.selection].topleft)
 
             textOverlays = zip([self.blankText,self.singleText,self.timeText,self.pvpText,self.selectText,self.backText],
@@ -1016,11 +1029,11 @@ class Menu:
 
             self.blankText=self.font.render('      ',1,BLACK)
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
-            self.singleText=self.font.render('SINGLE  ',1,BLACK)
+            self.singleText=self.font.render('SINGLE  ',1,'WHITE')
             self.singlePos=self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, BLACK)
+            self.timeText = self.font.render('TIME', 1, "WHITE")
             self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
-            self.backText = self.font.render('BACK', 1, BLACK)
+            self.backText = self.font.render('BACK', 1, 'WHITE')
             self.backPos = self.backText.get_rect(topleft=self.timePos.bottomleft)
 
             selectScoresDict = {1:self.singlePos,2:self.timePos,3:self.backPos}
