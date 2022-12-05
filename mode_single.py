@@ -60,12 +60,13 @@ class Single():
         life2, life2Rect = load_image('heart2.png')
         life3, life3Rect = load_image('heart3.png')
 
-        # boss life (추가해야함)        
-        # Bosslife1, Bosslife1Rect = load_image('bossheart1.png')
-        # Bosslife2, Bosslife2Rect = load_image('bossheart2.png')
-        # Bosslife3, Bosslife3Rect = load_image('bossheart3.png')
-        # Bosslife4, Bosslife4Rect = load_image('bossheart4.png')
-        # Bosslife5, Bosslife5Rect = load_image('bossheart5.png')
+        # boss life       
+        Bosslife0, Bosslife0Rect = load_image('bossheart0.png')
+        Bosslife1, Bosslife1Rect = load_image('bossheart2.png')
+        Bosslife2, Bosslife2Rect = load_image('bossheart4.png')
+        Bosslife3, Bosslife3Rect = load_image('bossheart6.png')
+        Bosslife4, Bosslife4Rect = load_image('bossheart8.png')
+        Bosslife5, Bosslife5Rect = load_image('bossheart10.png')
 
         # Sounds
         missile_sound = load_sound('missile.ogg')
@@ -484,14 +485,16 @@ class Single():
                 leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, 'WHITE')
                 scoreText = font.render("Score: " + str(score), 1, 'WHITE')
                 beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
+                bHealthText = font.render("Boss Health: ", 1, 'WHITE')
 
                 wavePos = waveText.get_rect(topleft=screen.get_rect().topleft)
                 leftPos = leftText.get_rect(midtop=screen.get_rect().midtop)
                 scorePos = scoreText.get_rect(topright=screen.get_rect().topright)
                 bombPos = beamText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bHealthPos = bHealthText.get_rect(bottomright = bombPos.topright)
 
-                text = [waveText, leftText, scoreText, beamText]
-                textposition = [wavePos, leftPos, scorePos, bombPos]
+                text = [waveText, leftText, scoreText, beamText, bHealthText]
+                textposition = [wavePos, leftPos, scorePos, bombPos, bHealthPos]
 
             # Update using items
                 # item - doublebeam, triplecupcake, broccoli
@@ -577,7 +580,7 @@ class Single():
                         if wave == 3:
                             Monster.pool.add([Pink(screen_size) for _ in range(5)])
                         if wave == 4:
-                            Monster.pool.add(boss)
+                            Monster.pool.add(boss)                 
                         if wave >= 5:
                             monstersThisWave = 10
                             Monster.pool.remove(boss)
@@ -618,24 +621,29 @@ class Single():
                 elif player.life == 1:
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
                         
-            # Update Boss life (추가해야함)
-                # Bosslife1Rect.topright = wavePos.bottomright
-                # Bosslife2Rect.topright = wavePos.bottomright
-                # Bosslife3Rect.topright = wavePos.bottomright
-                # Bosslife4Rect.topright = wavePos.bottomright
-                # Bosslife5Rect.topright = wavePos.bottomright                
+            # Update Boss life 
+                Bosslife0Rect.bottomleft = bHealthPos.bottomright
+                Bosslife1Rect.bottomleft = bHealthPos.bottomright
+                Bosslife2Rect.bottomleft = bHealthPos.bottomright
+                Bosslife3Rect.bottomleft = bHealthPos.bottomright
+                Bosslife4Rect.bottomleft = bHealthPos.bottomright
+                Bosslife5Rect.bottomleft = bHealthPos.bottomright               
                 
-                # boss_life_size = (round(bosslife1Rect.get_width() * ratio), round(bosslife1.get_height() * ratio))
-                # if boss.life == 5:
-                #     screen.blit(pygame.transform.scale(bosslife5, boss_life_size), bosslife5Rect)
-                # elif boss.life == 2:
-                #     screen.blit(pygame.transform.scale(bosslife4, boss_life_size), life4Rect)
-                # elif boss.life == 1:
-                #     screen.blit(pygame.transform.scale(bosslife3, boss_life_size), bosslife3Rect)
-                # elif boss.life == 2:
-                #     screen.blit(pygame.transform.scale(bosslife2, boss_life_size), bosslife2Rect)
-                # elif boss.life == 1:
-                #     screen.blit(pygame.transform.scale(bosslife1, boss_life_size), bosslife1Rect)
+                boss_life_size = (round(Bosslife0.get_width() * ratio * 0.3), round(Bosslife0.get_height() * ratio * 0.5))  
+                
+                if boss.health <= 10 and boss.health > 8:
+                    screen.blit(pygame.transform.scale(Bosslife5, boss_life_size), Bosslife5Rect)
+                elif boss.health <= 8 and boss.health > 6:
+                    screen.blit(pygame.transform.scale(Bosslife4, boss_life_size), Bosslife4Rect)
+                elif boss.health <= 6 and boss.health > 4:
+                    screen.blit(pygame.transform.scale(Bosslife3, boss_life_size), Bosslife3Rect)
+                elif boss.health <= 4 and boss.health > 2:
+                    screen.blit(pygame.transform.scale(Bosslife2, boss_life_size), Bosslife2Rect)
+                elif boss.health <= 2 and boss.health > 0:
+                    screen.blit(pygame.transform.scale(Bosslife1, boss_life_size), Bosslife1Rect)
+                elif boss.health == 0:
+                    screen.blit(pygame.transform.scale(Bosslife0, boss_life_size), Bosslife0Rect)     
+   
 
                 pygame.display.flip()
 
