@@ -114,7 +114,7 @@ class Single():
             elif monster.pType == 'pink':
                 score += 8
             elif monster.pType == 'boss':
-                monstersLeftThisWave -= 10
+                monstersLeftThisWave -= 159
                 score += 20
             return monstersLeftThisWave, score
         
@@ -579,6 +579,7 @@ class Single():
                         if wave == 4:
                             Monster.pool.add(boss)
                         if wave >= 5:
+                            monstersThisWave = 10
                             Monster.pool.remove(boss)
                         wave += 1
                         betweenWaveCount = betweenWaveTime
