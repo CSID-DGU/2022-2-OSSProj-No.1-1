@@ -7,7 +7,7 @@ from sprites import (MasterSprite,
                      Player, FriendShip, Monster, Beam, Explosion,
                      BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
                      BroccoliBeamfast,
-                     Green, Yellow, Grey, Blue, Pink)
+                     Green, Yellow, Grey, Blue, Pink, Boss)
 from database import Database
 from load import load_image, load_sound, load_music,Var
 from menu import *
@@ -39,8 +39,8 @@ class Single():
 
     # Prepare background image
         # Game field
-        field1, field1Rect = load_image("field.png")
-        field2, field2Rect = load_image("field.png")
+        field1, field1Rect = load_image("field.png") # skin
+        field2, field2Rect = load_image("field.png") #skin
         field1Rect.midtop = screen.get_rect().midtop
         field2Rect.midbottom = field1Rect.midtop
 
@@ -59,6 +59,13 @@ class Single():
         life1, life1Rect = load_image('heart1.png')
         life2, life2Rect = load_image('heart2.png')
         life3, life3Rect = load_image('heart3.png')
+
+        # boss life (추가해야함)        
+        # Bosslife1, Bosslife1Rect = load_image('bossheart1.png')
+        # Bosslife2, Bosslife2Rect = load_image('bossheart2.png')
+        # Bosslife3, Bosslife3Rect = load_image('bossheart3.png')
+        # Bosslife4, Bosslife4Rect = load_image('bossheart4.png')
+        # Bosslife5, Bosslife5Rect = load_image('bossheart5.png')
 
         # Sounds
         missile_sound = load_sound('missile.ogg')
@@ -84,6 +91,7 @@ class Single():
         # object
         player = Player(screen_size)
         miniplayer = FriendShip(screen_size)
+        boss = Boss(screen_size)
         
         initialMonsterTypes = (Green, Yellow)
         powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
@@ -92,9 +100,10 @@ class Single():
         powers = pygame.sprite.Group()
 
         ship_selection = Ship_selection_check() 
+        
 
         # Score Function
-        def kill_bear(monster, monstersLeftThisWave, score) :
+        def kill_monster(monster, monstersLeftThisWave, score) :
             monstersLeftThisWave -= 1
             if monster.pType == 'green':
                 score += 1
@@ -104,8 +113,11 @@ class Single():
                 score += 4
             elif monster.pType == 'pink':
                 score += 8
+            elif monster.pType == 'boss':
+                monstersLeftThisWave -= 10
+                score += 20
             return monstersLeftThisWave, score
-
+        
     # High Score
         hiScores=Database().getScores()
         highScoreTexts = [font.render("NAME", 1, RED),
@@ -159,11 +171,12 @@ class Single():
             doublebeam = False
             triplecupcake = False
             broccoli = False
-            pepper_chili = False
+            pepper_chili = False 
             bombsHeld = 3
             score = 0
             beamFired = 0
             wave = 1
+            health = 3
 
             # speed
             speed = 1.5 * ratio
@@ -198,6 +211,7 @@ class Single():
             player.life = 3
             player.initializeKeys()
             
+            boss.health = 10
             
             player.showChange_ship = False
         # Start Game
@@ -220,10 +234,12 @@ class Single():
                     # Resize windowSize
                     elif (event.type == pygame.VIDEORESIZE):
                         screen_size = min(event.w, event.h)
-                        if screen_size <= 300:
-                            screen_size = 300
+                        if screen_size <= 400:
+                            screen_size = 400
+                        if screen_size >= 900:
+                            screen_size = 900
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                        ratio = (screen_size / 400)
+                        ratio = (screen_size / 600)
                         font = pygame.font.Font(None, round(36*ratio))
                     # Player Moving
                     elif (event.type == pygame.KEYDOWN
@@ -242,9 +258,9 @@ class Single():
                             Beam.position(player.rect.topright)
                             beamFired += 2
                         elif triplecupcake :
-                            Beam.position(player.rect.topleft)
-                            Beam.position(player.rect.midtop)
-                            Beam.position(player.rect.topright)
+                            Beam.position2(player.rect.left - 5)
+                            Beam.position2(player.rect.top)
+                            Beam.position2(player.rect.right + 5)
                             beamFired += 3
                         elif broccoli :
                             Beam.position(player.rect.midtop)
@@ -293,10 +309,12 @@ class Single():
                                 # Resize windowSize
                                 elif (event.type == pygame.VIDEORESIZE):
                                     screen_size = min(event.w, event.h)
-                                    if screen_size <= 300:
-                                        screen_size = 300
+                                    if screen_size <= 400:
+                                        screen_size = 400
+                                    if screen_size >= 900:
+                                        screen_size = 900
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                                    ratio = (screen_size / 500)
+                                    ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
                                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  # unpause
                                     
@@ -367,15 +385,23 @@ class Single():
                     
 
             # Collision Detection
-                # Bears
+                # monster
                 for monster in Monster.active:
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster.active:
                             if monster.pType != 'grey' :
-                                monster.table()
-                                Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
+                                if monster.pType == 'boss':
+                                    if boss.health >= 1 :
+                                        boss.health -= 1
+                                    else :
+                                        monster.table() 
+                                        Explosion.position(monster.rect.center)
+                                        monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                else:
+                                    monster.table()
+                                    Explosion.position(monster.rect.center)
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             if soundFX:
                                 bear_explode_sound.play()
@@ -384,16 +410,27 @@ class Single():
                                 beam, monster) and monster in Monster.active:
                             beam.table()
                             if monster.pType != 'grey' :
-                                monster.table()
-                                Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
+                                beam.table()
+                                if monster.pType == 'boss':
+                                    if boss.health >= 1 :
+                                        boss.health -= 1                        
+                                    else :         
+                                        monster.table()                  
+                                        Explosion.position(monster.rect.center)
+                                        monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                else:
+                                    monster.table()
+                                    Explosion.position(monster.rect.center)
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             if soundFX:
                                 bear_explode_sound.play()
-                    if pygame.sprite.collide_rect(monster, player):
+                            if soundFX:
+                                bear_explode_sound.play()
+                    if pygame.sprite.collide_rect(monster, player) :
                         if player.shieldUp:
                             monster.table()
                             Explosion.position(monster.rect.center)
-                            monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
+                            monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             player.shieldUp = False
                         elif player.life > 1:   # life
@@ -409,7 +446,7 @@ class Single():
                             Explosion.position(player.rect.center)
                             if soundFX:
                                 kirin_explode_sound.play() ## 변경사항
-
+                
                 # PowerUps
                 for power in powers:
                     if pygame.sprite.collide_circle(power, player):
@@ -436,7 +473,7 @@ class Single():
                         power.kill()
 
             # Update Monsters
-                if curTime <= 0 and monstersLeftThisWave > 0:
+                if curTime <= 0 and monstersLeftThisWave > 0 :
                     Monster.position()
                     curTime = bearPeriod
                 elif curTime > 0:
@@ -444,20 +481,20 @@ class Single():
 
             # Update text overlays
                 waveText = font.render("Wave: " + str(wave), 1, BLACK)
-                leftText = font.render("Bears Left: " + str(monstersLeftThisWave), 1, BLACK)
+                leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, BLACK)
                 scoreText = font.render("Score: " + str(score), 1, BLACK)
-                bombText = font.render("Fart Bombs: " + str(bombsHeld), 1, BLACK)
+                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, BLACK)
 
                 wavePos = waveText.get_rect(topleft=screen.get_rect().topleft)
                 leftPos = leftText.get_rect(midtop=screen.get_rect().midtop)
                 scorePos = scoreText.get_rect(topright=screen.get_rect().topright)
-                bombPos = bombText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bombPos = beamText.get_rect(bottomleft=screen.get_rect().bottomleft)
 
-                text = [waveText, leftText, scoreText, bombText]
+                text = [waveText, leftText, scoreText, beamText]
                 textposition = [wavePos, leftPos, scorePos, bombPos]
 
             # Update using items
-                # item - doublebeam
+                # item - doublebeam, triplecupcake, broccoli
                 if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
@@ -504,7 +541,7 @@ class Single():
                         Beam.position(miniplayer.rect.midtop)
 
             # betweenWaveCount - Detertmine when to move to next wave
-                if monstersLeftThisWave <= 0:
+                if monstersLeftThisWave <= 0 :
                     if betweenWaveCount > 0:
                         betweenWaveCount -= 1
                         nextWaveText = font.render(
@@ -517,28 +554,32 @@ class Single():
                         nextWaveNumPos = nextWaveNum.get_rect(
                             midtop=nextWavePos.midbottom)
                         textposition.extend([nextWavePos, nextWaveNumPos])
-                        if wave % 4 == 0:
+                        if wave % 5 == 0:
                             speedUpText = font.render('SPEED UP!', 1, RED)
                             speedUpPos = speedUpText.get_rect(
                                 midtop=nextWaveNumPos.midbottom)
                             text.append(speedUpText)
                             textposition.append(speedUpPos)
                     elif betweenWaveCount == 0:
-                        if wave % 4 == 0:
+                        if wave % 5 == 0:
                             speed += 0.5
                             MasterSprite.speed = speed
                             player.initializeKeys()
                             monstersThisWave = 10
-                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
+                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
                         else:
                             monstersThisWave *= 2
-                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
+                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
                         if wave == 1:
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
                             Monster.pool.add([Blue(screen_size) for _ in range(5)])
                         if wave == 3:
                             Monster.pool.add([Pink(screen_size) for _ in range(5)])
+                        if wave == 4:
+                            Monster.pool.add(boss)
+                        if wave >= 5:
+                            Monster.pool.remove(boss)
                         wave += 1
                         betweenWaveCount = betweenWaveTime
 
@@ -575,16 +616,28 @@ class Single():
                     screen.blit(pygame.transform.scale(life2, life_size), life2Rect)
                 elif player.life == 1:
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
+                        
+            # Update Boss life (추가해야함)
+                # Bosslife1Rect.topright = wavePos.bottomright
+                # Bosslife2Rect.topright = wavePos.bottomright
+                # Bosslife3Rect.topright = wavePos.bottomright
+                # Bosslife4Rect.topright = wavePos.bottomright
+                # Bosslife5Rect.topright = wavePos.bottomright                
+                
+                # boss_life_size = (round(bosslife1Rect.get_width() * ratio), round(bosslife1.get_height() * ratio))
+                # if boss.life == 5:
+                #     screen.blit(pygame.transform.scale(bosslife5, boss_life_size), bosslife5Rect)
+                # elif boss.life == 2:
+                #     screen.blit(pygame.transform.scale(bosslife4, boss_life_size), life4Rect)
+                # elif boss.life == 1:
+                #     screen.blit(pygame.transform.scale(bosslife3, boss_life_size), bosslife3Rect)
+                # elif boss.life == 2:
+                #     screen.blit(pygame.transform.scale(bosslife2, boss_life_size), bosslife2Rect)
+                # elif boss.life == 1:
+                #     screen.blit(pygame.transform.scale(bosslife1, boss_life_size), bosslife1Rect)
 
                 pygame.display.flip()
 
-        # Data for Highscore
-            # accuracy = round(score / leafFired, 4) if leafFired > 0 else 0.0
-            # accuracy 지우기
-            # setScore 수정하고 isHiScore 지우기
-           # isHiScore = len(hiScores) < Database().numScores or score > hiScores[-1][1]
-            # 랭킹보드가 꽉 차지 않았거나, 점수가 맨 하위점수보다 높으면 
-            # 입력한 아이디가 
             name = ''
             nameBuffer = []
 
@@ -603,13 +656,15 @@ class Single():
                         and event.key == pygame.K_ESCAPE): # 게임 창 끔
                         return False
                 # Resize windowSize
-                elif (event.type == pygame.VIDEORESIZE): # 사용자가 창 크기 조절
-                    screen_size = min(event.w, event.h)
-                    if screen_size <= 300:
-                        screen_size = 300
-                    screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                    ratio = (screen_size / 500)
-                    font = pygame.font.Font(None, round(36*ratio))
+                elif (event.type == pygame.VIDEORESIZE):
+                        screen_size = min(event.w, event.h)
+                        if screen_size <= 400:
+                            screen_size = 400
+                        if screen_size >= 900:
+                            screen_size = 900
+                        screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+                        ratio = (screen_size / 600)
+                        font = pygame.font.Font(None, round(36*ratio))
                 elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
                     and event.key == pygame.K_RETURN # 엔터키
                     ): # 

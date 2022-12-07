@@ -636,3 +636,7 @@ class CharStore(Store):
 
             
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> jh
