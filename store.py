@@ -53,6 +53,10 @@ class Store(object):
         self.coin_item_count=Database().load_coin(self.user_id)
         self.width=self.screen.get_width()
         self.height=self.screen.get_height()
+        self.s1_price=Database().load_shipprice('ship1')
+        self.s2_price=Database().load_shipprice('ship2')
+        self.s3_price=Database().load_shipprice('ship3')
+        self.s4_price=Database().load_shipprice('ship4')
         
 
     def open(self):
@@ -93,6 +97,7 @@ class Store(object):
 class CharStore(Store):
     def __init__(self,screen_size):
         super().__init__(screen_size)
+        self.character_list=[1,2,3,4]
 
     def update(self,price,char):
         # coin 업데이트
@@ -100,42 +105,52 @@ class CharStore(Store):
         # 캐릭터 업데이트
         Database().update_char_data(char,self.user_id)
 
-    
+    def not_char_exists(self,char_num): # 없으면 true
+        if char_num not in Var.char_have:
+            return True
+            
     def make_selection(self):
-        s1_price=Database().load_shipprice('ship1')
-        s2_price=Database().load_shipprice('ship2')
-        s3_price=Database().load_shipprice('ship3')
-        s4_price=Database().load_shipprice('ship4')
+        self.s1_price=Database().load_shipprice('ship1')
+        self.s2_price=Database().load_shipprice('ship2')
+        self.s3_price=Database().load_shipprice('ship3')
+        self.s4_price=Database().load_shipprice('ship4')
 
-        if self.selection==1 and self.coin_item_count > s1_price and Var.char!=1 :
+        if self.selection==1 and self.coin_item_count > self.s1_price and self.not_char_exists(1):
             
             Var.char=1
             Var.char_lst=Var.char1_lst
-            self.update(s1_price,1)
+            Var.char_have.append(1)
+            self.update(self.s1_price,1)
 
-        elif self.selection==2 and self.coin_item_count > s2_price and Var.char!=2:
+        elif self.selection==2 and self.coin_item_count > self.s2_price and self.not_char_exists(2):
             
             Var.char=2
             Var.char_lst=Var.char2_lst
-            self.update(s2_price,2)
+            Var.char_have.append(2)
+            self.update(self.s2_price,2)
 
-        elif self.selection==3 and self.coin_item_count>s3_price and Var.char!=3:
+        elif self.selection==3 and self.coin_item_count>self.s3_price and self.not_char_exists(3):
             
             Var.char=3
             Var.char_lst=Var.char3_lst
-            self.update(s3_price,3)
+            Var.char_have.append(3)
+            self.update(self.s3_price,3)
 
-        elif self.selection==4 and self.coin_item_count>s4_price and Var.char!=4:
+        elif self.selection==4 and self.coin_item_count>self.s4_price and self.not_char_exists(4):
             
             Var.char=4
             Var.char_lst=Var.char4_lst
-            self.update(s4_price,4)
+            Var.char_have.append(4)
+            self.update(self.s4_price,4)
 
     def disp_ships(self):
        
         ship_offset=0
         text_offset=0.07
+        coin_offset=0.07
+        coin_text_offset=0.07
         ship_color=(120,120,230)
+        ship_price_color=(0,255,0)
         buy_color=(120,120,120)
         self.ship1_image,self.ship1_rect=load_image('ship.png')
         self.ship1_image=transform.scale(self.ship1_image,(60,60))
@@ -152,6 +167,34 @@ class CharStore(Store):
             ship_offset+=0.18
 
             self.screen.blit(img,ship_rect)
+        # show price
+        ship_offset=0
+        
+        self.coin1_image,self.coin1_rect=load_image('coin.png')
+        self.coin1_image=transform.scale(self.coin1_image,(30,30))
+        self.coin2_image,self.coin2_rect=load_image('coin.png')
+        self.coin2_image=transform.scale(self.coin1_image,(30,30))
+        self.coin3_image,self.coin3_rect=load_image('coin.png')
+        self.coin3_image=transform.scale(self.coin1_image,(30,30))
+        self.coin4_image,self.coin4_rect=load_image('coin.png')
+        self.coin4_image=transform.scale(self.coin1_image,(30,30))
+        # coin img
+        self.coin_img_zips=zip([self.coin1_image,self.coin2_image,self.coin3_image,self.coin4_image],[self.coin1_rect,self.coin2_rect,self.coin3_rect,self.coin4_rect])
+        for img,coin_img_rect in self.coin_img_zips:
+            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.18+ship_offset),self.height*(0.4+coin_offset))
+            ship_offset+=0.18
+            self.screen.blit(img,coin_img_rect)
+        # coin price text
+        ship_offset=0
+        self.coin1_text=self.font.render(f'X{self.s1_price}',True,ship_price_color)
+        self.coin2_text=self.font.render(f'X{self.s2_price}',True,ship_price_color)
+        self.coin3_text=self.font.render(f'X{self.s3_price}',True,ship_price_color)
+        self.coin4_text=self.font.render(f'X{self.s4_price}',True,ship_price_color)
+        self.coin_text_list=[self.coin1_text,self.coin2_text,self.coin3_text,self.coin4_text]
+        for x in self.coin_text_list:
+            x_rect=x.get_rect(center=(self.width*(0.18+ship_offset+coin_text_offset),self.height*(0.4+coin_offset)))
+            ship_offset+=0.18
+            self.screen.blit(x,x_rect)
 
         self.ship1_text=self.font.render('Ship1',True,ship_color)
         self.ship1_pos=self.ship1_text.get_rect()
@@ -168,7 +211,7 @@ class CharStore(Store):
         ship_offset=0
         self.text_zips=zip([self.ship1_text,self.ship2_text,self.ship3_text,self.ship4_text],[self.ship1_pos,self.ship2_pos,self.ship3_pos,self.ship4_pos])
         for txt,pos in self.text_zips:
-            (pos.centerx,pos.centery)=(self.width*(0.2+ship_offset),self.height*(0.4+text_offset))
+            (pos.centerx,pos.centery)=(self.width*(0.2+ship_offset),self.height*(0.4+coin_offset+text_offset))
             ship_offset+=0.18
             
             self.screen.blit(txt,pos)
@@ -228,10 +271,18 @@ class CharStore(Store):
             super().update_coin_text()
 
             pygame.display.flip()
-           
+
+    def char_setting(self):
+        # 없는건 어두운 이미지로..?
+        self.char_set=True
+        
         
 
-            
+        
+
+        
+
+
 
 
 
