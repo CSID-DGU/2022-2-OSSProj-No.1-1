@@ -7,6 +7,7 @@ from mode_single import *
 from mode_pvp import *
 from load import Var # id, 점수 자동저장을 위한 var
 from store import Store,CharStore
+from load import * 
 
 
 if not pygame.mixer:
@@ -115,13 +116,9 @@ while windowShow:
                 if pageResult == BACK:
                     flag = False
             elif userSelection==5:
-                pageResult,screen_size=Menu(screen_size).select_store_page()
-                if pageResult==BACK:
-                    flag=False
-                elif (pageResult=='charstore' or pageResult=='skinstore') :
-                    flag=False
-                    inMainMenu=False # 상점 접속
-                    instore=True
+                flag=False
+                inMainMenu=False
+                CharStore(screen_size).char_store()
             elif userSelection==6:
                 flag=False
                 inMainMenu=False
@@ -135,15 +132,8 @@ while windowShow:
 #########################
 #    store and character setting    #
 #########################
-    if instore==True:
-        if pageResult=='charstore':
-            print('char store접속')
-            CharStore(screen_size).char_store()
-        elif pageResult=='skinstore':
-            print('skin store접속')
 
-    #if incharsetting==True:
-     #   CharStore(screen_size).char_setting()
+
 
 #########################
 #    Start Game Loop    #

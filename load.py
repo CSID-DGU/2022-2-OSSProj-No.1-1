@@ -22,9 +22,21 @@ width_offset=0.3
 item_price_offset = 0.18
 resized_screen_center = (0, 0)
 btn_offset=0.25
-CHAR_SIZE=60
+CHAR_SIZE=58
+COIN_SIZE=30
+COIN_HAVE_SIZE=38
+LOCK_SIZE=27
 white = (255, 255, 255)
 USER_ITEM_SIZE=20
+
+ship_color=(120,120,230)
+ship_price_color=(0,255,0)
+buy_color=(120,120,120)
+
+
+
+
+
 
 def check_scr_size(eventw, eventh): # resized screen
     if (eventw < width and eventh < height) or (eventw < width) or (eventh < height):
@@ -103,6 +115,10 @@ def load_image(name,sizex=-1,sizey=-1, colorkey=None):
     return image, image.get_rect()
 
 
+# for skin store
+field1, field1Rect = load_image("field.png") # skin
+field2, field2Rect = load_image("field.png") #skin
+
 class Var:
     user_id=''
     initial_id=0
@@ -119,6 +135,11 @@ class Var:
     char2_lst=['ship2.png']
     char3_lst=['ship3.png']
     char4_lst=['ship4.png']
+    char5_lst=['ship5.png']
+    char6_lst=['ship6.png']
+    char7_lst=['ship7.png']
+    
+    
 
     char=1
     lst=char1_lst # char img 초기화 
