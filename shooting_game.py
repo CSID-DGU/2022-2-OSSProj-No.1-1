@@ -127,7 +127,9 @@ while windowShow:
             elif userSelection == 7: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
                 sys.exit()
-
+            elif userSelection == 9:
+                pageResult, screen_size=Menu(screen_size).login_sign_page(userSelection)
+                
 
 #########################
 #    store and character setting    #

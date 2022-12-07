@@ -155,4 +155,3 @@ class Var:
 
     coin=0
 
-

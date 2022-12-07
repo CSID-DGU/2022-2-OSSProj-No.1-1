@@ -636,4 +636,3 @@ class CharStore(Store):
 
             
 
-
