@@ -8,6 +8,7 @@ from database import Database
 from coin import *
 from sprites import *
 from load import * 
+from store import Store,CharStore
 
 BLACK = (0, 0, 0)
 Black=(0,0,0)
@@ -150,7 +151,11 @@ class Menu:
         self.store=False
         self.buychar=False
 
+        # for character setting
+        self.char_setting=False
+
         # For inMenu_page setting
+        
         self.startText = self.font.render('SELECT MODE', 1, 'GREEN')
         self.startPos = self.startText.get_rect(topleft=self.blankPos.bottomleft)
         self.hiScoreText = self.font.render('HIGH SCORE', 1, 'GREEN')
@@ -167,15 +172,15 @@ class Menu:
         self.musicOffText = self.font.render('OFF', 1, RED)
         self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
         self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-        self.shopText = self.font.render('SHIP SHOP', 1, 'GREEN')
+        self.shopText = self.font.render('SHOP', 1, 'GREEN')
         self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
+        self.charsettingText = self.font.render('CHAR SETTING', 1, 'GREEN')
+        self.charsettingPos = self.charsettingText.get_rect(topleft=self.shopPos.bottomleft)
         self.helpText=self.font.render('HELP',1,'YELLOW')
-        self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
+        self.helpPos=self.helpText.get_rect(topleft=self.charsettingPos.bottomleft)
         self.quitText = self.font.render('QUIT', 1, 'YELLOW')
         self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
-        self.selectText = self.font.render('*', 1, WHITE)
-        self.selectPos = self.selectText.get_rect(topright=self.startPos.topleft)
-        self.languageText = self.font2.render('언어변경', 1, 'YELLOW')
+        self.languageText = self.font2.render('언어 변경', 1, 'YELLOW')
         self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
         # For Select Mode setting
@@ -493,6 +498,8 @@ class Menu:
                         Var.char=1
                         
                         Var.lst=Var.char1_lst
+                        Database().update_char_have(Var.user_id,'ship1') # char_have테이블 갱신
+                        
                         #Var.user_id=self.id
                         Var.go_menu=True
                         Database().update_char_data(Var.char,Var.user_id)
@@ -501,7 +508,8 @@ class Menu:
                         Var.char=2
                         
                         Var.lst=Var.char2_lst
-                        
+                        Database().update_char_have(Var.user_id,'ship2')
+                     
                         Var.go_menu=True
                         Database().update_char_data(Var.char,Var.user_id)
                         return Var.go_menu
@@ -509,7 +517,8 @@ class Menu:
                         Var.char=3
                         
                         Var.lst=Var.char3_lst
-                        
+                       
+                        Database().update_char_have(Var.user_id,'ship3')
                         Var.go_menu=True
                         Database().update_char_data(Var.char,Var.user_id)
                         return Var.go_menu
@@ -518,6 +527,7 @@ class Menu:
                         
                         Var.lst=Var.char4_lst
                         
+                        Database().update_char_have(Var.user_id,'ship4')
                         Database().update_char_data(Var.char,Var.user_id)
                         Var.go_menu=True
                         
@@ -654,143 +664,7 @@ class Menu:
             pygame.display.flip()
 
 
-    def char_store(self):
-        self.buychar=True
-        # 가격
-        s1_price=Database().load_shipprice('ship1')
-        s2_price=Database().load_shipprice('ship2')
-        s3_price=Database().load_shipprice('ship3')
-        s4_price=Database().load_shipprice('ship4')
-
-        #폰트
-        ship1_price=self.font.render(f"x {s1_price}",True,Black)
-        ship2_price=self.font.render(f"x {s2_price}",True,Black)
-        ship3_price=self.font.render(f"x {s3_price}",True,Black)
-        ship4_price=self.font.render(f"x {s4_price}",True,Black)
-
-        # ship
-        ship1_image,ship1_rect=load_image('ship.png')
     
-        ship1_image=transform.scale(ship1_image,(CHAR_SIZE, CHAR_SIZE))
-    
-        ship2_image,ship2_rect=load_image('ship2.png')
-        ship2_image=transform.scale(ship2_image,(CHAR_SIZE, CHAR_SIZE))
-  
-        ship3_image,ship3_rect=load_image('ship3.png')
-        ship3_image=transform.scale(ship3_image,(CHAR_SIZE, CHAR_SIZE))
-
-        ship4_image,ship4_rect=load_image('ship4.png')
-        ship4_image=transform.scale(ship4_image,(CHAR_SIZE, CHAR_SIZE))
-
-        # buy pos
-        shipopt={1:ship1_rect,2:ship2_rect,3:ship3_rect,4:ship4_rect}
-        buytext=self.font.render('BUY',True,Black)
-        buytext_rect=buytext.get_rect(center=shipopt[self.selection].center)
-
-        # user coin
-        coin_item_count=Database().load_coin(Var.user_id)
-        user_coin_image,user_coin_rect=load_image('coin.png')
-        user_coin_image=transform.scale(user_coin_image,(USER_ITEM_SIZE,USER_ITEM_SIZE))
-    
-        user_coin=self.font.render(f'X {coin_item_count}',True,Black)
-
-        #user_char
-        user_char=Database().load_char_data(Var.user_id)
-        # 배치 
-        # 배치
-        (ship1_rect.centerx,ship1_rect.centery)=(width*0.2,height*0.37)
-        ship1_price_rect=ship1_price.get_rect(center=(width*0.23,height*(0.37+item_price_offset)))
-    #(no_money_rect.centerx,no_money_rect.centery)=(width*0.2,height*(0.37+item_price_offset))
-    
-    #
-        (ship2_rect.centerx,ship2_rect.centery)=(width*0.2,height*0.37)
-        ship2_price_rect=ship2_price.get_rect(center=(width*0.23,height*(0.37+item_price_offset)))
-    #(no_money_rect.centerx,no_money_rect.centery)=(width*0.2,height*(0.37+item_price_offset))
-    #
-        (ship3_rect.centerx,ship3_rect.centery)=(width*0.2,height*0.37)
-        ship3_price_rect=ship3_price.get_rect(center=(width*0.23,height*(0.37+item_price_offset)))
-   # (no_money_rect.centerx,no_money_rect.centery)=(width*0.2,height*(0.37+item_price_offset))
-
-    #
-        (ship4_rect.centerx,ship4_rect.centery)=(width*0.2,height*0.37)
-        ship4_price_rect=ship4_price.get_rect(center=(width*0.23,height*(0.37+item_price_offset)))
-    #(no_money_rect.centerx,no_money_rect.centery)=(width*0.2,height*(0.37+item_price_offset))
-   
-        while self.buychar:
-            self.clock.tick(self.clockTime) 
-            self.flag=True
-            main_menu, main_menuRect = load_image("main_menu.png")
-            main_menu = pygame.transform.scale(main_menu, (500, 500))
-            main_menuRect.midtop = self.screen.get_rect().midtop
-            main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
-            self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
-
-            for event in pygame.event.get():
-                if (event.type == pygame.QUIT
-                    or event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_ESCAPE):
-                    pygame.quit()
-                    sys.exit()
-                elif (event.type == pygame.VIDEORESIZE):
-                    self.screen_size = min(event.w, event.h)
-                    if self.screen_size <= 300:
-                        self.screen_size = 300
-                    self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                    self.ratio = (self.screen_size / 500)
-                    self.font = pygame.font.Font(None, round(36*self.ratio))
-                elif (event.type == pygame.KEYDOWN
-                    and event.key == pygame.K_RETURN):
-                    if self.showbuychar:
-                        self.showbuychar=False
-                    elif self.selection==1 and coin_item_count >=s1_price and user_char!=1:
-                        Var.char=1
-                        Var.lst=Var.char1_lst
-                        Database().update_char_data(1,Var.user_id)
-                        Database().buy_char(Var.user_id,s1_price)
-                    elif self.selection==2 and coin_item_count >=s2_price and user_char!=2:
-                        Var.char=2
-                        Var.lst=Var.char2_lst
-                        Database().update_char_data(2,Var.user_id)
-                        Database().buy_char(Var.user_id,s2_price)
-
-                    elif self.selection==3 and coin_item_count >=s3_price and user_char!=3:
-                        Var.char=3
-                        Var.lst=Var.char3_lst
-                        Database().update_char_data(3,Var.user_id)
-                        Database().buy_char(Var.user_id,s3_price)
-
-                    elif self.selection==4 and coin_item_count >=s4_price and user_char!=4:
-                        Var.char=4
-                        Var.lst=Var.char4_lst
-                        Database().update_char_data(4,Var.user_id)
-                        Database().buy_char(Var.user_id,s4_price)
-
-                    elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
-                    and self.selection>1 and not showbuychar ):
-                        self.selection-=1
-                    elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT
-                    and self.selection<len(shipopt) and not showbuychar ):
-                        self.selection+=1
-
-            self.screen.blit(ship1_image,ship1_rect)
-            self.screen.blit(ship2_image,ship2_rect)
-            self.screen.blit(ship3_image,ship3_rect)
-            self.screen.blit(ship4_image,ship4_rect)
-
-            shipopt={1:ship1_rect,2:ship2_rect,3:ship3_rect,4:ship4_rect}
-            buytext=self.font.render('BUY',True,Black)
-            buytext_rect=buytext.get_rect(center=shipopt[self.selection].center)
-            #rectlist=[ship1_rect,ship2_rect,ship3_rect]
-            #for x in rectlist:
-              #  self.screen.blit(x)
-            #self.textOverlays=zip([self.ship1text,self.ship2text,self.ship3text,self.ship4text,self.selectText],
-            #[self.ship1Pos,self.ship2Pos,self.ship3Pos,self.ship4Pos,self.selectPos])
-            #for txt,pos in self.textOverlays:
-            #    self.screen.blit(txt,pos)
-            pygame.display.flip()
-                        
-                        
-
     def inMenu_page(self):
         self.inMenu = True
         cnt=0
@@ -869,12 +743,15 @@ class Menu:
                         #     player.original = player.image
                         #     player.shield, player.rect = load_image('ship4_shield.png', -1)
                         #self.showShop = True
-                    elif self.selection == 6:
+                    elif self.selection==6: # character setting page 
+                        self.char_setting=True
+                        return 6,self.screen_size
+                    elif self.selection == 7:
                         cnt+=1
                         self.showHelp=True                                        
-                    elif self.selection == 7:
-                        return 7, self.screen_size
                     elif self.selection == 8:
+                        return 8, self.screen_size
+                    elif self.selection == 9:
                         self.language_checker.change_language()
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
@@ -882,14 +759,16 @@ class Menu:
                     and not self.showHiScores
                     and not self.showSelectModes
                     and not self.showHelp
-                    and not self.store):
+                    and not self.store
+                    and not self.char_setting):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.menuDict)
                     and not self.showHiScores
                     and not self.showSelectModes
-                    and not self.store):
+                    and not self.store
+                    and not self.char_setting):
                     self.selection += 1
                 #ship 고르기
                 """
@@ -988,10 +867,12 @@ class Menu:
                 self.musicOffText = self.font.render('OFF', 1, RED)
                 self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
                 self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-                self.shopText = self.font.render('SHIP SHOP', 1, 'GREEN')
+                self.shopText = self.font.render('SHOP', 1, 'GREEN')
                 self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
+                self.charsettingText = self.font.render('CHAR SETTING', 1, 'GREEN')
+                self.charsettingPos = self.charsettingText.get_rect(topleft=self.shopPos.bottomleft)
                 self.helpText=self.font.render('HELP',1,'YELLOW')
-                self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
+                self.helpPos=self.helpText.get_rect(topleft=self.charsettingPos.bottomleft)
                 self.quitText = self.font.render('QUIT', 1, 'YELLOW')
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
                 self.languageText = self.font2.render('언어 변경', 1, 'YELLOW')
@@ -1017,16 +898,18 @@ class Menu:
                 self.musicOffText = self.font2.render('꺼짐', 1, RED)
                 self.musicOnPos = self.musicOnText.get_rect(topleft=self.musicPos.topright)
                 self.musicOffPos = self.musicOffText.get_rect(topleft=self.musicPos.topright)
-                self.shopText = self.font2.render('비행기 상점', 1,'GREEN')
+                self.shopText = self.font2.render('상점', 1,'GREEN')
                 self.shopPos = self.shopText.get_rect(topleft=self.musicPos.bottomleft)
+                self.charsettingText = self.font.render('캐릭터 변경', 1, 'GREEN')
+                self.charsettingPos = self.charsettingText.get_rect(topleft=self.shopPos.bottomleft)
                 self.helpText=self.font2.render('도움말',1,'YELLOW')
-                self.helpPos=self.helpText.get_rect(topleft=self.shopPos.bottomleft)
+                self.helpPos=self.helpText.get_rect(topleft=self.charsettingPos.bottomleft)
                 self.quitText = self.font2.render('게임 종료', 1, 'YELLOW')
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
                 self.languageText = self.font2.render('LANGUAGE CHANGE', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
-            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos, 8: self.languagePos}
+            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos,6:self.charsettingPos, 7:self.helpPos, 8: self.quitPos, 9: self.languagePos}
             self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship_menuDict[self.ship_selection.get_ship_selection()].inflate(0,60).midbottom)
             self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
 
@@ -1044,7 +927,8 @@ class Menu:
                     menu_size = (500,500)
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                     
-            
+           # elif self.char_setting:
+            #    CharStore(self.screen_size).char_setting()
             elif self.showShop:
                 # self.screen.blit(self.title,self.titleRect)
                 self.screen.blit(self.ship1, self.ship1Rect)
@@ -1056,11 +940,11 @@ class Menu:
             
             else:
                 self.textOverlays = zip([self.blankText,self.startText, self.hiScoreText, self.helpText, self.fxText,
-                                    self.musicText, self.shopText, self.quitText, self.selectText,
+                                    self.musicText, self.shopText, self.charsettingText,self.quitText, self.selectText,
                                     self.fxOnText if self.soundFX else self.fxOffText,
                                     self.musicOnText if self.music else self.musicOffText,self.languageText],
                                 [self.blankPos,self.startPos, self.hiScorePos, self.helpPos, self.fxPos,
-                                    self.musicPos, self.shopPos, self.quitPos, self.selectPos,
+                                    self.musicPos, self.shopPos, self.charsettingPos,self.quitPos, self.selectPos,
                                     self.fxOnPos if self.soundFX else self.fxOffPos,
                                     self.musicOnPos if self.music else self.musicOffPos,self.languagePos])
             for txt, pos in self.textOverlays:

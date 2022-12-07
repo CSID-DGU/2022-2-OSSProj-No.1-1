@@ -96,6 +96,7 @@ while windowShow:
     # userSelection 1부터 6까지
     inMainMenu=True
     instore=False
+    incharsetting=False
     while inMainMenu:
         userSelection, screen_size=Menu(screen_size).inMenu_page() 
         flag=True
@@ -121,13 +122,18 @@ while windowShow:
                     flag=False
                     inMainMenu=False # 상점 접속
                     instore=True
-            elif userSelection == 6: # main menu에서 quit 버튼 
+            elif userSelection==6:
+                flag=False
+                inMainMenu=False
+                CharStore(screen_size).char_setting()
+               # incharSetting=True
+            elif userSelection == 7: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
                 sys.exit()
 
 
 #########################
-#    Start Game Loop    #
+#    store and character setting    #
 #########################
     if instore==True:
         if pageResult=='charstore':
@@ -136,6 +142,12 @@ while windowShow:
         elif pageResult=='skinstore':
             print('skin store접속')
 
+    #if incharsetting==True:
+     #   CharStore(screen_size).char_setting()
+
+#########################
+#    Start Game Loop    #
+#########################
     if pageResult == 'SingleMode': 
         print('Play Single mode')
         Single.playGame(screen_size)

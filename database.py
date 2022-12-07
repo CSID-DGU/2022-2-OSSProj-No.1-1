@@ -234,6 +234,34 @@ class Database(object):
 
         return data['price']
         
+    def update_char_have(self,user_id,type): #char_have 테이블 업데이트
+        curs=self.score_db.cursor()
+        sql='select * from char_have where user_id=%s'
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data: # update함
+            sql='update char_have set {0}=1 where user_id=%s'.format(type)
+            curs.execute(sql,user_id)
+            self.score_db.commit()
+            curs.close()
+            
+        else: # 처음일경우
+            sql='insert into char_have(user_id,{0}) values(%s,1)'.format(type)
+            curs.execute(sql,user_id)
+            self.score_db.commit()
+            curs.close()
+
+    def check_char_have(self,user_id,ship_type): # 있으면 1
+        curs=self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql='select * from char_have where user_id=%s'
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        data=data[ship_type]
+        return data
+        
+
+
+
 
         
 

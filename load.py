@@ -130,7 +130,7 @@ class Var:
     char3_price=100
     char4_price=200
     # for char_setting
-    char_have=[char]
+    char_have=[]
 
     coin=0
 
