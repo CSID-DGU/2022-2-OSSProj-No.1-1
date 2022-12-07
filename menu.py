@@ -819,7 +819,7 @@ class Menu:
                 self.languageText = self.font2.render('LANGUAGE CHANGE', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
 
-            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos, 6:self.helpPos, 7: self.quitPos, 8: self.languagePos}
+            self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos,6:self.charsettingPos, 7:self.helpPos, 8: self.quitPos, 9: self.languagePos}
             self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship_menuDict[self.ship_selection.get_ship_selection()].inflate(0,60).midbottom)
             self.selectPos = self.selectText.get_rect(topright=self.menuDict[self.selection].topleft)
 
