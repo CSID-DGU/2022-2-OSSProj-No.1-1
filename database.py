@@ -164,11 +164,34 @@ class Database(object):
         sql="UPDATE user_info SET user_coin=%s WHERE user_id=%s"
         curs.execute(sql,(newcoins,user_id))
         self.score_db.commit()
-       
-
 
         curs.close()
 
+
+    def load_coin(self,user_id):
+        curs=self.score_db.cursor()
+        sql="SELECT * FROM user_info where user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        curs.close()
+        return data[1]
+    
+    def buy_char(self,user_id,price):
+        curs=self.score_db.cursor()
+        sql="select * from user_info where user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        result=data[1]-price
+        
+        #바뀐 코인으로 업데이트
+        sql="update user_info set user_coin=%s where user_id=%s"
+        curs.execute(sql,(result,user_id))
+        self.score_db.commit()
+
+        
+        curs.close()
+        return result
+        
     
         
     def update_char_data(self,user_char,user_id): # 캐릭터 추가/변경
@@ -195,12 +218,51 @@ class Database(object):
         curs.execute(sql, user_id)
         data = curs.fetchone()  # 리스트 안에 딕셔너리가 있는 형태
         curs.close()
-        print("ID : ",data['user_id'])
+        #print("ID : ",data['user_id'])
         
-        print("CHAR : ",data['user_character'])
+        #print("CHAR : ",data['user_character'])
         return data['user_character']
 
     
+
+    def load_shipprice(self,name):
+        curs=self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql="SELECT * FROM ship WHERE name=%s"
+        curs.execute(sql,name)
+        data=curs.fetchone()
+        curs.close()
+
+        return data['price']
+        
+    def update_char_have(self,user_id,type): #char_have 테이블 업데이트
+        curs=self.score_db.cursor()
+        sql='select * from char_have where user_id=%s'
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data: # update함
+            sql='update char_have set {0}=1 where user_id=%s'.format(type)
+            curs.execute(sql,user_id)
+            self.score_db.commit()
+            curs.close()
+            
+        else: # 처음일경우
+            sql='insert into char_have(user_id,{0}) values(%s,1)'.format(type)
+            curs.execute(sql,user_id)
+            self.score_db.commit()
+            curs.close()
+
+    def check_char_have(self,user_id,ship_type): # 있으면 1
+        curs=self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql='select * from char_have where user_id=%s'
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        data=data[ship_type]
+        return data
+        
+
+
+
+
         
 
                     
