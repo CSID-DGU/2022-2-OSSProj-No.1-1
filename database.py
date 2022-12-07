@@ -225,7 +225,16 @@ class Database(object):
 
     
 
-    
+    def load_shipprice(self,name):
+        curs=self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql="SELECT * FROM ship WHERE name=%s"
+        curs.execute(sql,name)
+        data=curs.fetchone()
+        curs.close()
+
+        return data['price']
+        
+
         
 
                     

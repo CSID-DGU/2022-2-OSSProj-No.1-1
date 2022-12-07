@@ -6,6 +6,7 @@ from menu import *
 from mode_single import *
 from mode_pvp import *
 from load import Var # id, 점수 자동저장을 위한 var
+from store import Store,CharStore
 
 
 if not pygame.mixer:
@@ -94,6 +95,7 @@ while windowShow:
     # 로그인 후
     # userSelection 1부터 6까지
     inMainMenu=True
+    instore=False
     while inMainMenu:
         userSelection, screen_size=Menu(screen_size).inMenu_page() 
         flag=True
@@ -112,9 +114,13 @@ while windowShow:
                 if pageResult == BACK:
                     flag = False
             elif userSelection==5:
-                pageResult,screen_size=Menu(screen_size).store_page()
-                if pageResult==True:
+                pageResult,screen_size=Menu(screen_size).select_store_page()
+                if pageResult==BACK:
                     flag=False
+                elif (pageResult=='charstore' or pageResult=='skinstore') :
+                    flag=False
+                    inMainMenu=False # 상점 접속
+                    instore=True
             elif userSelection == 6: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
                 sys.exit()
@@ -123,6 +129,12 @@ while windowShow:
 #########################
 #    Start Game Loop    #
 #########################
+    if instore==True:
+        if pageResult=='charstore':
+            print('char store접속')
+            CharStore(screen_size).char_store()
+        elif pageResult=='skinstore':
+            print('skin store접속')
 
     if pageResult == 'SingleMode': 
         print('Play Single mode')
