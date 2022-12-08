@@ -171,6 +171,7 @@ class EPlayer(MasterSprite):
         self.move_left_press = 0
         self.move_right_press = 0
         self.alive = True
+        self.rect = self.image.get_rect()
 
     def initializeKeys(self):
         keyState = pygame.key.get_pressed()
@@ -733,14 +734,14 @@ class Enemy(MasterSprite):
         # 0:애니메이션 없음, 1: 포열 여는 애니메이션, 2: 레이저 발사, 3:발사 후 대기, 4:포열을 닫는 애니메이션
         self.turret_status = TURRET_STOP
         self.id = uuid.uuid4()
-
-    def update(self, Extreme):
+        
+    def update(self, screen_size):
+        self.screen_size = screen_size
         self.fire_frame += 1        
         self.animation_frame += 1
-        extreme = Extreme()
-        ty = extreme.player.rect.centery
+        ty = EPlayer.rect.centery
         sy = self.rect.centery
-        tx = extreme.player.rect.centerx
+        tx = EPlayer.rect.centerx
         sx = self.rect.centerx
         self.rect = self.image.get_rect()
         self.rect.center = [self.x, self.y]
@@ -759,7 +760,7 @@ class Enemy(MasterSprite):
                 if self.turret_status == TURRET_STOP:
                     self.turret_status = 1
                 elif self.turret_status == TURRET_FIRE:
-                    self.createBullet(extreme.bullet_group, sx, sy, tx, ty, 15, self.speed)
+                    self.createBullet(extreme.bullet_group, sx, sy, self.tx, self.ty, 15, self.speed)
                     self.turret_status = TURRET_WAIT
                     self.animation_frame = -30
                 elif self.turret_status == TURRET_WAIT:
@@ -812,3 +813,82 @@ class Enemy6(Enemy):
         super().__init__('6', screen_size)
         self.rect.center = [600, 300]
             
+class HomingLaserHeader(MasterSprite):
+    def __init__(self, sx, sy, tx, ty, rad, speed):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(img_dir + "/data/homing_laser_01.png").convert_alpha()
+        self.speed = 1
+        self.max_speed = 8
+        self.angle = math.atan2(ty - sy, tx - sx)
+        self.rect = self.image.get_rect()
+        self.rect.center = [sx, sy]
+        self.dx = math.cos(self.angle) * self.speed
+        self.dy = math.sin(self.angle) * self.speed
+        self.x = sx
+        self.y = sy
+        self.tracking = True
+
+    def update(self, EPlayer):
+        if self.tracking:      
+            tx = EPlayer.rect.x
+            ty = EPlayer.rect.y
+            sx = self.rect.x
+            sy = self.rect.y
+            self.angle = math.atan2(ty - sy, tx - sx)
+            self.dx = math.cos(self.angle) * self.speed
+            self.dy = math.sin(self.angle) * self.speed            
+
+        if (self.rect.y > EPlayer.rect.y - 60 and self.rect.y < EPlayer.rect.y + 60) and \
+            (self.rect.x > EPlayer.rect.x - 60 and self.rect.x < EPlayer.rect.x + 60):            
+            self.dx = math.cos(self.angle) * self.max_speed
+            self.dy = math.sin(self.angle) * self.max_speed
+            self.tracking = False
+        
+        self.x += self.dx
+        self.y += self.dy
+        self.rect.centerx = int(self.x)
+        self.rect.centery = int(self.y)
+
+        if self.max_speed > self.speed:
+            self.speed += 0.3
+
+        homingLaserShadow = HomingLaserTail(self.x, self.y)
+        extreme.bullet_group.add(homingLaserShadow)
+
+        if self.rect.y < -100:
+            self.kill()
+        elif self.rect.y > 900:
+            self.kill()
+        elif self.rect.x < -100:
+            self.kill()
+        elif self.rect.x > 900:
+            self.kill()
+
+class HomingLaserTail(MasterSprite):
+    def __init__(self, sx, sy):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = [pygame.image.load(img_dir + "/data/homing_laser_01.png").convert_alpha()
+                     , pygame.image.load(img_dir + "/data/homing_laser_02.png").convert_alpha()
+                     , pygame.image.load(img_dir + "/data/homing_laser_03.png").convert_alpha()
+                     , pygame.image.load(img_dir + "/data/homing_laser_04.png").convert_alpha()
+                     , pygame.image.load(img_dir + "/data/homing_laser_05.png").convert_alpha()
+                      ]
+        self.image = self.images[0]
+        self.rect = self.image.get_rect()
+        self.rect.center = [sx, sy]
+        self.count = 0
+
+    def update(self, EPlayer):
+        self.count += 1        
+        if self.count <= 5:
+            self.image = self.images[0]
+        elif self.count <= 10:
+            self.image = self.images[1]
+        elif self.count <= 15:
+            self.image = self.images[2]
+        elif self.count <= 20:
+            self.image = self.images[3]
+        elif self.count <= 25:
+            self.image = self.images[4]
+        else:
+            self.kill()

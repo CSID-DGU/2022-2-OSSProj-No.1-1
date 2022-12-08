@@ -78,6 +78,13 @@ class Extreme():
         player.life = 3
         bullet_group = pygame.sprite.Group()
         
+        enemy1 = Enemy1(screen_size)
+        enemy2 = Enemy2(screen_size)
+        enemy3 = Enemy3(screen_size)
+        enemy4 = Enemy4(screen_size)
+        enemy5 = Enemy5(screen_size)
+        enemy6 = Enemy6(screen_size)
+        
         initialEnemyTypes = (Enemy1, Enemy2, Enemy3, Enemy4, Enemy5, Enemy6)
         
         # Score Function
@@ -117,8 +124,9 @@ class Extreme():
         # Prepare game objects : reset
             # Reset Sprite groups
             alldrawings = pygame.sprite.Group()
-            allsprites = pygame.sprite.RenderPlain((player,))
+            allsprites = pygame.sprite.RenderPlain((player, ))
             MasterSprite.allsprites = allsprites
+            MasterSprite.allsprites.add(enemy1)
             Enemy.pool = pygame.sprite.Group(
                 [enemy(screen_size) for enemy in initialEnemyTypes])
             Enemy.active = pygame.sprite.Group()
@@ -170,6 +178,7 @@ class Extreme():
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                         ratio = (screen_size / 600)
                         font = pygame.font.Font(None, round(36*ratio))
+                        leftCountFont = pygame.font.Font(None, round(60*ratio))
                     # Player Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction.keys()):
@@ -248,7 +257,76 @@ class Extreme():
 
                             alldrawings.update()
                             pygame.display.flip()
-                        
+                
+            # Collision Detection
+                # monster
+                # for enemy in Enemy.active:
+                #     for bomb in bombs:
+                #         if pygame.sprite.collide_circle(
+                #                 bomb, monster) and monster in Monster.active:
+                #             if monster.pType != 'grey' :
+                #                 if monster.pType == 'boss':
+                #                     if boss.health >= 1 :
+                #                         boss.health -= 1
+                #                     else :
+                #                         monster.table() 
+                #                         Explosion.position(monster.rect.center)
+                #                         monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                #                 else:
+                #                     monster.table()
+                #                     Explosion.position(monster.rect.center)
+                #                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                #             beamFired += 1
+                #             if soundFX:
+                #                 bear_explode_sound.play()
+                #     for beam in Beam.active:
+                #         if pygame.sprite.collide_rect(
+                #                 beam, monster) and monster in Monster.active:
+                #             beam.table()
+                #             if monster.pType != 'grey' :
+                #                 beam.table()
+                #                 if monster.pType == 'boss':
+                #                     if boss.health >= 1 :
+                #                         boss.health -= 1                        
+                #                     else :         
+                #                         monster.table()                  
+                #                         Explosion.position(monster.rect.center)
+                #                         monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                #                 else:
+                #                     monster.table()
+                #                     Explosion.position(monster.rect.center)
+                #                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                #             if soundFX:
+                #                 bear_explode_sound.play()
+                #             if soundFX:
+                #                 bear_explode_sound.play()
+                #     if pygame.sprite.collide_rect(monster, player) :
+                #         if player.shieldUp:
+                #             monster.table()
+                #             Explosion.position(monster.rect.center)
+                #             monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                #             beamFired += 1
+                #             player.shieldUp = False
+                #         elif player.life > 1:   # life
+                #             monster.table()
+                #             Explosion.position(monster.rect.center)
+                #             monstersLeftThisWave -= 1
+                #             score += 1
+                #             player.life -= 1
+                #         else:
+                #             restart = False
+                #             player.alive = False
+                #             player.remove(allsprites)
+                #             Explosion.position(player.rect.center)
+                #             if soundFX:
+                #                 kirin_explode_sound.play() ## 변경사항
+                
+
+            # Update Monsters
+                if curTime <= 0 :
+                    curTime = Period
+                elif curTime > 0:
+                    curTime -= 1        
                         
             # Update text overlays
                 waveText = font.render("Wave: " + str(wave), 1, 'WHITE')
