@@ -5,6 +5,7 @@ from database import Database
 from menu import *
 from mode_single import *
 from mode_pvp import *
+from mode_extreme import *
 from load import Var # id, 점수 자동저장을 위한 var
 
 
@@ -103,7 +104,7 @@ while windowShow:
                 if pageResult == BACK: # back
                     flag = False
                 elif (pageResult == 'SingleMode' or  # select mode결과 
-                    pageResult == 'TimeMode' or # time mode 삭제
+                    pageResult == 'ExtremeMode' or # time mode 삭제
                     pageResult == 'PvpMode'):
                     flag = False
                     inMainMenu = False # 게임 화면 접속
@@ -125,9 +126,10 @@ while windowShow:
     if pageResult == 'SingleMode': 
         print('Play Single mode')
         Single.playGame(screen_size)
-    elif pageResult == 'TimeMode':
-        print('Play Time mode')
-        Time.playGame(screen_size)
+    elif pageResult == 'ExtremeMode':
+        print('Play Extreme mode')
+        extreme = Extreme()
+        extreme.playGame(screen_size)
     elif pageResult == 'PvpMode':
         print('Play Pvp mode')
         Pvp.playGame(screen_size)

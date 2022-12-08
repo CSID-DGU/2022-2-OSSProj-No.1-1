@@ -34,7 +34,7 @@ class Single():
         pygame.init()
         ratio = (screen_size / 400)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's Player!")
+        pygame.display.set_caption("Let's Play!")
         pygame.mouse.set_visible(0)
 
     # Prepare background image
@@ -205,8 +205,6 @@ class Single():
             friendshipBeamCount = friendshipBeamTime
             broccoliTime  = 8 * clockTime
             broccoliCount = broccoliTime
-            pepper_chiliTime  = 8 * clockTime
-            pepper_chiliCount = pepper_chiliTime
             
             player.alive = True
             player.life = 3
@@ -267,13 +265,6 @@ class Single():
                             Beam.position(player.rect.midtop)
                             beam.speed = 1.5
                             beamFired += 1
-                            
-                        # elif pepper_chili:
-                        #     Beam.position(player.rect.midtop)
-                        #     speed = newspeed
-                        #     player.speed = speed
-                        #     player.speedUp()
-                        #     beamFired += 1
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -517,15 +508,6 @@ class Single():
                         beam.speed = 1
                         broccoli = False
                         broccoliCount = broccoliTime
-                # if pepper_chili:
-                #     if pepper_chiliCount > 0:
-                #         pepper_chiliCount -= 1
-                #     elif pepper_chiliCount == 0:
-                #         speed = org_speed
-                #         player.speed = speed
-                #         player.speedUp()
-                #         pepper_chili = False
-                #         pepper_chiliCount = pepper_chiliTime
                 # item - friendship
                 miniplayer.rect.bottomright = player.rect.bottomleft
                 if friendship:

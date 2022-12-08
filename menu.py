@@ -181,10 +181,10 @@ class Menu:
         # For Select Mode setting
         self.singleText = self.font.render('SINGLE MODE', 1, 'WHITE')
         self.singlePos = self.singleText.get_rect(midtop=self.screen.get_rect().center)
-        self.timeText = self.font.render('TIME MODE', 1, "WHITE")
-        self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
+        self.extremeText = self.font.render('EXTREME MODE', 1, "WHITE")
+        self.extremePos = self.extremeText.get_rect(topleft=self.singlePos.bottomleft)
         self.pvpText = self.font.render('PVP MODE ', 1, 'WHITE')
-        self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
+        self.pvpPos = self.pvpText.get_rect(topleft=self.extremePos.bottomleft)
         self.backText=self.font.render('BACK',1,'WHITE')
         self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
         self.selectText = self.font.render('*', 1, 'YELLOW')
@@ -238,9 +238,9 @@ class Menu:
         # For selection '*' setting        
         self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selextPos=''
-        self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
+        self.selectModeDict = {1:self.singlePos,2:self.extremePos,3:self.pvpPos,4:self.backPos}
         self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.helpPos,6: self.quitPos}
-        self.selectScoresDict = {1:self.singlePos,2:self.timePos,3:self.backPos}
+        self.selectScoresDict = {1:self.singlePos,2:self.extremePos,3:self.backPos}
         self.menuDict = {1: self.loginPos, 2: self.signPos,3:self.quitPos}
         self.loginDict={}
         self.selection = 1
@@ -890,7 +890,7 @@ class Menu:
         main_menuRect.midtop = self.screen.get_rect().midtop
         inSelectMenu=True
         showSingleMode = False
-        showTimeMode = False
+        showExtremeMode = False
         showPvpMode = False
         
         while inSelectMenu:
@@ -918,8 +918,8 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     if showSingleMode:
                         showSingleMode = False
-                    elif showTimeMode:
-                        showTimeMode = False
+                    elif showExtremeMode:
+                        showExtremeMode = False
                     elif showPvpMode:
                         showPvpMode = False
                     elif self.selection == 1:
@@ -928,7 +928,7 @@ class Menu:
                         return selectMode, self.screen_size
                     elif self.selection == 2:
                         inSelectMenu = False
-                        selectMode = 'TimeMode'
+                        selectMode = 'ExtremeMode'
                         return selectMode, self.screen_size
                     elif self.selection == 3:
                         inSelectMenu = False
@@ -941,14 +941,14 @@ class Menu:
                     and event.key == pygame.K_UP
                     and self.selection > 1
                     and not showSingleMode
-                    and not showTimeMode
+                    and not showExtremeMode
                     and not showPvpMode):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.selectModeDict)
                     and not showSingleMode
-                    and not showTimeMode
+                    and not showExtremeMode
                     and not showPvpMode):
                     self.selection += 1
             
@@ -956,19 +956,19 @@ class Menu:
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
             self.singleText = self.font.render('SINGLE', 1, 'WHITE')
             self.singlePos = self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, 'WHITE')
-            self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
+            self.extremeText = self.font.render('EXTREME', 1, 'WHITE')
+            self.extremePos = self.extremeText.get_rect(topleft=self.singlePos.bottomleft)
             self.pvpText = self.font.render('PVP', 1, 'WHITE')
-            self.pvpPos = self.pvpText.get_rect(topleft=self.timePos.bottomleft)
+            self.pvpPos = self.pvpText.get_rect(topleft=self.extremePos.bottomleft)
             self.backText=self.font.render('BACK',1,'WHITE')
             self.backPos=self.backText.get_rect(topleft=self.pvpPos.bottomleft)
             
-            self.selectModeDict = {1:self.singlePos,2:self.timePos,3:self.pvpPos,4:self.backPos}
+            self.selectModeDict = {1:self.singlePos,2:self.extremePos,3:self.pvpPos,4:self.backPos}
             self.selectText = self.font.render('*', 1, 'WHITE')
             self.selectPos = self.selectText.get_rect(topright=self.selectModeDict[self.selection].topleft)
 
-            textOverlays = zip([self.blankText,self.singleText,self.timeText,self.pvpText,self.selectText,self.backText],
-            [self.blankPos,self.singlePos,self.timePos,self.pvpPos,self.selectPos,self.backPos])
+            textOverlays = zip([self.blankText,self.singleText,self.extremeText,self.pvpText,self.selectText,self.backText],
+            [self.blankPos,self.singlePos,self.extremePos,self.pvpPos,self.selectPos,self.backPos])
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             
@@ -1031,12 +1031,12 @@ class Menu:
             self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
             self.singleText=self.font.render('SINGLE  ',1,'WHITE')
             self.singlePos=self.singleText.get_rect(topleft=self.blankPos.bottomleft)
-            self.timeText = self.font.render('TIME', 1, "WHITE")
-            self.timePos = self.timeText.get_rect(topleft=self.singlePos.bottomleft)
+            self.extremeText = self.font.render('EXTREME', 1, "WHITE")
+            self.extremePos = self.extremeText.get_rect(topleft=self.singlePos.bottomleft)
             self.backText = self.font.render('BACK', 1, 'WHITE')
-            self.backPos = self.backText.get_rect(topleft=self.timePos.bottomleft)
+            self.backPos = self.backText.get_rect(topleft=self.extremePos.bottomleft)
 
-            selectScoresDict = {1:self.singlePos,2:self.timePos,3:self.backPos}
+            selectScoresDict = {1:self.singlePos,2:self.extremePos,3:self.backPos}
             self.selectPos= self.selectText.get_rect(topright=selectScoresDict[self.selection].topleft)
 
             self.highScoreTexts = [self.font.render("NAME", 1, RED), #폰트 렌터
@@ -1081,8 +1081,8 @@ class Menu:
                 #self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                 #textOverlays = zip(self.timeHighScoreTexts, self.timeHighScorePos)
             else:
-                textOverlays = zip([self.blankText,self.singleText, self.timeText,self.backText,self.selectText],
-                                [self.blankPos,self.singlePos, self.timePos,self.backPos, self.selectPos])
+                textOverlays = zip([self.blankText,self.singleText, self.extremeText,self.backText,self.selectText],
+                                [self.blankPos,self.singlePos, self.extremePos,self.backPos, self.selectPos])
             for txt, pos in textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
