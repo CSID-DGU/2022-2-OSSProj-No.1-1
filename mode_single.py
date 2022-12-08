@@ -39,8 +39,8 @@ class Single():
 
     # Prepare background image
         # Game field
-        field1, field1Rect = load_image("field.png")
-        field2, field2Rect = load_image("field.png")
+        field1, field1Rect = load_image("field.png") # skin
+        field2, field2Rect = load_image("field.png") #skin
         field1Rect.midtop = screen.get_rect().midtop
         field2Rect.midbottom = field1Rect.midtop
 

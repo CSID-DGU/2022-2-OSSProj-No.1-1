@@ -7,6 +7,8 @@ from mode_single import *
 from mode_pvp import *
 from mode_extreme import *
 from load import Var # id, 점수 자동저장을 위한 var
+from store import Store,CharStore
+from load import * 
 
 
 if not pygame.mixer:
@@ -95,6 +97,8 @@ while windowShow:
     # 로그인 후
     # userSelection 1부터 6까지
     inMainMenu=True
+    instore=False
+    incharsetting=False
     while inMainMenu:
         userSelection, screen_size=Menu(screen_size).inMenu_page() 
         flag=True
@@ -112,7 +116,16 @@ while windowShow:
                 pageResult, screen_size = Menu(screen_size).score_page()
                 if pageResult == BACK:
                     flag = False
-            elif userSelection == 6: # main menu에서 quit 버튼 
+            elif userSelection==5:
+                flag=False
+                inMainMenu=False
+                CharStore(screen_size).char_store()
+            elif userSelection==6:
+                flag=False
+                inMainMenu=False
+                CharStore(screen_size).char_setting()
+               # incharSetting=True
+            elif userSelection == 7: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
                 sys.exit()
             elif userSelection == 9:
@@ -120,9 +133,14 @@ while windowShow:
                 
 
 #########################
-#    Start Game Loop    #
+#    store and character setting    #
 #########################
 
+
+
+#########################
+#    Start Game Loop    #
+#########################
     if pageResult == 'SingleMode': 
         print('Play Single mode')
         Single.playGame(screen_size)
