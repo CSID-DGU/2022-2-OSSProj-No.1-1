@@ -146,8 +146,7 @@ while windowShow:
         Single.playGame(screen_size)
     elif pageResult == 'ExtremeMode':
         print('Play Extreme mode')
-        extreme = Extreme()
-        extreme.playGame(screen_size)
+        Extreme.playGame(screen_size)
     elif pageResult == 'PvpMode':
         print('Play Pvp mode')
         Pvp.playGame(screen_size)

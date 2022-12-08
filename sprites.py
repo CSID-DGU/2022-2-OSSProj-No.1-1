@@ -145,7 +145,7 @@ class FriendShip(MasterSprite):
         pygame.sprite.Sprite.kill(self)
 
 class EPlayer(MasterSprite):
-    def __init__(self, x, y, screen_size):
+    def __init__(self, screen_size):
         super().__init__()
         self.image, self.rect = load_image(Var.lst[0], -1) # 캐릭터 이미지
         self.original = self.image
@@ -165,7 +165,7 @@ class EPlayer(MasterSprite):
         self.life = 3
         self.speed = None
         self.org_speed = self.speed
-        self.rect.center = [x, y]
+        self.rect.center = [400, 600]
         self.move_left = False
         self.move_right = False
         self.move_left_press = 0
@@ -203,18 +203,6 @@ class EPlayer(MasterSprite):
                   or newvert.bottom >= self.area.bottom):
             self.rect = newvert
 
-        if self.shieldUp and self.image != self.shield:
-            self.image = self.shield
-
-        if self.fartNow and self.image == self.original:
-            self.image = self.fart
-
-        if (not self.shieldUp or not self.fartNow) and self.image != self.original:
-            self.image = self.original
-
-
-    def bomb(self):
-        return Bomb(self)
     
     def speedUp(self):
         keyState = pygame.key.get_pressed()
@@ -715,7 +703,10 @@ class BroccoliBeamfast(Power):
         
 # Extreme Enemy
 class Enemy(MasterSprite):
-    def __init__(self, x, y):
+    pool = pygame.sprite.Group()
+    active = pygame.sprite.Group()
+    
+    def __init__(self, kindof, screen_size):
         pygame.sprite.Sprite.__init__(self)
         self.images = \
             [pygame.image.load(img_dir + "/data/laser_turret_01.png")
@@ -728,10 +719,10 @@ class Enemy(MasterSprite):
         self.image = self.images[0]
         self.image_idx = 0
         self.rect = self.image.get_rect()
-        self.rect.center = [x, y]
+        self.rect.center = [0, 0]
         self.speed = 4
-        self.x = x
-        self.y = y
+        self.x = self.rect.centerx
+        self.y = self.rect.centery
         self.theta = 0
         self.angle = 0        
         self.animation_frame = 0
@@ -791,3 +782,33 @@ class Enemy(MasterSprite):
         enemyBullet = HomingLaserHeader(sx, sy, tx, ty, 0, speed)
         bullet_group.add(enemyBullet)
 
+class Enemy1(Enemy):
+    def __init__(self, screen_size):
+        super().__init__('1', screen_size)
+        self.rect.center = [100, 300]
+        
+class Enemy2(Enemy):
+    def __init__(self, screen_size):
+        super().__init__('2', screen_size)
+        self.rect.center = [200, 200]
+            
+class Enemy3(Enemy):
+    def __init__(self, screen_size):
+        super().__init__('3', screen_size)
+        self.rect.center = [300, 100]
+        
+class Enemy4(Enemy):
+    def __init__(self, screen_size):
+        super().__init__('4', screen_size)
+        self.rect.center = [400, 100]
+
+class Enemy5(Enemy):
+    def __init__(self, screen_size):
+        super().__init__('5', screen_size)
+        self.rect.center = [500, 200]
+
+class Enemy6(Enemy):
+    def __init__(self, screen_size):
+        super().__init__('6', screen_size)
+        self.rect.center = [600, 300]
+            
