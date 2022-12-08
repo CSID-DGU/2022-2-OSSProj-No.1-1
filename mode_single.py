@@ -190,8 +190,6 @@ class Single():
             curTime = 0
             powerTime = 8 * clockTime
             powerTimeLeft = powerTime
-            powerdownTime = 8 * clockTime
-            powerdownTimeLeft = powerdownTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
@@ -219,7 +217,6 @@ class Single():
                 
             # Drop Items
                 powerTimeLeft -= 1
-                powerdownTimeLeft -= 1
                 if powerTimeLeft <= 0:
                     powerTimeLeft = powerTime
                     random.choice(powerTypes)(screen_size).add(powers, allsprites)
