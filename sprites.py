@@ -143,81 +143,6 @@ class FriendShip(MasterSprite):
     def remove(self) :
         pygame.sprite.Sprite.kill(self)
 
-class EPlayer(MasterSprite):
-    def __init__(self, screen_size):
-        super().__init__()
-        self.image, self.rect = load_image(Var.lst[0], -1) # 캐릭터 이미지
-        self.original = self.image
-        self.shield, self.rect = load_image('ship_shield.png', -1) # 쉴드 상태 캐릭터 이미지
-        self.fart, self.rect = load_image('explosion.png', -1) # 폭탄 상태 캐릭터 이미지
-        self.screen_size = screen_size
-        self.ratio = (self.screen_size / 400) # 비율 변동
-        self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        self.area = self.screen.get_rect()
-        self.rect.midbottom = (self.screen.get_width() // 2, self.area.bottom)
-        self.radius = max(self.rect.width, self.rect.height)
-        self.alive = True
-        self.shieldUp = False
-        self.fartNow = False
-        self.vert = 0
-        self.horiz = 0
-        self.life = 3
-        self.speed = None
-        self.org_speed = self.speed
-        self.rect.center = [400, 600]
-        self.move_left = False
-        self.move_right = False
-        self.move_left_press = 0
-        self.move_right_press = 0
-        self.alive = True
-        self.rect = self.image.get_rect()
-
-    def initializeKeys(self):
-        keyState = pygame.key.get_pressed()
-        self.vert = 0
-        self.horiz = 0
-        if keyState[pygame.K_w]:
-            self.vert -= 2 * MasterSprite.speed
-        if keyState[pygame.K_a]:
-            self.horiz -= 2 * MasterSprite.speed
-        if keyState[pygame.K_s]:
-            self.vert += 2 * MasterSprite.speed
-        if keyState[pygame.K_d]:
-            self.horiz += 2 * MasterSprite.speed
-
-    def update(self, screen_size): 
-        self.screen_size = screen_size
-        newpos = self.rect.move((self.horiz, self.vert))
-        newhoriz = self.rect.move((self.horiz, 0))
-        newvert = self.rect.move((0, self.vert))
-
-        if not (newpos.left <= self.area.left
-                or newpos.top <= self.area.top
-                or newpos.right >= self.area.right
-                or newpos.bottom >= self.area.bottom):
-            self.rect = newpos
-        elif not (newhoriz.left <= self.area.left
-                  or newhoriz.right >= self.area.right):
-            self.rect = newhoriz
-        elif not (newvert.top <= self.area.top
-                  or newvert.bottom >= self.area.bottom):
-            self.rect = newvert
-
-    
-    def speedUp(self):
-        keyState = pygame.key.get_pressed()
-        if keyState[pygame.K_w]:
-            self.vert -= 2 * self.speed
-        if keyState[pygame.K_a]:
-            self.horiz -= 2 * self.speed
-        if keyState[pygame.K_s]:
-            self.vert += 2 * self.speed
-        if keyState[pygame.K_d]:
-            self.horiz += 2 * self.speed
-            
-        newpos = self.rect.move((self.horiz, self.vert))
-        newhoriz = self.rect.move((self.horiz, 0))
-        newvert = self.rect.move((0, self.vert))
 
 class FriendShip(MasterSprite):
     def __init__(self, screen_size):
@@ -641,193 +566,148 @@ class BroccoliBeamfast(Power):
         super().__init__('broccoli', screen_size)
         self.pType = 'broccoli'
         
-# Extreme Enemy
-class Enemy(MasterSprite):
+# Extreme mode Monsters
+class Monster2(MasterSprite):
     pool = pygame.sprite.Group()
     active = pygame.sprite.Group()
-    
-    def __init__(self, kindof, screen_size):
-        pygame.sprite.Sprite.__init__(self)
-        self.images = \
-            [pygame.image.load(img_dir + "/data/laser_turret_01.png")
-            ,pygame.image.load(img_dir + "/data/laser_turret_02.png")
-            ,pygame.image.load(img_dir + "/data/laser_turret_03.png")
-            ,pygame.image.load(img_dir + "/data/laser_turret_04.png")
-            ,pygame.image.load(img_dir + "/data/laser_turret_05.png")
-            ,pygame.image.load(img_dir + "/data/laser_turret_06.png")
-            ]
-        self.image = self.images[0]
-        self.image_idx = 0
-        self.rect = self.image.get_rect()
-        self.rect.center = [0, 0]
-        self.speed = 4
-        self.x = self.rect.centerx
-        self.y = self.rect.centery
-        self.theta = 0
-        self.angle = 0        
-        self.animation_frame = 0
-        self.animation_interval = 5
-        self.fire_frame = 0
-        self.fire_delay_frame = random.randint(200, 300)
-        self.aiming = True
-        # 0:애니메이션 없음, 1: 포열 여는 애니메이션, 2: 레이저 발사, 3:발사 후 대기, 4:포열을 닫는 애니메이션
-        self.turret_status = TURRET_STOP
-        self.id = uuid.uuid4()
-        
+
+    def __init__(self, trait, screen_size):
+        super().__init__()
+        self.image, self.rect = load_image(
+            trait + '.png', -1)
+        self.initialRect = self.rect
+        self.screen_size = screen_size
+        self.ratio = (self.screen_size / 500)
+        self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+        self.area = self.screen.get_rect()
+        self.loc = 0
+        self.radius = min(self.rect.width // 2, self.rect.height // 2)
+
+    @classmethod
+    def position(cls):
+        if len(cls.pool) > 0 and cls.numOffScreen > 0:
+            monster = random.choice(cls.pool.sprites())
+            if isinstance(monster, Blue2):
+                monster.rect.midbottom = (random.choice(
+                    (monster.area.left, monster.area.right)),
+                    random.randint(
+                    monster.area.centery, monster.area.bottom))
+            elif isinstance(monster, Blue3):
+                monster.rect.midtop = (random.choice(
+                    (monster.area.left, monster.area.right)),
+                    random.randint(
+                    monster.area.top, monster.area.centery))
+            else:
+                monster.rect.midtop = (random.randint(
+                    monster.area.left
+                    + monster.rect.width // 2,
+                    monster.area.right
+                    - monster.rect.width // 2),
+                    monster.area.top)
+            monster.initialRect = monster.rect
+            monster.loc = 0
+            monster.add(cls.allsprites, cls.active)
+            monster.remove(cls.pool)
+            monster.numOffScreen -= 1
+
     def update(self, screen_size):
         self.screen_size = screen_size
-        self.fire_frame += 1        
-        self.animation_frame += 1
-        ty = EPlayer.rect.centery
-        sy = self.rect.centery
-        tx = EPlayer.rect.centerx
-        sx = self.rect.centerx
-        self.rect = self.image.get_rect()
-        self.rect.center = [self.x, self.y]
+        horiz, vert = self.moveFunc()
+        if horiz + self.initialRect.x > self.screen_size:
+            horiz -= self.screen_size + self.rect.width
+        elif horiz + self.initialRect.x < 0 - self.rect.width:
+            horiz += self.screen_size + self.rect.width
+        self.rect = self.initialRect.move((horiz, self.loc + vert))
+        self.loc = self.loc + MasterSprite.speed
+        if self.rect.top > self.area.bottom:
+            self.table()
+            Monster2.numOffScreen += 1
 
-        if self.turret_status == TURRET_OPEN:
-            inc = 1
-        elif self.turret_status == TURRET_CLOSE:
-            inc = -1
-        else:
-            inc = 0
+    def table(self):
+        self.kill()
+        self.add(self.pool)
+
+# Blue (left, right)
+# Green, Yellow (Top)
+# Pink (Bottom)
+
+class Green2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('green',screen_size)
+        self.amp = random.randint(self.rect.width, 3.5 * self.rect.width) ## 적 좌우 움직임 변동
+        self.freq = (1 / 20)
+        self.moveFunc = lambda: (self.amp * math.sin(self.loc * self.freq), 0)
+        self.pType = 'green2'
+
+
+class Pink2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('pink',screen_size)
+        self.amp = random.randint(self.rect.width, 2 * self.rect.width)
+        self.freq = 1 / (25) # 원 움직임 변동 횟수 늘리기
+        self.moveFunc = lambda: (
+            self.amp *
+            math.sin(
+                self.loc *
+                self.freq),
+            self.amp *
+            math.cos(
+                self.loc *
+                self.freq))
+        self.pType = 'pink2'
+
+
+class Yellow2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('yellow',screen_size)
+        self.slope = random.choice(list(x for x in range(-3, 3) if x != 0)) # 범위 -3 ~ 3이 게임 진행에 있어 안정적
+        self.period = random.choice(list(4 * x for x in range(15, 41))) # 기본 적의 좌우 움직이는 주기 start를 늘림
+        self.moveFunc = lambda: (self.slope * (self.loc % self.period)
+                                 if self.loc % self.period < self.period // 2
+                                 else self.slope * self.period // 2
+                                 - self.slope * ((self.loc % self.period)
+                                 - self.period // 2), 0)
+        self.pType = 'yellow2'
+
+
+class Grey2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('grey',screen_size)
+        self.moveFunc = lambda: (0, 1.5 * self.loc)
+        self.pType = 'grey2'
+
+# Blue (bottomleft, bottomright)
+class Blue2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('blue',screen_size)
+        self.moveFunc = lambda: (1.8 * self.loc, 0)
+        self.pType = 'blue2'
+
+    def update(self, screen_size):
+        horiz, vert = self.moveFunc()
+        horiz = (-horiz if self.initialRect.center[0] == self.area.right
+                 else horiz)
+        if (horiz + self.initialRect.left > self.area.right
+                or horiz + self.initialRect.right < self.area.left):
+            self.table()
+            Monster2.numOffScreen += 1
+        self.rect = self.initialRect.move((horiz, vert))
+        self.loc = self.loc + MasterSprite.speed        
         
-        if self.fire_frame >= self.fire_delay_frame:
-            if self.animation_frame >= self.animation_interval:
-                self.image_idx += inc
-                self.animation_frame = 0
-                if self.turret_status == TURRET_STOP:
-                    self.turret_status = 1
-                elif self.turret_status == TURRET_FIRE:
-                    self.createBullet(extreme.bullet_group, sx, sy, self.tx, self.ty, 15, self.speed)
-                    self.turret_status = TURRET_WAIT
-                    self.animation_frame = -30
-                elif self.turret_status == TURRET_WAIT:
-                    self.turret_status = TURRET_CLOSE
-
-                if self.image_idx > 5:
-                    self.image_idx = 5
-                    self.turret_status = TURRET_FIRE
-                elif self.image_idx < 0:
-                    self.image_idx = 0
-                    self.turret_status = TURRET_STOP
-                    self.fire_frame = 0
-        
-        self.image = self.images[self.image_idx]
-    
-
-    def createBullet(self, bullet_group, sx, sy, tx, ty, theta, speed):
-        tx = sx - random.randint(50, 100)
-        ty = sy - random.randint(50, 100)
-        enemyBullet = HomingLaserHeader(sx, sy, tx, ty, 0, speed)
-        bullet_group.add(enemyBullet)
-
-class Enemy1(Enemy):
+# Blue (topleft, topright)
+class Blue3(Monster2):
     def __init__(self, screen_size):
-        super().__init__('1', screen_size)
-        self.rect.center = [100, 300]
-        
-class Enemy2(Enemy):
-    def __init__(self, screen_size):
-        super().__init__('2', screen_size)
-        self.rect.center = [200, 200]
-            
-class Enemy3(Enemy):
-    def __init__(self, screen_size):
-        super().__init__('3', screen_size)
-        self.rect.center = [300, 100]
-        
-class Enemy4(Enemy):
-    def __init__(self, screen_size):
-        super().__init__('4', screen_size)
-        self.rect.center = [400, 100]
+        super().__init__('blue',screen_size)
+        self.moveFunc = lambda: (1.8 * self.loc, 0)
+        self.pType = 'blue3'
 
-class Enemy5(Enemy):
-    def __init__(self, screen_size):
-        super().__init__('5', screen_size)
-        self.rect.center = [500, 200]
-
-class Enemy6(Enemy):
-    def __init__(self, screen_size):
-        super().__init__('6', screen_size)
-        self.rect.center = [600, 300]
-            
-class HomingLaserHeader(MasterSprite):
-    def __init__(self, sx, sy, tx, ty, rad, speed):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(img_dir + "/data/homing_laser_01.png").convert_alpha()
-        self.speed = 1
-        self.max_speed = 8
-        self.angle = math.atan2(ty - sy, tx - sx)
-        self.rect = self.image.get_rect()
-        self.rect.center = [sx, sy]
-        self.dx = math.cos(self.angle) * self.speed
-        self.dy = math.sin(self.angle) * self.speed
-        self.x = sx
-        self.y = sy
-        self.tracking = True
-
-    def update(self, EPlayer):
-        if self.tracking:      
-            tx = EPlayer.rect.x
-            ty = EPlayer.rect.y
-            sx = self.rect.x
-            sy = self.rect.y
-            self.angle = math.atan2(ty - sy, tx - sx)
-            self.dx = math.cos(self.angle) * self.speed
-            self.dy = math.sin(self.angle) * self.speed            
-
-        if (self.rect.y > EPlayer.rect.y - 60 and self.rect.y < EPlayer.rect.y + 60) and \
-            (self.rect.x > EPlayer.rect.x - 60 and self.rect.x < EPlayer.rect.x + 60):            
-            self.dx = math.cos(self.angle) * self.max_speed
-            self.dy = math.sin(self.angle) * self.max_speed
-            self.tracking = False
-        
-        self.x += self.dx
-        self.y += self.dy
-        self.rect.centerx = int(self.x)
-        self.rect.centery = int(self.y)
-
-        if self.max_speed > self.speed:
-            self.speed += 0.3
-
-        homingLaserShadow = HomingLaserTail(self.x, self.y)
-        extreme.bullet_group.add(homingLaserShadow)
-
-        if self.rect.y < -100:
-            self.kill()
-        elif self.rect.y > 900:
-            self.kill()
-        elif self.rect.x < -100:
-            self.kill()
-        elif self.rect.x > 900:
-            self.kill()
-
-class HomingLaserTail(MasterSprite):
-    def __init__(self, sx, sy):
-        pygame.sprite.Sprite.__init__(self)
-        self.images = [pygame.image.load(img_dir + "/data/homing_laser_01.png").convert_alpha()
-                     , pygame.image.load(img_dir + "/data/homing_laser_02.png").convert_alpha()
-                     , pygame.image.load(img_dir + "/data/homing_laser_03.png").convert_alpha()
-                     , pygame.image.load(img_dir + "/data/homing_laser_04.png").convert_alpha()
-                     , pygame.image.load(img_dir + "/data/homing_laser_05.png").convert_alpha()
-                      ]
-        self.image = self.images[0]
-        self.rect = self.image.get_rect()
-        self.rect.center = [sx, sy]
-        self.count = 0
-
-    def update(self, EPlayer):
-        self.count += 1        
-        if self.count <= 5:
-            self.image = self.images[0]
-        elif self.count <= 10:
-            self.image = self.images[1]
-        elif self.count <= 15:
-            self.image = self.images[2]
-        elif self.count <= 20:
-            self.image = self.images[3]
-        elif self.count <= 25:
-            self.image = self.images[4]
-        else:
-            self.kill()
+    def update(self, screen_size):
+        horiz, vert = self.moveFunc()
+        horiz = (-horiz if self.initialRect.center[0] == self.area.right
+                 else horiz)
+        if (horiz + self.initialRect.left > self.area.right
+                or horiz + self.initialRect.right < self.area.left):
+            self.table()
+            Monster2.numOffScreen += 1
+        self.rect = self.initialRect.move((horiz, vert))
+        self.loc = self.loc + MasterSprite.speed    
