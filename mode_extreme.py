@@ -4,10 +4,10 @@ import sys
 from pygame.locals import *
 
 from sprites import (MasterSprite, 
-                     Player, FriendShip, Monster, Beam, Explosion,
+                     Player, FriendShip, Monster2, Beam, Explosion,
                      BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
                      BroccoliBeamfast,
-                     Green, Yellow, Grey, Blue, Pink)
+                     Green2, Yellow2, Grey2, Blue2, Blue3, Pink2)
 from database import Database
 from load import load_image, load_sound, load_music
 from menu import *
@@ -81,7 +81,7 @@ class Extreme():
         player = Player(screen_size)
         miniplayer = FriendShip(screen_size)
         
-        initialMonsterTypes = (Green, Yellow)
+        initialMonsterTypes = (Green2, Yellow2, Blue2, Blue3, Pink2)
         powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
                         FriendPower, LifePower)
         bombs = pygame.sprite.Group()
@@ -92,13 +92,13 @@ class Extreme():
         # Score Function
         def kill_monster(monster, monstersLeftThisWave, score) :
             monstersLeftThisWave -= 1
-            if monster.pType == 'green':
+            if monster.pType == 'green2':
                 score += 1
-            elif monster.pType == 'yellow':
+            elif monster.pType == 'yellow2':
                 score += 2
-            elif monster.pType == 'blue':
+            elif monster.pType == 'blue2' or monster.pType == 'blue3':
                 score += 4
-            elif monster.pType == 'pink':
+            elif monster.pType == 'pink2':
                 score += 8
             return monstersLeftThisWave, score
 
@@ -142,16 +142,16 @@ class Extreme():
             alldrawings = pygame.sprite.Group()
             allsprites = pygame.sprite.RenderPlain((player,))
             MasterSprite.allsprites = allsprites
-            Monster.pool = pygame.sprite.Group(
-                [monster(screen_size) for monster in initialMonsterTypes for _ in range(5)])
-            Monster.active = pygame.sprite.Group()
+            Monster2.pool = pygame.sprite.Group(
+                [monster(screen_size) for monster in initialMonsterTypes for _ in range(7)])
+            Monster2.active = pygame.sprite.Group()
             Beam.pool = pygame.sprite.Group([Beam(screen_size) for _ in range(10)]) 
             Beam.active = pygame.sprite.Group()
             Explosion.pool = pygame.sprite.Group([Explosion(screen_size) for _ in range(10)])
             Explosion.active = pygame.sprite.Group()
 
             # Reset game contents
-            monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 1000, 0, 1000
+            monstersThisWave, monstersLeftThisWave, Monster2.numOffScreen = 1000, 0, 1000
             friendship = False
             doublebeam = False
             triplecupcake = False
@@ -333,10 +333,10 @@ class Extreme():
 
             # Collision Detection
                 # monster
-                for monster in Monster.active:
+                for monster in Monster2.active:
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
-                                bomb, monster) and monster in Monster.active:
+                                bomb, monster) and monster in Monster2.active:
                             if monster.pType != 'grey' :
                                 if monster.pType == 'boss':
                                     if boss.health >= 1 :
@@ -354,7 +354,7 @@ class Extreme():
                                 bear_explode_sound.play()
                     for beam in Beam.active:
                         if pygame.sprite.collide_rect(
-                                beam, monster) and monster in Monster.active:
+                                beam, monster) and monster in Monster2.active:
                             beam.table()
                             if monster.pType != 'grey' :
                                 beam.table()
@@ -422,7 +422,7 @@ class Extreme():
 
             # Update Bears
                 if curTime <= 0 and monstersLeftThisWave > 0 :
-                    Monster.position()
+                    Monster2.position()
                     curTime = bearPeriod
                 elif curTime > 0:
                     curTime -= 1
@@ -503,7 +503,7 @@ class Extreme():
                         beforeWavePos = beforeWaveText.get_rect(center=screen.get_rect().center)
                     else:
                         beforeWaveText = beforeWaveCountFont.render("", 1, BLACK)
-                        monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
+                        monstersLeftThisWave = Monster2.numOffScreen = monstersThisWave
                     text.extend([beforeWaveText])
                     textposition.extend([beforeWavePos])
 
