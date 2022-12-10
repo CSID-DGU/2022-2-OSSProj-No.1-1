@@ -435,7 +435,7 @@ class Single():
                             monstersLeftThisWave -= 1
                             score += 1
                             if monster.pType == 'boss':
-                                player.life -= 3
+                                player.life = 0
                             else:
                                 player.life -= 1
                         else:
@@ -560,7 +560,7 @@ class Single():
                         else:
                             monstersThisWave *= 2
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
-                        if wave == 1:
+                        if wave == 1:            
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
                             Monster.pool.add([Blue(screen_size) for _ in range(5)])

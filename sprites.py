@@ -387,19 +387,33 @@ class Blue(Monster):
 class Boss(Monster):
     def __init__(self, screen_size):
         super().__init__('boss', screen_size)
-        self.amp = random.randint(self.rect.width, self.rect.width)
-        self.freq = 1 / (35) # 원 움직임 변동 횟수 늘리기
+        self.amp = random.randint(self.rect.width, 2 * self.rect.width)
+        self.freq = 1 / (30) # 원 움직임 변동 횟수 늘리기
         self.moveFunc = lambda: (
             self.amp *
             math.sin(
                 self.loc *
-                self.freq),
+                self.freq), 
             self.amp *
             math.cos(
                 self.loc *
-                self.freq))
+                self.freq)
+            )
         self.pType = 'boss'
         self.health = 10
+    
+    def update(self, screen_size):
+        self.screen_size = screen_size
+        horiz, vert = self.moveFunc()
+        if horiz + self.initialRect.x > self.screen_size:
+            horiz -= self.screen_size + self.rect.width
+        elif horiz + self.initialRect.x < 0 - self.rect.width:
+            horiz += self.screen_size + self.rect.width
+        self.rect = self.initialRect.move((horiz, self.loc))
+        self.loc = self.loc + MasterSprite.speed
+        if self.rect.top > self.area.bottom:
+            self.table()
+            Monster.numOffScreen += 1
     
     def update(self, screen_size):
         horiz, vert = self.moveFunc()
