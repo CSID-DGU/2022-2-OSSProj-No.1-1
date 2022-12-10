@@ -472,17 +472,17 @@ class Single():
                 waveText = font.render("Wave: " + str(wave), 1, 'WHITE')
                 leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, 'WHITE')
                 scoreText = font.render("Score: " + str(score), 1, 'WHITE')
-                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
                 bHealthText = font.render("Boss Health: ", 1, 'WHITE')
+                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
 
                 wavePos = waveText.get_rect(topleft=screen.get_rect().topleft)
                 leftPos = leftText.get_rect(midtop=screen.get_rect().midtop)
                 scorePos = scoreText.get_rect(topright=screen.get_rect().topright)
-                bombPos = beamText.get_rect(bottomleft=screen.get_rect().bottomleft)
-                bHealthPos = bHealthText.get_rect(bottomright = bombPos.topright)
+                bHealthPos = bHealthText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bombPos = beamText.get_rect(bottomright=screen.get_rect().bottomright)
 
-                text = [waveText, leftText, scoreText, beamText, bHealthText]
-                textposition = [wavePos, leftPos, scorePos, bombPos, bHealthPos]
+                text = [waveText, leftText, scoreText, bHealthText, beamText]
+                textposition = [wavePos, leftPos, scorePos, bHealthPos, bombPos]
 
             # Update using items
                 # item - doublebeam, triplecupcake, broccoli
@@ -601,12 +601,12 @@ class Single():
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
                         
             # Update Boss life 
-                Bosslife0Rect.bottomleft = bHealthPos.bottomright
-                Bosslife1Rect.bottomleft = bHealthPos.bottomright
-                Bosslife2Rect.bottomleft = bHealthPos.bottomright
-                Bosslife3Rect.bottomleft = bHealthPos.bottomright
-                Bosslife4Rect.bottomleft = bHealthPos.bottomright
-                Bosslife5Rect.bottomleft = bHealthPos.bottomright               
+                Bosslife0Rect.topleft = bHealthPos.topright
+                Bosslife1Rect.topleft = bHealthPos.topright
+                Bosslife2Rect.topleft = bHealthPos.topright
+                Bosslife3Rect.topleft = bHealthPos.topright
+                Bosslife4Rect.topleft = bHealthPos.topright
+                Bosslife5Rect.topleft = bHealthPos.topright               
                 
                 boss_life_size = (round(Bosslife0.get_width() * ratio * 0.3), round(Bosslife0.get_height() * ratio * 0.5))  
                 
