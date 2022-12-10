@@ -50,7 +50,7 @@ class Ship_selection_check():
         
 class Menu:
     def __init__(self, screen_size):
-
+        scr_x , scr_y = pygame.display.get_surface().get_size()
         self.language_checker = Language_check()
         missile_sound = load_sound('missile.ogg')
         bomb_sound = load_sound('bomb.ogg')
@@ -348,6 +348,7 @@ class Menu:
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0))
 
             for event in pygame.event.get():
+                scr_x , scr_y = pygame.display.get_surface().get_size()
                 if (event.type == pygame.QUIT
                     or event.type == pygame.KEYDOWN
                     and event.key == pygame.K_ESCAPE):
@@ -590,7 +591,7 @@ class Menu:
     def inMenu_page(self):
         self.inMenu = True
         cnt=0
-
+        scr_x , scr_y = pygame.display.get_surface().get_size()
         while self.inMenu:
             self.clock.tick(self.clockTime) 
             self.flag=True
