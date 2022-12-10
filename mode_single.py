@@ -427,7 +427,10 @@ class Single():
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave -= 1
                             score += 1
-                            player.life -= 1
+                            if monster.pType == 'boss':
+                                player.life -= 3
+                            else:
+                                player.life -= 1
                         else:
                             restart = False
                             player.alive = False
