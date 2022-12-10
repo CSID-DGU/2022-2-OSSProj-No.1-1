@@ -105,18 +105,25 @@ class Single():
 
         # Score Function
         def kill_monster(monster, monstersLeftThisWave, score) :
-            monstersLeftThisWave -= 1
-            if monster.pType == 'green':
-                score += 1
-            elif monster.pType == 'yellow':
-                score += 2
-            elif monster.pType == 'blue':
-                score += 4
-            elif monster.pType == 'pink':
-                score += 8
-            elif monster.pType == 'boss':
-                monstersLeftThisWave -= 159
-                score += 20
+            if wave == 5:
+                if monster.pType == 'green' or monster.pType == 'yellow' or monster.pType == 'blue' or monster.pType == 'pink':
+                    score += 0
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 160
+                    score += 20
+            else:
+                monstersLeftThisWave -= 1
+                if monster.pType == 'green':
+                    score += 1
+                elif monster.pType == 'yellow':
+                    score += 2
+                elif monster.pType == 'blue':
+                    score += 4
+                elif monster.pType == 'pink':
+                    score += 8
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 159
+                    score += 20
             return monstersLeftThisWave, score
         
     # High Score
@@ -548,8 +555,6 @@ class Single():
                     elif betweenWaveCount == 0:
                         if wave % 5 == 0:
                             speed += 0.5
-                            MasterSprite.speed = speed
-                            player.initializeKeys()
                             monstersThisWave = 10
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
                         else:

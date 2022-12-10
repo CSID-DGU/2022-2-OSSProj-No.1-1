@@ -286,6 +286,11 @@ class Monster(MasterSprite):
                     random.randint(
                     (monster.area.bottom * 3) // 4,
                     monster.area.bottom))
+            elif isinstance(monster, Boss):
+                monster.rect.midtop = (random.choice(
+                    (monster.area.left, monster.area.right)),
+                    random.randint(
+                    monster.area.top, monster.area.centery))
             else:
                 monster.rect.midtop = (random.randint(
                     monster.area.left
