@@ -405,18 +405,25 @@ class Single():
         
      # Score Function
         def kill_monster(monster, monstersLeftThisWave, score) :
-            monstersLeftThisWave -= 1
-            if monster.pType == 'green':
-                score += 1
-            elif monster.pType == 'yellow':
-                score += 2
-            elif monster.pType == 'blue':
-                score += 4
-            elif monster.pType == 'pink':
-                score += 8
-            elif monster.pType == 'boss':
-                monstersLeftThisWave -= 159
-                score += 20
+            if wave == 5:
+                if monster.pType == 'green' or monster.pType == 'yellow' or monster.pType == 'blue' or monster.pType == 'pink':
+                    score += 0
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 160
+                    score += 20
+            else:
+                monstersLeftThisWave -= 1
+                if monster.pType == 'green':
+                    score += 1
+                elif monster.pType == 'yellow':
+                    score += 2
+                elif monster.pType == 'blue':
+                    score += 4
+                elif monster.pType == 'pink':
+                    score += 8
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 159
+                    score += 20
             return monstersLeftThisWave, score
         
     # High Score
@@ -726,7 +733,10 @@ class Single():
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave -= 1
                             score += 1
-                            player.life -= 1
+                            if monster.pType == 'boss':
+                                player.life = 0
+                            else:
+                                player.life -= 1
                         else:
                             restart = False
                             player.alive = False
@@ -771,17 +781,17 @@ class Single():
                 waveText = font.render("Wave: " + str(wave), 1, 'WHITE')
                 leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, 'WHITE')
                 scoreText = font.render("Score: " + str(score), 1, 'WHITE')
-                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
                 bHealthText = font.render("Boss Health: ", 1, 'WHITE')
+                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
 
                 wavePos = waveText.get_rect(topleft=screen.get_rect().topleft)
                 leftPos = leftText.get_rect(midtop=screen.get_rect().midtop)
                 scorePos = scoreText.get_rect(topright=screen.get_rect().topright)
-                bombPos = beamText.get_rect(bottomleft=screen.get_rect().bottomleft)
-                bHealthPos = bHealthText.get_rect(bottomright = bombPos.topright)
+                bHealthPos = bHealthText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bombPos = beamText.get_rect(bottomright=screen.get_rect().bottomright)
 
-                text = [waveText, leftText, scoreText, beamText, bHealthText]
-                textposition = [wavePos, leftPos, scorePos, bombPos, bHealthPos]
+                text = [waveText, leftText, scoreText, bHealthText, beamText]
+                textposition = [wavePos, leftPos, scorePos, bHealthPos, bombPos]
 
             # Update using items
                 # item - doublebeam, triplecupcake, broccoli
@@ -844,14 +854,12 @@ class Single():
                     elif betweenWaveCount == 0:
                         if wave % 5 == 0:
                             speed += 0.5
-                            MasterSprite.speed = speed
-                            player.initializeKeys()
                             monstersThisWave = 10
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
                         else:
                             monstersThisWave *= 2
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
-                        if wave == 1:
+                        if wave == 1:            
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
                             Monster.pool.add([Blue(screen_size) for _ in range(5)])
@@ -900,12 +908,12 @@ class Single():
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
                         
             # Update Boss life 
-                Bosslife0Rect.bottomleft = bHealthPos.bottomright
-                Bosslife1Rect.bottomleft = bHealthPos.bottomright
-                Bosslife2Rect.bottomleft = bHealthPos.bottomright
-                Bosslife3Rect.bottomleft = bHealthPos.bottomright
-                Bosslife4Rect.bottomleft = bHealthPos.bottomright
-                Bosslife5Rect.bottomleft = bHealthPos.bottomright               
+                Bosslife0Rect.topleft = bHealthPos.topright
+                Bosslife1Rect.topleft = bHealthPos.topright
+                Bosslife2Rect.topleft = bHealthPos.topright
+                Bosslife3Rect.topleft = bHealthPos.topright
+                Bosslife4Rect.topleft = bHealthPos.topright
+                Bosslife5Rect.topleft = bHealthPos.topright               
                 
                 boss_life_size = (round(Bosslife0.get_width() * ratio * 0.3), round(Bosslife0.get_height() * ratio * 0.5))  
                 
