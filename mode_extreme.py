@@ -291,24 +291,20 @@ class Extreme():
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                                     ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
-                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  # unpause
-                                    
-                                    if pauseMenu:
-                                        pauseMenu = True
-                                    elif selection == 1:
+                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
+                                    if selection == 1:
                                         pauseMenu = False
                                     elif selection == 2:
-                                        return 2, screen_size
-                                    elif (event.type == pygame.KEYDOWN
-                                        and event.key == pygame.K_UP
-                                        and selection > 1
-                                        and not showlogin):
-                                        selection -= 1
-                                    elif (event.type == pygame.KEYDOWN
+                                        inMenu =True
+                                        return inMenu, screen_size
+                                elif (event.type == pygame.KEYDOWN
                                         and event.key == pygame.K_DOWN
-                                        and selection < len(pauseMenuDict)
-                                        and not showlogin):
+                                        and selection < len(pauseMenuDict)):
                                         selection += 1
+                                elif (event.type == pygame.KEYDOWN
+                                        and event.key == pygame.K_UP
+                                        and selection > 1):
+                                        selection -= 1
                             
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
@@ -318,7 +314,6 @@ class Extreme():
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
                             selectText = font.render('*', 1, 'white')
 
-                            selection = 1
                             pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
                             
