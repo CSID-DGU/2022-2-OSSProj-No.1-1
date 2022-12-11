@@ -85,7 +85,7 @@ class Store(object):
         
         self.coin_item_count=Database().load_coin(self.user_id)
         user_coin=self.font.render(f'X{self.coin_item_count}',True,coin_color)
-        user_c_rect=user_coin.get_rect(topright=(self.width*(0.89+0.005),self.height*0.03))
+        user_c_rect=user_coin.get_rect(topright=(self.width*(0.89+0.002),self.height*0.03))
         self.screen.blit(self.coin_image,self.coin_rect)
         self.screen.blit(user_coin,user_c_rect)
 
@@ -135,48 +135,48 @@ class CharStore(Store):
         if self.selection==1 and self.coin_item_count > self.s1_price and not self.ship1_have:
             
             Var.char=1
-            Var.char_lst=Var.char1_lst
+            Var.lst=Var.char1_lst
             Database().update_char_have(self.user_id,'ship1') # 구매하면 1로 업데이트
             self.update(self.s1_price,1)
 
         elif self.selection==2 and self.coin_item_count > self.s2_price and not self.ship2_have:
             
             Var.char=2
-            Var.char_lst=Var.char2_lst
+            Var.lst=Var.char2_lst
             Database().update_char_have(self.user_id,'ship2')
             self.update(self.s2_price,2)
 
         elif self.selection==3 and self.coin_item_count>self.s3_price and not self.ship3_have:
             
             Var.char=3
-            Var.char_lst=Var.char3_lst
+            Var.lst=Var.char3_lst
             Database().update_char_have(self.user_id,'ship3')
             self.update(self.s3_price,3)
 
         elif self.selection==4 and self.coin_item_count>self.s4_price and not self.ship4_have:
             
             Var.char=4
-            Var.char_lst=Var.char4_lst
+            Var.lst=Var.char4_lst
             Database().update_char_have(self.user_id,'ship4')
             self.update(self.s4_price,4)
         elif self.selection==5 and self.coin_item_count>self.s5_price and not self.ship5_have:
             
             Var.char=5
-            Var.char_lst=Var.char5_lst
+            Var.lst=Var.char5_lst
             Database().update_char_have(self.user_id,'ship5')
             self.update(self.s5_price,5)
 
         elif self.selection==6 and self.coin_item_count>self.s6_price and not self.ship6_have:
             
             Var.char=6
-            Var.char_lst=Var.char6_lst
+            Var.lst=Var.char6_lst
             Database().update_char_have(self.user_id,'ship6')
             self.update(self.s6_price,6)
 
         elif self.selection==7 and self.coin_item_count>self.s7_price and not self.ship7_have:
             
             Var.char=7
-            Var.char_lst=Var.char7_lst
+            Var.lst=Var.char7_lst
             Database().update_char_have(self.user_id,'ship7')
             self.update(self.s7_price,7)
 
@@ -208,8 +208,8 @@ class CharStore(Store):
         self.ship_zips=zip([self.ship1_image,self.ship2_image,self.ship3_image,self.ship4_image],[self.ship1_rect,self.ship2_rect,self.ship3_rect,self.ship4_rect])
         for img,ship_rect in self.ship_zips:
             img.set_colorkey((0,0,0)) # 뒤에 검은 배경 지우기
-            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.2+ship_offset),self.height*0.37)
-            ship_offset+=0.18
+            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.18+ship_offset),self.height*0.3)
+            ship_offset+=0.2
 
             self.screen.blit(img,ship_rect)
         #ship5,6,7
@@ -225,8 +225,8 @@ class CharStore(Store):
         self.ship_zips2=zip([self.ship5_image,self.ship6_image,self.ship7_image],[self.ship5_rect,self.ship6_rect,self.ship7_rect])
         for img,ship_rect in self.ship_zips2:
             img.set_colorkey((0,0,0))
-            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.26+ship_offset),self.height*0.6)
-            ship_offset+=0.2
+            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.22+ship_offset),self.height*0.6)
+            ship_offset+=0.22
 
             self.screen.blit(img,ship_rect)
 
@@ -247,8 +247,8 @@ class CharStore(Store):
        
         for img,coin_img_rect in self.coin_img_zips:
             img.set_colorkey((0,0,0))
-            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.18+ship_offset),self.height*(0.37+coin_offset))
-            ship_offset+=0.18
+            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.16+ship_offset),self.height*(0.3+coin_offset))
+            ship_offset+=0.2
             self.screen.blit(img,coin_img_rect)
 
         # show 5,6,7 price
@@ -263,8 +263,8 @@ class CharStore(Store):
         self.coin_img_zips2=zip([self.coin5_image,self.coin6_image,self.coin7_image],[self.coin5_rect,self.coin6_rect,self.coin7_rect])
         for img,coin_img_rect in self.coin_img_zips2:
             img.set_colorkey((0,0,0))
-            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.22+ship_offset),self.height*(0.6+coin_offset))
-            ship_offset+=0.18
+            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.2+ship_offset),self.height*(0.6+coin_offset))
+            ship_offset+=0.22
             self.screen.blit(img,coin_img_rect)
 
 
@@ -276,8 +276,8 @@ class CharStore(Store):
         self.coin4_text=self.font.render(f'X{self.s4_price}',True,ship_price_color)
         self.coin_text_list=[self.coin1_text,self.coin2_text,self.coin3_text,self.coin4_text]
         for x in self.coin_text_list:
-            x_rect=x.get_rect(center=(self.width*(0.18+ship_offset+coin_text_offset),self.height*(0.37+coin_offset)))
-            ship_offset+=0.18
+            x_rect=x.get_rect(center=(self.width*(0.16+ship_offset+coin_text_offset),self.height*(0.3+coin_offset)))
+            ship_offset+=0.2
             self.screen.blit(x,x_rect)
         # coin price text 5,6,7
         ship_offset=0
@@ -287,8 +287,8 @@ class CharStore(Store):
         self.coin_text_list2=[self.coin5_text,self.coin6_text,self.coin7_text]
         
         for x in self.coin_text_list2:
-            x_rect=x.get_rect(center=(self.width*(0.22+ship_offset+coin_text_offset),self.height*(0.6+coin_offset)))
-            ship_offset+=0.18
+            x_rect=x.get_rect(center=(self.width*(0.2+ship_offset+coin_text_offset),self.height*(0.6+coin_offset)))
+            ship_offset+=0.22
             self.screen.blit(x,x_rect)
 
         #ship1,2,3,4 text
@@ -307,8 +307,8 @@ class CharStore(Store):
         ship_offset=0
         self.text_zips=zip([self.ship1_text,self.ship2_text,self.ship3_text,self.ship4_text],[self.ship1_pos,self.ship2_pos,self.ship3_pos,self.ship4_pos])
         for txt,pos in self.text_zips:
-            (pos.centerx,pos.centery)=(self.width*(0.2+ship_offset),self.height*(0.37+coin_offset+text_offset))
-            ship_offset+=0.18
+            (pos.centerx,pos.centery)=(self.width*(0.2+ship_offset),self.height*(0.3+coin_offset+text_offset))
+            ship_offset+=0.2
             
             self.screen.blit(txt,pos)
 
@@ -325,8 +325,8 @@ class CharStore(Store):
         self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text,self.back_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos,self.back_pos])
 
         for txt,pos in self.text_zips2:
-            (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.6+coin_offset+text_offset))
-            ship_offset+=0.2
+            (pos.centerx,pos.centery)=(self.width*(0.24+ship_offset),self.height*(0.6+coin_offset+text_offset))
+            ship_offset+=0.22
             
             self.screen.blit(txt,pos)
 
@@ -454,7 +454,7 @@ class CharStore(Store):
         for img,ship_rect,ship_have in self.ship_zips:
             img.set_colorkey((0,0,0,0)) # 검은색 배경 제거
            
-            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.2+ship_offset),self.height*0.4)
+            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.18+ship_offset),self.height*0.3)
             if ship_have==0:
                 img.convert_alpha()
                 img.set_alpha(30)
@@ -462,7 +462,7 @@ class CharStore(Store):
                 self.screen.blit(img,ship_rect)
                 self.screen.blit(self.lock1_image,self.lock1_rect)
            
-            ship_offset+=0.18
+            ship_offset+=0.2
             self.screen.blit(img,ship_rect)
         
         #ship 5,6,7 display
@@ -472,7 +472,7 @@ class CharStore(Store):
         for img,ship_rect,ship_have in self.ship_zips2:
             img.set_colorkey((0,0,0,0)) # 뒤에 검은색 배경 제거
             cnt=5
-            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.26+ship_offset),self.height*0.6)
+            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.22+ship_offset),self.height*0.55)
             if ship_have==0:
                 img.convert_alpha()
                 img.set_alpha(30)
@@ -480,7 +480,7 @@ class CharStore(Store):
                 self.screen.blit(img,ship_rect)
                 self.screen.blit(self.lock1_image,self.lock1_rect)
            
-            ship_offset+=0.2
+            ship_offset+=0.22
             self.screen.blit(img,ship_rect)
        
         #Ship text
@@ -500,8 +500,8 @@ class CharStore(Store):
         ship_offset=0
         self.text_zips=zip([self.ship1_text,self.ship2_text,self.ship3_text,self.ship4_text],[self.ship1_pos,self.ship2_pos,self.ship3_pos,self.ship4_pos])
         for txt,pos in self.text_zips:
-            (pos.centerx,pos.centery)=(self.width*(0.2+ship_offset),self.height*(0.4+text_offset))
-            ship_offset+=0.18
+            (pos.centerx,pos.centery)=(self.width*(0.2+ship_offset),self.height*(0.3+text_offset))
+            ship_offset+=0.2
             
             self.screen.blit(txt,pos)
 
@@ -518,8 +518,8 @@ class CharStore(Store):
         self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text,self.back_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos,self.back_pos])
 
         for txt,pos in self.text_zips2:
-            (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.6+text_offset))
-            ship_offset+=0.2
+            (pos.centerx,pos.centery)=(self.width*(0.24+ship_offset),self.height*(0.55+text_offset))
+            ship_offset+=0.22
             
             self.screen.blit(txt,pos)
 
@@ -528,37 +528,38 @@ class CharStore(Store):
         self.SET_pos=self.SET_text.get_rect(midbottom=self.ship_dict[self.selection].inflate(20,30).midbottom)
         self.screen.blit(self.SET_text,self.SET_pos)
 
+    # 유저 선택에 따라 캐릭터 세팅, db업데이트
     def new_char_set(self):
         if self.selection==1 and self.ship1_have:
             Var.char=1
-            Var.char_lst=Var.char1_lst
-            Database().update_char_data(1,self.user_id)
+            Var.lst=Var.char1_lst
+            Database().update_char_data(1,self.user_id) # db업데이트 : 유저의 현재 캐릭터
         elif self.selection==2 and self.ship2_have:
             Var.char=2
-            Var.char_lst=Var.char2_lst
+            Var.lst=Var.char2_lst
             Database().update_char_data(2,self.user_id)
         elif self.selection==3 and self.ship3_have:
             Var.char=3
-            Var.char_lst=Var.char3_lst
+            Var.lst=Var.char3_lst
             Database().update_char_data(3,self.user_id)
         elif self.selection==4 and self.ship4_have:
             Var.char=4
-            Var.char_lst=Var.char4_lst
+            Var.lst=Var.char4_lst
             Database().update_char_data(4,self.user_id)
 
         elif self.selection==5 and self.ship5_have:
             Var.char=5
-            Var.char_lst=Var.char5_lst
+            Var.lst=Var.char5_lst
             Database().update_char_data(5,self.user_id)
         
         elif self.selection==6 and self.ship6_have:
             Var.char=6
-            Var.char_lst=Var.char6_lst
+            Var.lst=Var.char6_lst
             Database().update_char_data(6,self.user_id)
         
         elif self.selection==7 and self.ship7_have:
             Var.char=7
-            Var.char_lst=Var.char7_lst
+            Var.lst=Var.char7_lst
             Database().update_char_data(7,self.user_id)
 
         elif self.selection ==8:
