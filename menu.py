@@ -70,32 +70,32 @@ class Menu:
         self.player = Player(screen_size)
         # For hiscore setting 
         self.hiScores=Database().getScores()
-        #self.timeHiScores=Database().getTimeScores()
+        
+        self.extremeScores=Database().getScores_extreme()
+        
         self.highScoreTexts = [self.font.render("NAME", 1, RED),
                         self.font.render("SCORE", 1, RED)]
         self.highScorePos = [self.highScoreTexts[0].get_rect(
                         topleft=self.screen.get_rect().inflate(-100, -100).topleft),
                         self.highScoreTexts[1].get_rect(
                         midtop=self.screen.get_rect().inflate(-100, -100).midtop)]
-       # self.timeHighScoreTexts= [self.font.render("NAME", 1, RED),
-                      #  self.font.render("SCORE", 1, RED),
-                      #  self.font.render("ACCURACY", 1, RED)]
-       # self.timeHighScorePos = [self.timeHighScoreTexts[0].get_rect(
-                       # topleft=self.screen.get_rect().inflate(-100, -100).topleft),
-                       # self.timeHighScoreTexts[1].get_rect(
-                        #midtop=self.screen.get_rect().inflate(-100, -100).midtop),
-                        #self.timeHighScoreTexts[2].get_rect(
-                        #topright=self.screen.get_rect().inflate(-100, -100).topright)]
+        self.extremeScoreTexts= [self.font.render("NAME", 1, RED),
+                        self.font.render("SCORE", 1, RED)]
+        self.extremeScorePos = [self.extremeScoreTexts[0].get_rect(
+                       topleft=self.screen.get_rect().inflate(-100, -100).topleft),
+                        self.extremeScoreTexts[1].get_rect(
+                        midtop=self.screen.get_rect().inflate(-100, -100).midtop)
+                        ]
         for hs in self.hiScores:
             self.highScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
                                 for x in range(2)])
             self.highScorePos.extend([self.highScoreTexts[x].get_rect(
                 topleft=self.highScorePos[x].bottomleft) for x in range(-2, 0)])
-        #for hs in self.timeHiScores:
-            #self.timeHighScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
-                               # for x in range(3)])
-           #self.timeHighScorePos.extend([self.timeHighScoreTexts[x].get_rect(
-                #topleft=self.timeHighScorePos[x].bottomleft) for x in range(-3, 0)])
+        for hs in self.extremeScores:
+            self.extremeScoreTexts.extend([self.font.render(str(hs[x]), 1, RED)
+                                for x in range(2)])
+            self.extremeScorePos.extend([self.extremeScoreTexts[x].get_rect(
+                topleft=self.extremeScorePos[x].bottomleft) for x in range(-2, 0)])
         
         # For init_page setting
         self.blankText=self.font.render('       ',1,BLACK)
