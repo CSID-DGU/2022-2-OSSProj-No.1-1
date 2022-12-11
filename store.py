@@ -225,7 +225,7 @@ class CharStore(Store):
         self.ship_zips2=zip([self.ship5_image,self.ship6_image,self.ship7_image],[self.ship5_rect,self.ship6_rect,self.ship7_rect])
         for img,ship_rect in self.ship_zips2:
             img.set_colorkey((0,0,0))
-            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.65+ship_offset),self.height)
+            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.26+ship_offset),self.height*0.6)
             ship_offset+=0.2
 
             self.screen.blit(img,ship_rect)
@@ -263,7 +263,7 @@ class CharStore(Store):
         self.coin_img_zips2=zip([self.coin5_image,self.coin6_image,self.coin7_image],[self.coin5_rect,self.coin6_rect,self.coin7_rect])
         for img,coin_img_rect in self.coin_img_zips2:
             img.set_colorkey((0,0,0))
-            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.22+ship_offset),self.height*(0.67+coin_offset))
+            (coin_img_rect.centerx,coin_img_rect.centery)=(self.width*(0.22+ship_offset),self.height*(0.6+coin_offset))
             ship_offset+=0.18
             self.screen.blit(img,coin_img_rect)
 
@@ -287,7 +287,7 @@ class CharStore(Store):
         self.coin_text_list2=[self.coin5_text,self.coin6_text,self.coin7_text]
         
         for x in self.coin_text_list2:
-            x_rect=x.get_rect(center=(self.width*(0.22+ship_offset+coin_text_offset),self.height*(0.67+coin_offset)))
+            x_rect=x.get_rect(center=(self.width*(0.22+ship_offset+coin_text_offset),self.height*(0.6+coin_offset)))
             ship_offset+=0.18
             self.screen.blit(x,x_rect)
 
@@ -325,7 +325,7 @@ class CharStore(Store):
         self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text,self.back_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos,self.back_pos])
 
         for txt,pos in self.text_zips2:
-            (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.67+coin_offset+text_offset))
+            (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.6+coin_offset+text_offset))
             ship_offset+=0.2
             
             self.screen.blit(txt,pos)
@@ -472,7 +472,7 @@ class CharStore(Store):
         for img,ship_rect,ship_have in self.ship_zips2:
             img.set_colorkey((0,0,0,0)) # 뒤에 검은색 배경 제거
             cnt=5
-            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.65+ship_offset),self.height)
+            (ship_rect.centerx,ship_rect.centery)=(self.width*(0.26+ship_offset),self.height*0.6)
             if ship_have==0:
                 img.convert_alpha()
                 img.set_alpha(30)
@@ -482,48 +482,7 @@ class CharStore(Store):
            
             ship_offset+=0.2
             self.screen.blit(img,ship_rect)
-        """
-        if self.ship1_have==0:
-                self.ship1_image.convert_alpha()
-                self.ship1_image.set_alpha(30)
-                self.lock1_rect=self.ship1_rect.topleft
-                self.screen.blit(self.lock1_image,self.lock1_rect)
-        if self.ship2_have==0:
-                self.ship2_image.convert_alpha()
-                self.ship2_image.set_alpha(30) # 이미지 투명도
-                self.lock2_rect=self.ship2_rect.topleft
-                self.screen.blit(self.lock2_image,self.lock2_rect)
-                    
-        if self.ship3_have==0:
-                self.ship3_image.convert_alpha()
-                self.ship3_image.set_alpha(30)
-                self.lock3_rect=self.ship3_rect.topleft
-                self.screen.blit(self.lock3_image,self.lock3_rect)
-
-        if self.ship4_have==0:
-                self.ship4_image.convert_alpha()
-                self.ship4_image.set_alpha(30)
-                self.lock4_rect=self.ship4_rect.topleft
-                self.screen.blit(self.lock4_image,self.lock4_rect)
-
-        if self.ship5_have==0:
-                self.ship5_image.convert_alpha()
-                self.ship5_image.set_alpha(30)
-                self.lock5_rect.center=self.ship5_rect.center
-                self.screen.blit(self.lock5_image,self.lock5_rect)
-
-        if self.ship6_have==0:
-                self.ship6_image.convert_alpha()
-                self.ship6_image.set_alpha(30)
-                self.lock6_rect.center=self.ship6_rect.center
-                self.screen.blit(self.lock6_image,self.lock6_rect)
-
-        if self.ship7_have==0:
-                self.ship7_image.convert_alpha()
-                self.ship7_image.set_alpha(30)
-                self.lock7_rect.center=self.ship7_rect.center
-                self.screen.blit(self.lock7_image,self.lock7_rect)
-        """
+       
         #Ship text
         
         self.ship1_text=self.font.render('Ship1',True,ship_color)
@@ -559,7 +518,7 @@ class CharStore(Store):
         self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text,self.back_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos,self.back_pos])
 
         for txt,pos in self.text_zips2:
-            (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.67+text_offset))
+            (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.6+text_offset))
             ship_offset+=0.2
             
             self.screen.blit(txt,pos)
@@ -637,14 +596,14 @@ class CharStore(Store):
                     self.ratio = (self.screen_size / 500)
                     self.font = pygame.font.Font(None, round(36*self.ratio))
                 elif (event.type == pygame.KEYDOWN and event.key==pygame.K_RETURN):
-                    if self.char_set:
-                        self.new_char_set()
+                  
+                    self.new_char_set()
                         
-                        if self.char_set:
-                            self.disp_setting()
-                            return True
-                        else:
-                            return BACK
+                    if self.char_set:
+                        self.disp_setting()
+                        return True
+                    else:
+                        return BACK
 
                         
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT):
