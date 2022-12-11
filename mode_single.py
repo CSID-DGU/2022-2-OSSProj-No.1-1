@@ -342,40 +342,10 @@ class Single():
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
                             selectText = font2.render('*', 1, 'white')
                             pauseMenuDict={1:continuePos,2:gotoMenuPos}
-                            
 
-                         
                             
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
-                            # highScoreTexts = [font.render("NAME", 1, RED),
-                            #                 font.render("SCORE", 1, RED)]
-                            # highScorePos = [highScoreTexts[0].get_rect(
-                            #                 topleft=screen.get_rect().inflate(-100, -100).topleft),
-                            #                 highScoreTexts[1].get_rect(
-                            #                 midtop=screen.get_rect().inflate(-100, -100).midtop)]
-                            # for hs in hiScores:
-                            #     highScoreTexts.extend([font.render(str(hs[x]), 1, BLACK)
-                            #                         for x in range(2)])
-                            #     highScorePos.extend([highScoreTexts[x].get_rect(
-                            #         topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
-
-                            # if showHiScores:
-                            #     menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                            #     screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                
-                            #     textOverlays = zip(highScoreTexts, highScorePos)
-                            # elif showHelp:
-                            #     if cnt%3==1:
-                            #         menu, menuRect = load_image("help1.png")
-                            #         menuRect.midtop = screen.get_rect().midtop
-                            #         menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                            #         screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                            #     elif cnt%3==2:
-                            #         menu, menuRect = load_image("help2.png") 
-                            #         menuRect.midtop = screen.get_rect().midtop
-                            #         menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                            #         screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                  
-                            # else:
                             textOverlays = zip([blankText,continueText, gotoMenuText, selectText],
                                                     [blankPos,continuePos, gotoMenuPos, selectPos])
                             for txt, pos in textOverlays:

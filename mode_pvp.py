@@ -116,32 +116,17 @@ class Pvp() :
             return monstersLeftThisWave, score
 
     # pause menu text
-        blankText=font.render('            ',1,BLACK)
+        blankText=font.render('            ',1,'white')
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
-        restartText = font.render('RESTART GAME', 1, BLACK)
-        restartPos = restartText.get_rect(topleft=blankPos.bottomleft)  
-        fxText = font.render('SOUND FX ', 1, BLACK)
-        fxPos = fxText.get_rect(topleft=restartPos.bottomleft)
-        fxOnText = font.render('ON', 1, RED)
-        fxOffText = font.render('OFF', 1, RED)
-        fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
-        fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
-        musicText = font.render('MUSIC', 1, BLACK)
-        musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
-        musicOnText = font.render('ON', 1, RED)
-        musicOffText = font.render('OFF', 1, RED)
-        musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
-        musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
-        helpText=font.render('HELP',1,BLACK)
-        helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
-        quitText = font.render('QUIT', 1, BLACK)
-        quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
-        selectText = font.render('*', 1, BLACK)
-        selectPos = selectText.get_rect(topright=restartPos.topleft)
+        continueText = font2.render('CONTINUE', 1, 'white')
+        continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
+        gotoMenuText = font2.render('GO TO MAIN', 1, 'white')
+        gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
+        selectText = font2.render('*', 1, 'white')
+        pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
         selection = 1
-        showHiScores = False 
-        showHelp=False
-
+        selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
+        
 
     #########################
     #    Start Pvp Loop    #
@@ -308,13 +293,16 @@ class Pvp() :
                         and event.key == pygame.K_p):
                         pauseMenu = True
                         cnt=0
-                        
+                        pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                        selection=1
                         while pauseMenu:
+                            #clock.tick(clockTime)
                             clock.tick(clockTime)
-
                             pause_size = (round(pause.get_width() * ratio), round(pause.get_height() * ratio))
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
-
+                            pause = pygame.transform.scale(pause, (600, 600))
+                            pauseRect.midtop = screen.get_rect().midtop
+                            
                             for event in pygame.event.get():
                                 if (event.type == pygame.QUIT
                                     or event.type == pygame.KEYDOWN
@@ -324,101 +312,41 @@ class Pvp() :
                                 # Resize windowSize
                                 elif (event.type == pygame.VIDEORESIZE):
                                     screen_size = min(event.w, event.h)
-                                    if screen_size <= 300:
-                                        screen_size = 300
+                                    if screen_size <= 400:
+                                        screen_size = 400
+                                    if screen_size >= 900:
+                                        screen_size = 900
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                                    ratio = (screen_size / 500)
+                                    ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_p): 
-                                    pauseMenu = False
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_RETURN):
-                                    if showHelp:
-                                        cnt+=1
-                                        if cnt%3!=0:
-                                            showHelp=True
-                                        else:
-                                            showHelp=False
-                                    elif selection == 1:    
+                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
+                                    if selection == 1:
                                         pauseMenu = False
-                                        player.alive = False
-                                    # elif selection == 2:
-                                        # soundFX = not soundFX
-                                        # if soundFX:
-                                        #     beam_sound.play()
-                                        # Database.setSound(int(soundFX))
-                                    elif selection == 3 and pygame.mixer:
-                                        music = not music
-                                        if music:
-                                            pygame.mixer.music.play(loops=-1)
-                                        else:
-                                            pygame.mixer.music.stop()
-                                        Database.setSound(int(music), music=True)
-                                    elif selection == 4:
-                                        cnt+=1
-                                        showHelp=True
-                                    elif selection == 5:
-                                        pygame.quit()
-                                        sys.exit()
+                                    elif selection == 2:
+                                        inMenu =True
+                                        return inMenu, screen_size
                                 elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_UP
-                                    and selection > 1
-                                    and not showHiScores):
-                                    selection -= 1
+                                        and event.key == pygame.K_DOWN
+                                        and selection < len(pauseMenuDict)):
+                                        selection += 1
                                 elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_DOWN
-                                    and selection < len(pauseMenuDict)
-                                    and not showHiScores):
-                                    selection += 1
-
-                            # pause menu text
+                                        and event.key == pygame.K_UP
+                                        and selection > 1):
+                                        selection -= 1
+                                
+                                
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
-                            restartText = font.render('RESTART GAME', 1, BLACK)
-                            restartPos = restartText.get_rect(topleft=blankPos.bottomleft)  
-                            fxText = font.render('SOUND FX ', 1, BLACK)
-                            fxPos = fxText.get_rect(topleft=restartPos.bottomleft)
-                            fxOnText = font.render('ON', 1, RED)
-                            fxOffText = font.render('OFF', 1, RED)
-                            fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
-                            fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
-                            musicText = font.render('MUSIC', 1, BLACK)
-                            musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
-                            musicOnText = font.render('ON', 1, RED)
-                            musicOffText = font.render('OFF', 1, RED)
-                            musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
-                            musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
-                            helpText=font.render('HELP',1,BLACK)
-                            helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
-                            quitText = font.render('QUIT', 1, BLACK)
-                            quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
-
-                            pauseMenuDict = {1: restartPos, 2: fxPos, 3: musicPos, 4: helpPos, 5: quitPos}
-                            selectText = font.render('*', 1, BLACK)
+                            continueText = font2.render('CONTINUE', 1, 'white')
+                            continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
+                            gotoMenuText = font2.render('GO TO MAIN', 1, 'white')
+                            gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
+                            selectText = font2.render('*', 1, 'white')
+                            pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                            
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
-
-                            if showHelp:
-                                if cnt%3==1:
-                                    menu, menuRect = load_image("help3.png") 
-                                    menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                                elif cnt%3==2:
-                                    menu, menuRect = load_image("help2.png") 
-                                    menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                             
-                            else:
-                                textOverlays = zip([blankText,restartText, helpText, fxText,
-                                                    musicText, quitText, selectText,
-                                                    fxOnText if soundFX else fxOffText,
-                                                    musicOnText if music else musicOffText],
-                                                    [blankPos,restartPos, helpPos, fxPos,
-                                                    musicPos, quitPos, selectPos,
-                                                    fxOnPos if soundFX else fxOffPos,
-                                                    musicOnPos if music else musicOffPos])
-
+                            textOverlays = zip([blankText,continueText, gotoMenuText, selectText],
+                                                    [blankPos,continuePos, gotoMenuPos, selectPos])
                             for txt, pos in textOverlays:
                                 screen.blit(txt, pos)
 
