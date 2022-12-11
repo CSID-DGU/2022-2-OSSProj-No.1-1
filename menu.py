@@ -627,7 +627,7 @@ class Menu:
                         self.showSelectModes = False
                     elif self.showHelp:
                         cnt+=1
-                        if cnt%3!=0:
+                        if cnt%2!=0:
                             self.showHelp=True
                         else:
                             self.showHelp=False
@@ -852,17 +852,12 @@ class Menu:
 
 
             if self.showHelp:
-                if cnt%3==1:
+                if cnt%2==1:
                     menu, menuRect = load_image("help1.png")
                     menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (500,500)
+                    menu_size = (600,600)
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                    
-                elif cnt%3==2:
-                    menu, menuRect = load_image("help2.png")
-                    menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (500,500)
-                    self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+
                     
            # elif self.char_setting:
             #    CharStore(self.screen_size).char_setting()
