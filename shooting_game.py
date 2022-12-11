@@ -125,7 +125,7 @@ while windowShow:
                 inMainMenu=False
                 CharStore(screen_size).char_setting()
                # incharSetting=True
-            elif userSelection == 7: # main menu에서 quit 버튼 
+            elif userSelection == 8: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
                 sys.exit()
             elif userSelection == 9:
