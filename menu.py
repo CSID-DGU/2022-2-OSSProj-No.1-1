@@ -551,12 +551,16 @@ class Menu:
             #self.blankPos=self.blankText.get_rect(topright=self.screen.get_rect().center)
             # image는 로드만, text로 선택
             self.ship1, self.ship1Rect = load_image('ship.png')
+            self.ship1.set_colorkey((0,0,0,0))
             self.ship1Rect.bottomleft = self.screen.get_rect().inflate(-140, -350).bottomleft
             self.ship2, self.ship2Rect = load_image('ship2.png')
+            self.ship2.set_colorkey((0,0,0,0))
             self.ship2Rect.bottomleft = self.screen.get_rect().inflate(-370, -350).bottomleft 
             self.ship3, self.ship3Rect = load_image('ship3.png')
+            self.ship3.set_colorkey((0,0,0,0))
             self.ship3Rect.bottomleft = self.screen.get_rect().inflate(-600, -350).bottomleft
             self.ship4, self.ship4Rect = load_image('ship4.png')
+            self.ship4.set_colorkey((0,0,0,0))
             self.ship4Rect.bottomleft = self.screen.get_rect().inflate(-830, -350).bottomleft
 
             self.ship1text = self.font.render('Ship1', 1, RED)
