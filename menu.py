@@ -987,7 +987,7 @@ class Menu:
 
         inScoreMenu=True
         showSingleScores =False
-        showTimeScores=False
+        showextremeScores=False
 
         while inScoreMenu:
             self.clock.tick(self.clockTime)
@@ -1011,25 +1011,25 @@ class Menu:
                     and event.key == pygame.K_RETURN):
                     if showSingleScores:
                         showSingleScores = False
-                    elif showTimeScores:
-                        showTimeScores = False
+                    elif showextremeScores:
+                        showextremeScores = False
                     elif self.selection == 1:
                         showSingleScores=True 
                     elif self.selection == 2:
-                        showTimeScores = True
+                        showextremeScores = True
                     elif self.selection == 3:
                         return BACK, self.screen_size 
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_UP
                     and self.selection > 1
                     and not showSingleScores
-                    and not showTimeScores):
+                    and not showextremeScores):
                     self.selection -= 1
                 elif (event.type == pygame.KEYDOWN
                     and event.key == pygame.K_DOWN
                     and self.selection < len(self.selectScoresDict)
                     and not showSingleScores
-                    and not showTimeScores):
+                    and not showextremeScores):
                     self.selection += 1 
 
             self.blankText=self.font.render('      ',1,BLACK)
@@ -1050,28 +1050,29 @@ class Menu:
                             topleft=self.screen.get_rect().inflate(-100, -100).topleft),
                             self.highScoreTexts[1].get_rect(
                             midtop=self.screen.get_rect().inflate(-100, -100).midtop)]
-            #self.timeHighScoreTexts= [self.font.render("NAME", 1, RED), #폰트 렌터
-                           # self.font.render("SCORE", 1, RED),
-                            #self.font.render("ACCURACY", 1, RED)]
-           # self.timeHighScorePos = [self.timeHighScoreTexts[0].get_rect(
-                           # topleft=self.screen.get_rect().inflate(-100, -100).topleft),
-                           # self.timeHighScoreTexts[1].get_rect(
-                            #midtop=self.screen.get_rect().inflate(-100, -100).midtop),
-                            #self.timeHighScoreTexts[2].get_rect(
-                            #topright=self.screen.get_rect().inflate(-100, -100).topright)]
+            self.extremeScoreTexts= [self.font.render("NAME", 1, RED), #폰트 렌터
+                            self.font.render("SCORE", 1, RED)
+                            ]
+            self.extremeScorePos = [self.extremeScoreTexts[0].get_rect(
+                            topleft=self.screen.get_rect().inflate(-100, -100).topleft),
+                            self.extremeScoreTexts[1].get_rect(
+                            midtop=self.screen.get_rect().inflate(-100, -100).midtop)
+                            ]
 
+            #single score page
             self.hiScores=Database().getScores()
             for hs in self.hiScores:
                 self.highScoreTexts.extend([self.font.render(str(hs[x]), 1, RED)
                                     for x in range(2)]) 
                 self.highScorePos.extend([self.highScoreTexts[x].get_rect(
                     topleft=self.highScorePos[x].bottomleft) for x in range(-2, 0)])
-
-            #for hs in self.timeHiScores:
-                #self.timeHighScoreTexts.extend([self.font.render(str(hs[x]), 1, BLACK)
-                #                    for x in range(3)])
-                #self.timeHighScorePos.extend([self.timeHighScoreTexts[x].get_rect(
-                    #topleft=self.timeHighScorePos[x].bottomleft) for x in range(-3, 0)])
+            #extreme score page
+            self.extremeScores=Database().getScores_extreme()
+            for hs in self.extremeScores:
+                self.extremeScoreTexts.extend([self.font.render(str(hs[x]), 1, RED)
+                                    for x in range(2)])
+                self.extremeScorePos.extend([self.extremeScoreTexts[x].get_rect(
+                    topleft=self.extremeScorePos[x].bottomleft) for x in range(-2, 0)])
 
             if showSingleScores:
                 menu, menuRect = load_image("menu.png")
@@ -1079,12 +1080,12 @@ class Menu:
                 menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
                 self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                 textOverlays = zip(self.highScoreTexts, self.highScorePos)
-            #elif showTimeScores:
-                #menu, menuRect = load_image("menu.png")
-                #menuRect.midtop = self.screen.get_rect().midtop
-                #menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
-                #self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                #textOverlays = zip(self.timeHighScoreTexts, self.timeHighScorePos)
+            elif showextremeScores:
+                menu, menuRect = load_image("menu.png")
+                menuRect.midtop = self.screen.get_rect().midtop
+                menu_size = (round(menu.get_width() * self.ratio), round(menu.get_height() * self.ratio))
+                self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                textOverlays = zip(self.extremeScoreTexts, self.extremeScorePos)
             else:
                 textOverlays = zip([self.blankText,self.singleText, self.extremeText,self.backText,self.selectText],
                                 [self.blankPos,self.singlePos, self.extremePos,self.backPos, self.selectPos])

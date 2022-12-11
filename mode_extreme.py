@@ -579,7 +579,7 @@ class Extreme():
                 elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
                     and event.key == pygame.K_RETURN # 엔터키
                     ): # 
-                    Database().setScore(Var.user_id,score)
+                    Database().setScore_extreme(Var.user_id,score)
                     Database().setCoins(Var.user_id,score)
                     return True
 
