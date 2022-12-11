@@ -291,8 +291,8 @@ class Single():
                         and event.key == pygame.K_p):
                         pauseMenu = True
                         cnt=0
-                        pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
-                        
+                        pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                        selection=1
                         while pauseMenu:
                             #clock.tick(clockTime)
                             clock.tick(clockTime)
@@ -300,6 +300,7 @@ class Single():
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
                             pause = pygame.transform.scale(pause, (600, 600))
                             pauseRect.midtop = screen.get_rect().midtop
+                            
                             for event in pygame.event.get():
                                 if (event.type == pygame.QUIT
                                     or event.type == pygame.KEYDOWN
@@ -320,15 +321,15 @@ class Single():
                                     if selection == 1:
                                         pauseMenu = False
                                     elif selection == 2:
-                                        inMenu ==True
+                                        inMenu =True
                                         return inMenu, screen_size
                                 elif (event.type == pygame.KEYDOWN
                                         and event.key == pygame.K_DOWN
-                                        and selection == len(pauseMenuDict)):
+                                        and selection < len(pauseMenuDict)):
                                         selection += 1
                                 elif (event.type == pygame.KEYDOWN
                                         and event.key == pygame.K_UP
-                                        and selection < len(pauseMenuDict)):
+                                        and selection > 1):
                                         selection -= 1
                                 
                                 
@@ -339,8 +340,10 @@ class Single():
                             gotoMenuText = font.render('GO TO MAIN', 1, 'white')
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
                             selectText = font.render('*', 1, 'white')
+                            pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                            
 
-                            selection = 1
+                         
                             
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
