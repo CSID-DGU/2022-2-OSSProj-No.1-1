@@ -89,27 +89,6 @@ class Single():
                     elif selection == 5:
                         store=True
                         return 5, screen_size
-                        # if ship_selection.get_ship_selection() == 1:
-                        #     player.image, player.rect = load_image('ship.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship_shield.png', -1)
-                
-                        # elif ship_selection.get_ship_selection() == 2:
-                        #     player.image, player.rect = load_image('ship2.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship2_shield.png', -1)
-            
-                        # elif ship_selection.get_ship_selection() == 3:
-                        #     player.image, player.rect = load_image('ship3.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship3_shield.png', -1)
-
-                        # elif ship_selection.get_ship_selection() == 4:
-                        #     player.image, player.rect = load_image('ship4.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship4_shield.png', -1)
-                        #showShop = True
-                    elif selection==6: # character setting page 
                         char_setting=True
                         return 6,screen_size
                     elif selection == 7:

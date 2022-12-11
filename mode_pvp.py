@@ -36,7 +36,7 @@ class Pvp() :
         pygame.init()
         ratio = (screen_size / 500)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's Player!")
+        pygame.display.set_caption("Let's Play!")
         pygame.mouse.set_visible(0)    
 
     # Prepare background image
