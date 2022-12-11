@@ -117,13 +117,18 @@ while windowShow:
                 if pageResult == BACK:
                     flag = False
             elif userSelection==5:
-                flag=False
-                inMainMenu=False
-                CharStore(screen_size).char_store()
+                pageResult=CharStore(screen_size).char_store()
+                if pageResult==BACK:
+                    flag=False
+               
             elif userSelection==6:
-                flag=False
-                inMainMenu=False
-                CharStore(screen_size).char_setting()
+                pagerResult=CharStore(screen_size).char_setting()
+                if pageResult==BACK:
+                    flag=False
+                
+                
+                
+               
                # incharSetting=True
             elif userSelection == 8: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료

@@ -22,6 +22,7 @@ from database import Database
 #width_offset=0.3
 #resized_screen_center = (0, 0)
 FPS=60
+BACK=0
 #CHAR_SIZE = 60
 #USER_ITEM_SIZE=20
 #showstore=False
@@ -63,13 +64,13 @@ class Store(object):
     
     def r_selection(self):
         self.selection+=1
-        if self.selection>7:
+        if self.selection>8:
             self.selection=1
 
     def l_selection(self):
         self.selection-=1
         if self.selection<1:
-            self.selection=7
+            self.selection=8
 
     
     def update_coin_text(self):
@@ -120,7 +121,7 @@ class CharStore(Store):
         self.ship6_have=Database().check_char_have(self.user_id,'ship6')
         self.ship7_have=Database().check_char_have(self.user_id,'ship7')
         
-
+        
     def update(self,price,char):
         # coin 업데이트
         Database().buy_char(self.user_id,price)
@@ -179,7 +180,12 @@ class CharStore(Store):
             Database().update_char_have(self.user_id,'ship7')
             self.update(self.s7_price,7)
 
-    def disp_ships(self):
+        elif self.selection==8:
+            self.active=False
+
+
+
+    def disp_ships(self): # 상점 디스플레이
        
         ship_offset=0
         text_offset=0.07
@@ -188,6 +194,7 @@ class CharStore(Store):
         #ship_color=(120,120,230)
         #ship_price_color=(0,255,0)
         #buy_color=(120,120,120)
+        back_color=(0,0,0)
        
         self.ship1_image=transform.scale(self.ship1_image,(CHAR_SIZE,CHAR_SIZE))
         
@@ -313,7 +320,9 @@ class CharStore(Store):
         self.ship6_pos=self.ship6_text.get_rect()
         self.ship7_text=self.font.render('Ship7',True,ship_color)
         self.ship7_pos=self.ship7_text.get_rect()
-        self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos])
+        self.back_text=self.font.render('BACK',True,back_color)
+        self.back_pos=self.back_text.get_rect()
+        self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text,self.back_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos,self.back_pos])
 
         for txt,pos in self.text_zips2:
             (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.67+coin_offset+text_offset))
@@ -322,7 +331,7 @@ class CharStore(Store):
             self.screen.blit(txt,pos)
 
 
-        self.ship_dict={1:self.ship1_pos,2:self.ship2_pos,3:self.ship3_pos,4:self.ship4_pos,5:self.ship5_pos,6:self.ship6_pos,7:self.ship7_pos}
+        self.ship_dict={1:self.ship1_pos,2:self.ship2_pos,3:self.ship3_pos,4:self.ship4_pos,5:self.ship5_pos,6:self.ship6_pos,7:self.ship7_pos,8:self.back_pos}
         self.buy_text=self.font.render('BUY',True,buy_color)
         self.buy_pos=self.buy_text.get_rect(midbottom=self.ship_dict[self.selection].inflate(20,30).midbottom)
         self.screen.blit(self.buy_text,self.buy_pos)
@@ -357,8 +366,13 @@ class CharStore(Store):
                     self.font = pygame.font.Font(None, round(36*self.ratio))
                 elif (event.type == pygame.KEYDOWN and event.key==pygame.K_RETURN):
                     if self.active:
+                        
                         self.make_selection()
-                        super().update_coin_text()
+                        if self.active:
+                            super().update_coin_text()
+                            return True
+                        else:
+                            return BACK
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT):
                     if self.active:
                         super().r_selection()
@@ -379,7 +393,7 @@ class CharStore(Store):
         text_offset=0.07
        
         ship_color=(120,120,230)
-       
+        back_color=(0,0,0)
         SET_color=(120,120,120)
         #갖고있으면 1
         self.ship1_have=Database().check_char_have(self.user_id,'ship1')
@@ -534,7 +548,9 @@ class CharStore(Store):
         self.ship6_pos=self.ship6_text.get_rect()
         self.ship7_text=self.font.render('Ship7',True,ship_color)
         self.ship7_pos=self.ship7_text.get_rect()
-        self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos])
+        self.back_text=self.font.render('BACK',True,back_color)
+        self.back_pos=self.back_text.get_rect()
+        self.text_zips2=zip([self.ship5_text,self.ship6_text,self.ship7_text,self.back_text],[self.ship5_pos,self.ship6_pos,self.ship7_pos,self.back_pos])
 
         for txt,pos in self.text_zips2:
             (pos.centerx,pos.centery)=(self.width*(0.26+ship_offset),self.height*(0.67+text_offset))
@@ -543,7 +559,7 @@ class CharStore(Store):
             self.screen.blit(txt,pos)
 
         self.SET_text=self.font.render('SET',True,SET_color)
-        self.ship_dict={1:self.ship1_pos,2:self.ship2_pos,3:self.ship3_pos,4:self.ship4_pos,5:self.ship5_pos,6:self.ship6_pos,7:self.ship7_pos}
+        self.ship_dict={1:self.ship1_pos,2:self.ship2_pos,3:self.ship3_pos,4:self.ship4_pos,5:self.ship5_pos,6:self.ship6_pos,7:self.ship7_pos,8:self.back_pos}
         self.SET_pos=self.SET_text.get_rect(midbottom=self.ship_dict[self.selection].inflate(20,30).midbottom)
         self.screen.blit(self.SET_text,self.SET_pos)
 
@@ -564,6 +580,26 @@ class CharStore(Store):
             Var.char=4
             Var.char_lst=Var.char4_lst
             Database().update_char_data(4,self.user_id)
+
+        elif self.selection==5 and self.ship5_have:
+            Var.char=5
+            Var.char_lst=Var.char5_lst
+            Database().update_char_data(5,self.user_id)
+        
+        elif self.selection==6 and self.ship6_have:
+            Var.char=6
+            Var.char_lst=Var.char6_lst
+            Database().update_char_data(6,self.user_id)
+        
+        elif self.selection==7 and self.ship7_have:
+            Var.char=7
+            Var.char_lst=Var.char7_lst
+            Database().update_char_data(7,self.user_id)
+
+        elif self.selection ==8:
+            self.char_set=False
+        
+        
         
 
 
@@ -597,6 +633,11 @@ class CharStore(Store):
                 elif (event.type == pygame.KEYDOWN and event.key==pygame.K_RETURN):
                     if self.char_set:
                         self.new_char_set()
+                        if self.char_set:
+                            return True
+                        else:
+                            return BACK
+
                         
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_RIGHT):
                     if self.char_set:
