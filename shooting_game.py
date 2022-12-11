@@ -122,7 +122,7 @@ while windowShow:
                     flag=False
                
             elif userSelection==6:
-                pagerResult=CharStore(screen_size).char_setting()
+                pageResult=CharStore(screen_size).char_setting()
                 if pageResult==BACK:
                     flag=False
                 
