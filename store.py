@@ -21,7 +21,7 @@ from database import Database
 #screen=resized_screen.copy()
 #width_offset=0.3
 #resized_screen_center = (0, 0)
-FPS=60
+FPS=75
 BACK=0
 #CHAR_SIZE = 60
 #USER_ITEM_SIZE=20
@@ -40,7 +40,7 @@ class Store(object):
         self.ratio = (self.screen_size / 500)
         self.font = pygame.font.Font("LeeSeoyun.ttf", round(21*self.ratio))
         self.clock = pygame.time.Clock()
-        self.clockTime = 60
+        self.clockTime = FPS
         self.main_menu, self.main_menuRect = load_image("shopback.png") 
         self.main_menu = pygame.transform.scale(self.main_menu, (500, 500))
         self.main_menuRect.midtop = self.screen.get_rect().midtop
@@ -342,7 +342,7 @@ class CharStore(Store):
         main_menu, main_menuRect = load_image("shopback.png")
         main_menu = pygame.transform.scale(main_menu, (500, 500))
         main_menuRect.midtop = self.screen.get_rect().midtop
-
+        
         while self.active:
            
             self.clock.tick(self.clockTime)
@@ -380,6 +380,10 @@ class CharStore(Store):
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT):
                     if self.active:
                         super().l_selection()
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_UP):
+                    self.selection=1
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_DOWN):
+                    self.selection=5
                     
             self.disp_ships()
             super().update_coin_text()
@@ -404,22 +408,19 @@ class CharStore(Store):
         self.ship6_have=Database().check_char_have(self.user_id,'ship6')
         self.ship7_have=Database().check_char_have(self.user_id,'ship7')
 
-
+        # ship image
         self.ship1_image=transform.scale(self.ship1_image,(CHAR_SIZE,CHAR_SIZE))
-        #self.ship1_image.set_colorkey((0,0,0,0))
-      
         self.ship2_image=transform.scale(self.ship2_image,(CHAR_SIZE,CHAR_SIZE))
-        #self.ship2_image.set_colorkey((0,0,0,0))
-        
         self.ship3_image=transform.scale(self.ship3_image,(CHAR_SIZE,CHAR_SIZE))
-        #self.ship3_image.set_colorkey((0,0,0,0))
-       
         self.ship4_image=transform.scale(self.ship4_image,(CHAR_SIZE,CHAR_SIZE))
-        #self.ship4_image.set_colorkey((0,0,0,0))
+        self.ship5_image=transform.scale(self.ship5_image,(CHAR_SIZE,CHAR_SIZE))
+        self.ship6_image=transform.scale(self.ship6_image,(CHAR_SIZE,CHAR_SIZE))
+        self.ship7_image=transform.scale(self.ship7_image,(CHAR_SIZE,CHAR_SIZE))
+        
 
         #lock image
         self.lock1_image,self.lock1_rect=load_image('lock_icon.png')
-        self.lock1_image.set_colorkey((255,255,255))
+        self.lock1_image.set_colorkey((255,255,255)) # 흰색 배경 제거
         self.lock1_image=transform.scale(self.lock1_image,(LOCK_SIZE,LOCK_SIZE)) 
 
         self.lock2_image,self.lock2_rect=load_image('lock_icon.png')
@@ -447,36 +448,41 @@ class CharStore(Store):
         self.lock7_image=transform.scale(self.lock7_image,(LOCK_SIZE,LOCK_SIZE)) 
 
 
-       
-
-        
-        
-        self.ship_zips=zip([self.ship1_image,self.ship2_image,self.ship3_image,self.ship4_image],[self.ship1_rect,self.ship2_rect,self.ship3_rect,self.ship4_rect])
-        for img,ship_rect in self.ship_zips:
-            img.set_colorkey((0,0,0,0))
+        #ship 1,2,3,4 display
+        self.ship_zips=zip([self.ship1_image,self.ship2_image,self.ship3_image,self.ship4_image],[self.ship1_rect,self.ship2_rect,self.ship3_rect,self.ship4_rect],
+        [self.ship1_have,self.ship2_have,self.ship3_have,self.ship4_have])
+        for img,ship_rect,ship_have in self.ship_zips:
+            img.set_colorkey((0,0,0,0)) # 검은색 배경 제거
+           
             (ship_rect.centerx,ship_rect.centery)=(self.width*(0.2+ship_offset),self.height*0.4)
+            if ship_have==0:
+                img.convert_alpha()
+                img.set_alpha(30)
+                self.lock1_rect=ship_rect.topleft
+                self.screen.blit(img,ship_rect)
+                self.screen.blit(self.lock1_image,self.lock1_rect)
+           
             ship_offset+=0.18
-
             self.screen.blit(img,ship_rect)
         
-        #ship5,6,7
+        #ship 5,6,7 display
         ship_offset=0
-        self.ship5_image=transform.scale(self.ship5_image,(CHAR_SIZE,CHAR_SIZE))
-        
-        self.ship6_image=transform.scale(self.ship6_image,(CHAR_SIZE,CHAR_SIZE))
-        
-        self.ship7_image=transform.scale(self.ship7_image,(CHAR_SIZE,CHAR_SIZE))
-        
-        #(self.ship5_rect.centerx,self.ship5_rect.centery)=(self.width*(0.65+ship_offset),self.height)
-        #self.screen.blit(self.ship5_image,self.ship5_rect)
-        self.ship_zips2=zip([self.ship5_image,self.ship6_image,self.ship7_image],[self.ship5_rect,self.ship6_rect,self.ship7_rect])
-        for img,ship_rect in self.ship_zips2:
-            img.set_colorkey((0,0,0))
+        self.ship_zips2=zip([self.ship5_image,self.ship6_image,self.ship7_image],[self.ship5_rect,self.ship6_rect,self.ship7_rect],
+        [self.ship5_have,self.ship6_have,self.ship7_have])
+        for img,ship_rect,ship_have in self.ship_zips2:
+            img.set_colorkey((0,0,0,0)) # 뒤에 검은색 배경 제거
+            cnt=5
             (ship_rect.centerx,ship_rect.centery)=(self.width*(0.65+ship_offset),self.height)
+            if ship_have==0:
+                img.convert_alpha()
+                img.set_alpha(30)
+                self.lock1_rect=ship_rect.topleft
+                self.screen.blit(img,ship_rect)
+                self.screen.blit(self.lock1_image,self.lock1_rect)
+           
             ship_offset+=0.2
-
             self.screen.blit(img,ship_rect)
-        
+        """
         if self.ship1_have==0:
                 self.ship1_image.convert_alpha()
                 self.ship1_image.set_alpha(30)
@@ -517,7 +523,7 @@ class CharStore(Store):
                 self.ship7_image.set_alpha(30)
                 self.lock7_rect.center=self.ship7_rect.center
                 self.screen.blit(self.lock7_image,self.lock7_rect)
-        
+        """
         #Ship text
         
         self.ship1_text=self.font.render('Ship1',True,ship_color)
@@ -610,12 +616,12 @@ class CharStore(Store):
         main_menu, main_menuRect = load_image("shopback.png")
         main_menu = pygame.transform.scale(main_menu, (500, 500))
         main_menuRect.midtop = self.screen.get_rect().midtop
-
+        self.disp_setting()
         while self.char_set:
-            self.clock.tick(self.clockTime)
+            self.clock.tick(self.clockTime)#delay문제
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0)) 
-            self.disp_setting()
+            #self.disp_setting()
 
             for event in pygame.event.get():
                 if (event.type== pygame.QUIT or event.type==pygame.KEYDOWN
@@ -633,7 +639,9 @@ class CharStore(Store):
                 elif (event.type == pygame.KEYDOWN and event.key==pygame.K_RETURN):
                     if self.char_set:
                         self.new_char_set()
+                        
                         if self.char_set:
+                            self.disp_setting()
                             return True
                         else:
                             return BACK
@@ -646,6 +654,10 @@ class CharStore(Store):
                 elif (event.type==pygame.KEYDOWN and event.key==pygame.K_LEFT):
                     if self.char_set:
                         super().l_selection()
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_UP):
+                    self.selection=1
+                elif (event.type==pygame.KEYDOWN and event.key==pygame.K_DOWN):
+                    self.selection=5
 
             self.disp_setting()
             pygame.display.flip()

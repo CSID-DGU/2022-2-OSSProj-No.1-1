@@ -146,10 +146,10 @@ class Var:
     # 메뉴 전환을 위한 변수
     go_menu=False
     # 상점기능
-    char1_price=50
-    char2_price=70
-    char3_price=100
-    char4_price=200
+    #char1_price=50
+    #char2_price=70
+    #char3_price=100
+    #char4_price=200
     # for char_setting
     char_have=[]
 

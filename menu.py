@@ -386,6 +386,12 @@ class Menu:
                                         Var.lst=Var.char3_lst
                                     elif Var.char==4:
                                         Var.lst=Var.char4_lst
+                                    elif Var.char==5:
+                                        Var.lst=Var.char5_lst
+                                    elif Var.char==6:
+                                        Var.lst=Var.char6_lst
+                                    elif Var.char==7:
+                                        Var.lst=Var.char7_lst
                                     return self.id, self.screen_size
                                 else:
                                     print("비번 확인")
