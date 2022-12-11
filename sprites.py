@@ -1,11 +1,22 @@
 import pygame
 import random
 import math
+import uuid
 from numpy import sqrt 
 from load import load_image,Var
 from pygame.locals import *
 from sys import *
+import os
 
+game_main_dir = os.path.dirname(os.path.abspath(__file__))
+img_dir = os.path.join(game_main_dir)
+
+TURRET_STOP = 0
+TURRET_OPEN = 1
+TURRET_FIRE = 2
+TURRET_WAIT = 3
+TURRET_CLOSE = 4
+    
 class MasterSprite(pygame.sprite.Sprite):
     allsprites = None
     speed = None
@@ -132,6 +143,21 @@ class FriendShip(MasterSprite):
     def remove(self) :
         pygame.sprite.Sprite.kill(self)
 
+
+class FriendShip(MasterSprite):
+    def __init__(self, screen_size):
+        super().__init__()
+        self.image, self.rect = load_image('friendShip.png', -1)
+        self.original = self.image
+        self.screen_size = screen_size
+        self.ratio = (self.screen_size / 400)
+        self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+        self.area = self.screen.get_rect()
+        self.radius = max(self.rect.width, self.rect.height)
+   
+    def remove(self) :
+        pygame.sprite.Sprite.kill(self)
+
 class Player2(MasterSprite):
     def __init__(self, screen_size):
         super().__init__()
@@ -232,6 +258,8 @@ class Player3(MasterSprite):
     def bomb(self):
         return Bomb(self)
 
+
+
 class Monster(MasterSprite):
     pool = pygame.sprite.Group()
     active = pygame.sprite.Group()
@@ -258,6 +286,11 @@ class Monster(MasterSprite):
                     random.randint(
                     (monster.area.bottom * 3) // 4,
                     monster.area.bottom))
+            elif isinstance(monster, Boss):
+                monster.rect.midtop = (random.choice(
+                    (monster.area.left, monster.area.right)),
+                    random.randint(
+                    monster.area.top, monster.area.centery))
             else:
                 monster.rect.midtop = (random.randint(
                     monster.area.left
@@ -354,19 +387,33 @@ class Blue(Monster):
 class Boss(Monster):
     def __init__(self, screen_size):
         super().__init__('boss', screen_size)
-        self.amp = random.randint(self.rect.width, self.rect.width)
-        self.freq = 1 / (35) # 원 움직임 변동 횟수 늘리기
+        self.amp = random.randint(self.rect.width, 2 * self.rect.width)
+        self.freq = 1 / (30) # 원 움직임 변동 횟수 늘리기
         self.moveFunc = lambda: (
             self.amp *
             math.sin(
                 self.loc *
-                self.freq),
+                self.freq), 
             self.amp *
             math.cos(
                 self.loc *
-                self.freq))
+                self.freq)
+            )
         self.pType = 'boss'
         self.health = 10
+    
+    def update(self, screen_size):
+        self.screen_size = screen_size
+        horiz, vert = self.moveFunc()
+        if horiz + self.initialRect.x > self.screen_size:
+            horiz -= self.screen_size + self.rect.width
+        elif horiz + self.initialRect.x < 0 - self.rect.width:
+            horiz += self.screen_size + self.rect.width
+        self.rect = self.initialRect.move((horiz, self.loc))
+        self.loc = self.loc + MasterSprite.speed
+        if self.rect.top > self.area.bottom:
+            self.table()
+            Monster.numOffScreen += 1
     
     def update(self, screen_size):
         horiz, vert = self.moveFunc()
@@ -538,8 +585,148 @@ class BroccoliBeamfast(Power):
         super().__init__('broccoli', screen_size)
         self.pType = 'broccoli'
         
-# class PepperSpeedup(Power):
-#     def __init__(self, screen_size):
-#         super().__init__('pepper_chili', screen_size)
-#         self.pType = 'pepper_chili'
+# Extreme mode Monsters
+class Monster2(MasterSprite):
+    pool = pygame.sprite.Group()
+    active = pygame.sprite.Group()
 
+    def __init__(self, trait, screen_size):
+        super().__init__()
+        self.image, self.rect = load_image(
+            trait + '.png', -1)
+        self.initialRect = self.rect
+        self.screen_size = screen_size
+        self.ratio = (self.screen_size / 500)
+        self.screen = pygame.display.set_mode((self.screen_size, self.screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+        self.area = self.screen.get_rect()
+        self.loc = 0
+        self.radius = min(self.rect.width // 2, self.rect.height // 2)
+
+    @classmethod
+    def position(cls):
+        if len(cls.pool) > 0 and cls.numOffScreen > 0:
+            monster = random.choice(cls.pool.sprites())
+            if isinstance(monster, Blue2):
+                monster.rect.midbottom = (random.choice(
+                    (monster.area.left, monster.area.right)),
+                    random.randint(
+                    monster.area.centery, monster.area.bottom))
+            elif isinstance(monster, Blue3):
+                monster.rect.midtop = (random.choice(
+                    (monster.area.left, monster.area.right)),
+                    random.randint(
+                    monster.area.top, monster.area.centery))
+            else:
+                monster.rect.midtop = (random.randint(
+                    monster.area.left
+                    + monster.rect.width // 2,
+                    monster.area.right
+                    - monster.rect.width // 2),
+                    monster.area.top)
+            monster.initialRect = monster.rect
+            monster.loc = 0
+            monster.add(cls.allsprites, cls.active)
+            monster.remove(cls.pool)
+            monster.numOffScreen -= 1
+
+    def update(self, screen_size):
+        self.screen_size = screen_size
+        horiz, vert = self.moveFunc()
+        if horiz + self.initialRect.x > self.screen_size:
+            horiz -= self.screen_size + self.rect.width
+        elif horiz + self.initialRect.x < 0 - self.rect.width:
+            horiz += self.screen_size + self.rect.width
+        self.rect = self.initialRect.move((horiz, self.loc + vert))
+        self.loc = self.loc + MasterSprite.speed
+        if self.rect.top > self.area.bottom:
+            self.table()
+            Monster2.numOffScreen += 1
+
+    def table(self):
+        self.kill()
+        self.add(self.pool)
+
+# Blue (left, right)
+# Green, Yellow (Top)
+# Pink (Bottom)
+
+class Green2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('green',screen_size)
+        self.amp = random.randint(self.rect.width, 3.5 * self.rect.width) ## 적 좌우 움직임 변동
+        self.freq = (1 / 20)
+        self.moveFunc = lambda: (self.amp * math.sin(self.loc * self.freq), 0)
+        self.pType = 'green2'
+
+
+class Pink2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('pink',screen_size)
+        self.amp = random.randint(self.rect.width, 2 * self.rect.width)
+        self.freq = 1 / (25) # 원 움직임 변동 횟수 늘리기
+        self.moveFunc = lambda: (
+            self.amp *
+            math.sin(
+                self.loc *
+                self.freq),
+            self.amp *
+            math.cos(
+                self.loc *
+                self.freq))
+        self.pType = 'pink2'
+
+
+class Yellow2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('yellow',screen_size)
+        self.slope = random.choice(list(x for x in range(-3, 3) if x != 0)) # 범위 -3 ~ 3이 게임 진행에 있어 안정적
+        self.period = random.choice(list(4 * x for x in range(15, 41))) # 기본 적의 좌우 움직이는 주기 start를 늘림
+        self.moveFunc = lambda: (self.slope * (self.loc % self.period)
+                                 if self.loc % self.period < self.period // 2
+                                 else self.slope * self.period // 2
+                                 - self.slope * ((self.loc % self.period)
+                                 - self.period // 2), 0)
+        self.pType = 'yellow2'
+
+
+class Grey2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('grey',screen_size)
+        self.moveFunc = lambda: (0, 1.5 * self.loc)
+        self.pType = 'grey2'
+
+# Blue (bottomleft, bottomright)
+class Blue2(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('blue',screen_size)
+        self.moveFunc = lambda: (1.8 * self.loc, 0)
+        self.pType = 'blue2'
+
+    def update(self, screen_size):
+        horiz, vert = self.moveFunc()
+        horiz = (-horiz if self.initialRect.center[0] == self.area.right
+                 else horiz)
+        if (horiz + self.initialRect.left > self.area.right
+                or horiz + self.initialRect.right < self.area.left):
+            self.table()
+            Monster2.numOffScreen += 1
+        self.rect = self.initialRect.move((horiz, vert))
+        self.loc = self.loc + MasterSprite.speed        
+        
+# Blue (topleft, topright)
+class Blue3(Monster2):
+    def __init__(self, screen_size):
+        super().__init__('blue',screen_size)
+        self.moveFunc = lambda: (1.8 * self.loc, 0)
+        self.pType = 'blue3'
+
+    def update(self, screen_size):
+        horiz, vert = self.moveFunc()
+        horiz = (-horiz if self.initialRect.center[0] == self.area.right
+                 else horiz)
+        if (horiz + self.initialRect.left > self.area.right
+                or horiz + self.initialRect.right < self.area.left):
+            self.table()
+            Monster2.numOffScreen += 1
+        self.rect = self.initialRect.move((horiz, vert))
+        self.loc = self.loc + MasterSprite.speed    

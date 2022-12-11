@@ -28,13 +28,14 @@ direction = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
              pygame.K_LEFT: (-2, 0), pygame.K_RIGHT: (2, 0)}
 
 class Single():
+
     def playGame(screen_size):
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
         ratio = (screen_size / 400)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's Player!")
+        pygame.display.set_caption("Let's Play!")
         pygame.mouse.set_visible(0)
 
     # Prepare background image
@@ -53,6 +54,7 @@ class Single():
         pause = pygame.transform.scale(pause, (600, 600))
         pauseRect.midtop = screen.get_rect().midtop
         pauseMenu = False
+
 
     # Prepare game contents
         # life
@@ -102,21 +104,27 @@ class Single():
 
         ship_selection = Ship_selection_check() 
         
-
-        # Score Function
+     # Score Function
         def kill_monster(monster, monstersLeftThisWave, score) :
-            monstersLeftThisWave -= 1
-            if monster.pType == 'green':
-                score += 1
-            elif monster.pType == 'yellow':
-                score += 2
-            elif monster.pType == 'blue':
-                score += 4
-            elif monster.pType == 'pink':
-                score += 8
-            elif monster.pType == 'boss':
-                monstersLeftThisWave -= 159
-                score += 20
+            if wave == 5:
+                if monster.pType == 'green' or monster.pType == 'yellow' or monster.pType == 'blue' or monster.pType == 'pink':
+                    score += 0
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 160
+                    score += 20
+            else:
+                monstersLeftThisWave -= 1
+                if monster.pType == 'green':
+                    score += 1
+                elif monster.pType == 'yellow':
+                    score += 2
+                elif monster.pType == 'blue':
+                    score += 4
+                elif monster.pType == 'pink':
+                    score += 8
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 159
+                    score += 20
             return monstersLeftThisWave, score
         
     # High Score
@@ -134,6 +142,7 @@ class Single():
                 topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
     
     # pause menu text  
+        
         blankText=font.render('            ',1,'white')
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
         continueText = font.render('CONTINUE', 1, 'white')
@@ -141,8 +150,9 @@ class Single():
         gotoMenuText = font.render('GO TO MAIN', 1, 'white')
         gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
         selectText = font.render('*', 1, 'white')
-        selectPos = selectText.get_rect(topright=continuePos.topleft)
+        pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
         selection = 1
+        selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
         
 
 
@@ -190,8 +200,6 @@ class Single():
             curTime = 0
             powerTime = 8 * clockTime
             powerTimeLeft = powerTime
-            powerdownTime = 8 * clockTime
-            powerdownTimeLeft = powerdownTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
@@ -205,8 +213,6 @@ class Single():
             friendshipBeamCount = friendshipBeamTime
             broccoliTime  = 8 * clockTime
             broccoliCount = broccoliTime
-            pepper_chiliTime  = 8 * clockTime
-            pepper_chiliCount = pepper_chiliTime
             
             player.alive = True
             player.life = 3
@@ -221,7 +227,6 @@ class Single():
                 
             # Drop Items
                 powerTimeLeft -= 1
-                powerdownTimeLeft -= 1
                 if powerTimeLeft <= 0:
                     powerTimeLeft = powerTime
                     random.choice(powerTypes)(screen_size).add(powers, allsprites)
@@ -267,13 +272,6 @@ class Single():
                             Beam.position(player.rect.midtop)
                             beam.speed = 1.5
                             beamFired += 1
-                            
-                        # elif pepper_chili:
-                        #     Beam.position(player.rect.midtop)
-                        #     speed = newspeed
-                        #     player.speed = speed
-                        #     player.speedUp()
-                        #     beamFired += 1
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -293,10 +291,11 @@ class Single():
                         and event.key == pygame.K_p):
                         pauseMenu = True
                         cnt=0
+                        pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
                         
                         while pauseMenu:
+                            #clock.tick(clockTime)
                             clock.tick(clockTime)
-
                             pause_size = (round(pause.get_width() * ratio), round(pause.get_height() * ratio))
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
                             pause = pygame.transform.scale(pause, (600, 600))
@@ -317,24 +316,21 @@ class Single():
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                                     ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
-                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  # unpause
-                                    
-                                    if pauseMenu:
-                                        pauseMenu = True
-                                    elif selection == 1:
+                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
+                                    if selection == 1:
                                         pauseMenu = False
                                     elif selection == 2:
-                                        return 2, screen_size
-                                    elif (event.type == pygame.KEYDOWN
-                                        and event.key == pygame.K_UP
-                                        and selection > 1
-                                        and not showlogin):
-                                        selection -= 1
-                                    elif (event.type == pygame.KEYDOWN
+                                        inMenu ==True
+                                        return inMenu, screen_size
+                                elif (event.type == pygame.KEYDOWN
                                         and event.key == pygame.K_DOWN
-                                        and selection < len(pauseMenuDict)
-                                        and not showlogin):
+                                        and selection == len(pauseMenuDict)):
                                         selection += 1
+                                elif (event.type == pygame.KEYDOWN
+                                        and event.key == pygame.K_UP
+                                        and selection < len(pauseMenuDict)):
+                                        selection -= 1
+                                
                                 
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
@@ -345,7 +341,7 @@ class Single():
                             selectText = font.render('*', 1, 'white')
 
                             selection = 1
-                            pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
+                            
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
                             # highScoreTexts = [font.render("NAME", 1, RED),
@@ -439,7 +435,10 @@ class Single():
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave -= 1
                             score += 1
-                            player.life -= 1
+                            if monster.pType == 'boss':
+                                player.life = 0
+                            else:
+                                player.life -= 1
                         else:
                             restart = False
                             player.alive = False
@@ -484,17 +483,17 @@ class Single():
                 waveText = font.render("Wave: " + str(wave), 1, 'WHITE')
                 leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, 'WHITE')
                 scoreText = font.render("Score: " + str(score), 1, 'WHITE')
-                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
                 bHealthText = font.render("Boss Health: ", 1, 'WHITE')
+                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
 
                 wavePos = waveText.get_rect(topleft=screen.get_rect().topleft)
                 leftPos = leftText.get_rect(midtop=screen.get_rect().midtop)
                 scorePos = scoreText.get_rect(topright=screen.get_rect().topright)
-                bombPos = beamText.get_rect(bottomleft=screen.get_rect().bottomleft)
-                bHealthPos = bHealthText.get_rect(bottomright = bombPos.topright)
+                bHealthPos = bHealthText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bombPos = beamText.get_rect(bottomright=screen.get_rect().bottomright)
 
-                text = [waveText, leftText, scoreText, beamText, bHealthText]
-                textposition = [wavePos, leftPos, scorePos, bombPos, bHealthPos]
+                text = [waveText, leftText, scoreText, bHealthText, beamText]
+                textposition = [wavePos, leftPos, scorePos, bHealthPos, bombPos]
 
             # Update using items
                 # item - doublebeam, triplecupcake, broccoli
@@ -517,15 +516,6 @@ class Single():
                         beam.speed = 1
                         broccoli = False
                         broccoliCount = broccoliTime
-                # if pepper_chili:
-                #     if pepper_chiliCount > 0:
-                #         pepper_chiliCount -= 1
-                #     elif pepper_chiliCount == 0:
-                #         speed = org_speed
-                #         player.speed = speed
-                #         player.speedUp()
-                #         pepper_chili = False
-                #         pepper_chiliCount = pepper_chiliTime
                 # item - friendship
                 miniplayer.rect.bottomright = player.rect.bottomleft
                 if friendship:
@@ -566,14 +556,12 @@ class Single():
                     elif betweenWaveCount == 0:
                         if wave % 5 == 0:
                             speed += 0.5
-                            MasterSprite.speed = speed
-                            player.initializeKeys()
                             monstersThisWave = 10
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
                         else:
                             monstersThisWave *= 2
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
-                        if wave == 1:
+                        if wave == 1:            
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
                             Monster.pool.add([Blue(screen_size) for _ in range(5)])
@@ -622,12 +610,12 @@ class Single():
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
                         
             # Update Boss life 
-                Bosslife0Rect.bottomleft = bHealthPos.bottomright
-                Bosslife1Rect.bottomleft = bHealthPos.bottomright
-                Bosslife2Rect.bottomleft = bHealthPos.bottomright
-                Bosslife3Rect.bottomleft = bHealthPos.bottomright
-                Bosslife4Rect.bottomleft = bHealthPos.bottomright
-                Bosslife5Rect.bottomleft = bHealthPos.bottomright               
+                Bosslife0Rect.topleft = bHealthPos.topright
+                Bosslife1Rect.topleft = bHealthPos.topright
+                Bosslife2Rect.topleft = bHealthPos.topright
+                Bosslife3Rect.topleft = bHealthPos.topright
+                Bosslife4Rect.topleft = bHealthPos.topright
+                Bosslife5Rect.topleft = bHealthPos.topright               
                 
                 boss_life_size = (round(Bosslife0.get_width() * ratio * 0.3), round(Bosslife0.get_height() * ratio * 0.5))  
                 
