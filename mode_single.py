@@ -30,6 +30,7 @@ direction = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
 class Single():
 
     def playGame(screen_size):
+        load_music('music_loop.ogg')
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
@@ -45,9 +46,7 @@ class Single():
         field1Rect.midtop = screen.get_rect().midtop
         field2Rect.midbottom = field1Rect.midtop
 
-        # # Menu - pause menu Highscore & help
-        # menu, menuRect = load_image("menu.png")
-        # menuRect.midtop = screen.get_rect().midtop
+
 
         # pause
         pause,pauseRect = load_image('pause.png')
@@ -77,9 +76,9 @@ class Single():
         ship_explode_sound = load_sound('ship_explode.ogg')
         load_music('music_loop.ogg')
         soundFX = Database().getSound()
-       # music = Database().getSound(music=True)
-        #if music and pygame.mixer: 
-         #   pygame.mixer.music.play(loops=-1)
+        music = Database().getSound()
+        if music and pygame.mixer: 
+           pygame.mixer.music.play(loops=-1)
 
         # font
         font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
@@ -374,8 +373,7 @@ class Single():
                                     Explosion.position(monster.rect.center)
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-                            if soundFX:
-                                bear_explode_sound.play()
+                            
                     for beam in Beam.active:
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
@@ -393,10 +391,7 @@ class Single():
                                     monster.table()
                                     Explosion.position(monster.rect.center)
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            if soundFX:
-                                bear_explode_sound.play()
-                            if soundFX:
-                                bear_explode_sound.play()
+                            
                     if pygame.sprite.collide_rect(monster, player) :
                         if player.shieldUp:
                             monster.table()
@@ -419,7 +414,7 @@ class Single():
                             player.remove(allsprites)
                             Explosion.position(player.rect.center)
                             if soundFX:
-                                kirin_explode_sound.play() ## 변경사항
+                                alien_explode_sound.play() #
                 
                 # PowerUps
                 for power in powers:

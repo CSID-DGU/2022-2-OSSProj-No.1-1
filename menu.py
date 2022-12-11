@@ -18,6 +18,12 @@ WHITE = (255, 255, 255)
 BACK=0
 #mixer not initialized
 pygame.init()
+missile_sound = load_sound('missile.ogg')
+bomb_sound = load_sound('bomb.ogg')
+alien_explode_sound = load_sound('alien_explode.ogg')
+ship_explode_sound = load_sound('ship_explode.ogg')
+
+load_music('music_loop.ogg')
 
 class Language_check() :  
     def __init__(self):
@@ -597,6 +603,7 @@ class Menu:
 
     
     def inMenu_page(self):
+        load_music('music_loop.ogg')
         self.inMenu = True
         cnt=0
         scr_x , scr_y = pygame.display.get_surface().get_size()
