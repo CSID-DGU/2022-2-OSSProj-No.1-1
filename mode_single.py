@@ -82,7 +82,8 @@ class Single():
          #   pygame.mixer.music.play(loops=-1)
 
         # font
-        font = pygame.font.Font("LeeSeoyun.ttf", round(20*ratio))
+        font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
+        font2 = pygame.font.Font("LeeSeoyun.ttf", round(21*ratio))
         # clock - 60 FPS game
         clockTime = 60  # maximum FPS
         clock = pygame.time.Clock()
@@ -145,11 +146,11 @@ class Single():
         
         blankText=font.render('            ',1,'white')
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
-        continueText = font.render('CONTINUE', 1, 'white')
+        continueText = font2.render('CONTINUE', 1, 'white')
         continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
-        gotoMenuText = font.render('GO TO MAIN', 1, 'white')
+        gotoMenuText = font2.render('GO TO MAIN', 1, 'white')
         gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
-        selectText = font.render('*', 1, 'white')
+        selectText = font2.render('*', 1, 'white')
         pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
         selection = 1
         selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
@@ -335,11 +336,11 @@ class Single():
                                 
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
-                            continueText = font.render('CONTINUE', 1, 'white')
+                            continueText = font2.render('CONTINUE', 1, 'white')
                             continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
-                            gotoMenuText = font.render('GO TO MAIN', 1, 'white')
+                            gotoMenuText = font2.render('GO TO MAIN', 1, 'white')
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
-                            selectText = font.render('*', 1, 'white')
+                            selectText = font2.render('*', 1, 'white')
                             pauseMenuDict={1:continuePos,2:gotoMenuPos}
                             
 

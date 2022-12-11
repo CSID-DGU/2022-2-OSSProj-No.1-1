@@ -79,7 +79,8 @@ class Pvp() :
         #     pygame.mixer.music.play(loops=-1)
 
         # font
-        font = pygame.font.Font(None, round(36*ratio))
+        font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
+        font2 = pygame.font.Font("LeeSeoyun.ttf", round(21*ratio))
 
         # clock - 60 FPS game
         clockTime = 60  # maximum FPS
@@ -556,13 +557,13 @@ class Pvp() :
                     curTime -= 1
 
             # Update text overlays
-                waveText = font.render("Wave: " + str(wave), 1, BLACK)
-                leftText = font.render("monsters: " + str(monstersLeftThisWave), 1, BLACK)
-                bombText = font.render("Bombs: " + str(bombsHeld), 1, BLACK)
-                bombText2 = font.render("Bombs: " + str(bombsHeld2), 1, BLACK)
-                Player1winText = font.render('PLAYER 1 WIN!', 1, BLACK)
-                Player2winText = font.render('PLAYER 2 WIN!', 1, BLACK)
-                drawText = font.render('DRAW!', 1, BLACK)
+                waveText = font.render("Wave: " + str(wave), 1, 'white')
+                leftText = font.render("monsters: " + str(monstersLeftThisWave), 1, 'white')
+                bombText = font.render("Bombs: " + str(bombsHeld), 1, 'white')
+                bombText2 = font.render("Bombs: " + str(bombsHeld2), 1, 'white')
+                Player1winText = font2.render('PLAYER 1 WIN!', 1, 'RED')
+                Player2winText = font2.render('PLAYER 2 WIN!', 1, 'RED')
+                drawText = font2.render('DRAW!', 1, 'RED')
         
                 wavePos = waveText.get_rect(topright=screen.get_rect().midtop)
                 leftPos = leftText.get_rect(topleft=screen.get_rect().midtop)
@@ -635,9 +636,9 @@ class Pvp() :
                     if betweenWaveCount > 0:
                         betweenWaveCount -= 1
                         nextWaveText = font.render(
-                            'Wave ' + str(wave + 1) + ' in', 1, BLACK)
+                            'Wave ' + str(wave + 1) + ' in', 1, 'white')
                         nextWaveNum = font.render(
-                            str((betweenWaveCount // clockTime) + 1), 1, BLACK)
+                            str((betweenWaveCount // clockTime) + 1), 1, 'white')
                         text.extend([nextWaveText, nextWaveNum])
                         nextWavePos = nextWaveText.get_rect(
                             center=screen.get_rect().center)

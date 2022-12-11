@@ -182,8 +182,6 @@ class Menu:
         self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
         self.languageText = self.font2.render('언어 변경', 1, 'YELLOW')
         self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
-        self.logoutText = self.font.render('LOGOUT', 1, 'WHITE')
-        self.logoutPos = self.logoutText.get_rect(topleft=self.languagePos.bottomleft)
 
 
         # For Select Mode setting
@@ -814,8 +812,6 @@ class Menu:
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
                 self.languageText = self.font2.render('언어 변경', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
-                self.logoutText = self.font.render('LOGOUT', 1, 'SKY BLUE')
-                self.logoutPos = self.logoutText.get_rect(topleft=self.languagePos.bottomleft)
 
 
             else:
@@ -847,8 +843,6 @@ class Menu:
                 self.quitPos = self.quitText.get_rect(topleft=self.helpPos.bottomleft)
                 self.languageText = self.font2.render('LANGUAGE CHANGE', 1, 'YELLOW')
                 self.languagePos = self.languageText.get_rect(topleft=self.quitPos.bottomleft)
-                self.logoutText = self.font2.render('로그아웃', 1, 'SKY BLUE')
-                self.logoutPos = self.logoutText.get_rect(topleft=self.languagePos.bottomleft)
 
 
             self.menuDict = {1: self.startPos, 2: self.hiScorePos, 3:self.fxPos, 4: self.musicPos, 5:self.shopPos,6:self.charsettingPos, 7:self.helpPos, 8: self.quitPos, 9: self.languagePos}
@@ -880,11 +874,11 @@ class Menu:
                 self.textOverlays = zip([self.blankText,self.startText, self.hiScoreText, self.helpText, self.fxText,
                                     self.musicText, self.shopText, self.charsettingText,self.quitText, self.selectText,
                                     self.fxOnText if self.soundFX else self.fxOffText,
-                                    self.musicOnText if self.music else self.musicOffText,self.languageText,self.logoutText],
+                                    self.musicOnText if self.music else self.musicOffText,self.languageText],
                                 [self.blankPos,self.startPos, self.hiScorePos, self.helpPos, self.fxPos,
                                     self.musicPos, self.shopPos, self.charsettingPos,self.quitPos, self.selectPos,
                                     self.fxOnPos if self.soundFX else self.fxOffPos,
-                                    self.musicOnPos if self.music else self.musicOffPos,self.languagePos, self.logoutPos])
+                                    self.musicOnPos if self.music else self.musicOffPos,self.languagePos])
             for txt, pos in self.textOverlays:
                 self.screen.blit(txt, pos)
             pygame.display.flip()
