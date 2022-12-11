@@ -126,9 +126,7 @@ while windowShow:
                 if pageResult==BACK:
                     flag=False
                 
-                
-                
-               
+            
                # incharSetting=True
             elif userSelection == 8: # main menu에서 quit 버튼 
                 pygame.quit() # pygame 자체를 종료
