@@ -851,7 +851,7 @@ class Menu:
                 if cnt%3==1:
                     menu, menuRect = load_image("help1.png")
                     menuRect.midtop = self.screen.get_rect().midtop
-                    menu_size = (500,500)
+                    menu_size = (600,600)
                     self.screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
                     
                 elif cnt%3==2:
