@@ -486,7 +486,7 @@ class Pvp() :
                     curTime -= 1
 
             # Update text overlays
-                waveText = font.render("Wave: " + str(wave), 1, 'white')
+                waveText = font.render("Wave: " + str(wave), 1, 'YELLOW')
                 leftText = font.render("monsters: " + str(monstersLeftThisWave), 1, 'white')
                 bombText = font.render("Bombs: " + str(bombsHeld), 1, 'white')
                 bombText2 = font.render("Bombs: " + str(bombsHeld2), 1, 'white')
@@ -632,7 +632,7 @@ class Pvp() :
                 life_bRect.topleft = leftPos.topright
                 life_cRect.topleft = leftPos.topright
 
-                life_size = (round(life1.get_width() * ratio), round(life1.get_height() * ratio))
+                life_size = (round(life1.get_width() * ratio * 0.8), round(life1.get_height() * ratio * 0.8))
                 if player.life == 3:
                     screen.blit(pygame.transform.scale(life3, life_size), life3Rect)
                 elif player.life == 2:
