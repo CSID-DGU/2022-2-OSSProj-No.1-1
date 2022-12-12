@@ -1,3 +1,4 @@
+## 시연 영상용 Tmode_single.py
 import pygame
 import random
 import sys
@@ -177,7 +178,7 @@ class Single():
             Explosion.active = pygame.sprite.Group()
 
             # Reset game contents
-            monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
+            monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 3, 3, 3
             friendship = False
             doublebeam = False
             triplecupcake = False
