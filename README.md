@@ -51,13 +51,13 @@ python3 shooting_game.py
 
 ## In Game
 ### 1. Single Mode  
-<img width="600" alt="스크린샷 2022-12-13 오후 6 33 39" src="https://user-images.githubusercontent.com/108131226/207305306-1e7292e2-1295-47c3-8256-6ce6ebf18ffc.png">
+<img width="500" alt="스크린샷 2022-12-13 오후 6 33 39" src="https://user-images.githubusercontent.com/108131226/207305306-1e7292e2-1295-47c3-8256-6ce6ebf18ffc.png">
 
   - 게임의 베이스가 되는 게임입니다. 
 
 
 ### 2. Extreme Mode
-<img width="600" alt="스크린샷 2022-12-13 오후 8 25 57" src="https://user-images.githubusercontent.com/108131226/207306105-211b1621-0110-4512-916d-0f08b6ab4de3.png">
+<img width="500" alt="스크린샷 2022-12-13 오후 8 25 57" src="https://user-images.githubusercontent.com/108131226/207306105-211b1621-0110-4512-916d-0f08b6ab4de3.png">
 
   - 제한된 시간 내에서 몬스터를 처치하고 가장 많은 점수를 획득한 사람이 랭킹 보드에 등록되는 모드입니다. 
   - 제한 시간은 60초로, 기존 모드들과 다른 점은 몬스터들이 게임 위에서만 등장하는 것이 아닌 좌우에서도 등장합니다. 
@@ -69,14 +69,14 @@ python3 shooting_game.py
   
 ### 3. PVP Mode
 
-<img width="600" alt="스크린샷 2022-12-13 오후 8 27 17" src="https://user-images.githubusercontent.com/108131226/207305964-48034a9d-e158-4956-b635-252b71ad3451.png">
+<img width="500" alt="스크린샷 2022-12-13 오후 8 27 17" src="https://user-images.githubusercontent.com/108131226/207305964-48034a9d-e158-4956-b635-252b71ad3451.png">
 
   - 2명이서 플레이할 수 있는 PVP 모드를 추가하였습니다. 
   - 해당 모드는 랭킹 모드가 적용되지 않으며 2명이서 게임을 진행 후 최종 결과를 비교해 승자를 가립니다.   
 
 ### Ship shop
 
-<img width="600" alt="스크린샷 2022-12-13 오후 8 36 09" src="https://user-images.githubusercontent.com/108131226/207307734-935c7302-8dcb-45ee-b9b2-589bbf4b6e60.png">
+<img width="500" alt="스크린샷 2022-12-13 오후 8 36 09" src="https://user-images.githubusercontent.com/108131226/207307734-935c7302-8dcb-45ee-b9b2-589bbf4b6e60.png">
 
  - 게임해서 모은 coin으로 shop 메뉴에서 캐릭터를 구매할 수 있습니다.
  - 구매한 캐릭터들은 char setting 메뉴에서 선택할 수 있습니다.
