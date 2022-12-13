@@ -510,7 +510,6 @@ class Menu:
                         self.showselectchar=False
                     elif self.selection==1:
                         Var.char=1
-                        
                         Var.lst=Var.char1_lst
                         Database().update_char_have(Var.user_id,'ship1') # char_have테이블 갱신
                         
