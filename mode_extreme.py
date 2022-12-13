@@ -24,11 +24,14 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
+# 방향키
 direction = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
              pygame.K_LEFT: (-2, 0), pygame.K_RIGHT: (2, 0)}
 
 class Extreme():
+    
     def playGame(screen_size):
+        load_music('music_loop.ogg')
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
@@ -63,6 +66,9 @@ class Extreme():
         ship_explode_sound = load_sound('ship_explode.ogg')
         load_music('music_loop.ogg')
         soundFX = Database().getSound()
+        music = Database().getSound()
+        if music and pygame.mixer: 
+           pygame.mixer.music.play(loops=-1)
 
         # font
         font = pygame.font.Font("LeeSeoyun.ttf", round(20*ratio))
@@ -81,7 +87,9 @@ class Extreme():
         player = Player(screen_size)
         miniplayer = FriendShip(screen_size)
         
+        # 초기 등장 몬스터
         initialMonsterTypes = (Green2, Yellow2, Blue2, Blue3, Pink2)
+        # 아이템 종류
         powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
                         FriendPower, LifePower)
         bombs = pygame.sprite.Group()
@@ -171,7 +179,7 @@ class Extreme():
             MasterSprite.speed = speed
 
             # Reset all time
-            bearPeriod = clockTime // speed
+            Period = clockTime // speed
             curTime = 0
             powerTime = 4 * clockTime
             powerTimeLeft = powerTime
@@ -180,6 +188,7 @@ class Extreme():
             leftTime = 60 * clockTime           # 60, 59, 58... game count down
             leftCount = leftTime
             
+            # 아이템 지속 시간
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
             betweenTripleTime = 8 * clockTime
@@ -191,6 +200,7 @@ class Extreme():
             broccoliTime  = 8 * clockTime
             broccoliCount = broccoliTime
             
+            # 유저 목숨
             player.alive = True
             player.life = 3
             player.initializeKeys()
@@ -205,7 +215,6 @@ class Extreme():
                 if powerTimeLeft <= 0:
                     powerTimeLeft = powerTime
                     random.choice(powerTypes)(screen_size).add(powers, allsprites)
-                
             # Event Handling
                 for event in pygame.event.get():
                     if (event.type == pygame.QUIT
@@ -235,15 +244,18 @@ class Extreme():
                     # Beam
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
+                        # doublebeam 위치 설정
                         if doublebeam :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
+                        # triplecupcake 위치 설정
                         elif triplecupcake :
                             Beam.position2(player.rect.left - 5)
                             Beam.position2(player.rect.top)
                             Beam.position2(player.rect.right + 5)
                             beamFired += 3
+                        # broccoli 위치 및 속도 변경
                         elif broccoli :
                             Beam.position(player.rect.midtop)
                             beam.speed = 1.5
@@ -267,14 +279,15 @@ class Extreme():
                         and event.key == pygame.K_p):
                         pauseMenu = True
                         cnt=0
-
+                        pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                        selection=1
                         while pauseMenu:
                             clock.tick(clockTime)
-
                             pause_size = (round(pause.get_width() * ratio), round(pause.get_height() * ratio))
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
                             pause = pygame.transform.scale(pause, (600, 600))
                             pauseRect.midtop = screen.get_rect().midtop
+                            
                             for event in pygame.event.get():
                                 if (event.type == pygame.QUIT
                                     or event.type == pygame.KEYDOWN
@@ -292,6 +305,7 @@ class Extreme():
                                     ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
                                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
+                                    # selection에 따라 정지 혹은 종료
                                     if selection == 1:
                                         pauseMenu = False
                                     elif selection == 2:
@@ -313,8 +327,8 @@ class Extreme():
                             gotoMenuText = font.render('GO TO MAIN', 1, 'white')
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
                             selectText = font.render('*', 1, 'white')
-
                             pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
+                            
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
                             
                             textOverlays = zip([blankText,continueText, gotoMenuText, selectText],
@@ -329,13 +343,13 @@ class Extreme():
             # Collision Detection
                 # monster
                 for monster in Monster2.active:
-                    for bomb in bombs:
+                    for bomb in bombs:  # Bomb
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster2.active:
-                            if monster.pType != 'grey' :
-                                if monster.pType == 'boss':
+                            if monster.pType != 'grey' :    # 회색 몬스터 아니면
+                                if monster.pType == 'boss': # 보스면
                                     if boss.health >= 1 :
-                                        boss.health -= 1
+                                        boss.health -= 1    # 보스 체력 감소
                                     else :
                                         monster.table() 
                                         Explosion.position(monster.rect.center)
@@ -345,33 +359,30 @@ class Extreme():
                                     Explosion.position(monster.rect.center)
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-                            if soundFX:
-                                bear_explode_sound.play()
-                    for beam in Beam.active:
+                            
+                    for beam in Beam.active:    # Beam
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster2.active:
                             beam.table()
-                            if monster.pType != 'grey' :
-                                beam.table()
-                                if monster.pType == 'boss':
+                            if monster.pType != 'grey' :    # 회색 몬스터가 아니면
+                                beam.table()    # beam 적용
+                                if monster.pType == 'boss': # 보스면
                                     if boss.health >= 1 :
-                                        boss.health -= 1                        
+                                        boss.health -= 1   # 보스 체력 감소                     
                                     else :         
                                         monster.table()                  
                                         Explosion.position(monster.rect.center)
                                         monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else:
                                     monster.table()
-                                    Explosion.position(monster.rect.center)
+                                    Explosion.position(monster.rect.center) # 폭발 위치
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-                            if soundFX:
-                                bear_explode_sound.play()
-                            if soundFX:
-                                bear_explode_sound.play()
+                    
+                    # player monster 충돌            
                     if pygame.sprite.collide_rect(monster, player) :
-                        if player.shieldUp:
+                        if player.shieldUp: # 쉴드일 때
                             monster.table()
-                            Explosion.position(monster.rect.center)
+                            Explosion.position(monster.rect.center) # 폭발 위치
                             monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             player.shieldUp = False
@@ -385,12 +396,11 @@ class Extreme():
                             restart = False
                             player.alive = False
                             player.remove(allsprites)
-                            Explosion.position(player.rect.center)
+                            Explosion.position(player.rect.center)  # 폭발 위치
                             if soundFX:
-                                kirin_explode_sound.play() ## 변경사항
+                                alien_explode_sound.play() ## 변경사항
                 
-
-                # powers
+                # Powers
                 for power in powers:
                     if pygame.sprite.collide_circle(power, player):
                         if power.pType == 'bomb':
@@ -415,10 +425,10 @@ class Extreme():
                     elif power.rect.top > power.area.bottom:
                         power.kill()
 
-            # Update Bears
+            # Update Monsters
                 if curTime <= 0 and monstersLeftThisWave > 0 :
                     Monster2.position()
-                    curTime = bearPeriod
+                    curTime = Period
                 elif curTime > 0:
                     curTime -= 1
 
@@ -484,7 +494,7 @@ class Extreme():
                         player.remove(allsprites)
                         Explosion.position(player.rect.center)
                         if soundFX:
-                            kirin_explode_sound.play() ## 수정해야함
+                            alien_explode_sound.play() 
 
             # beforeWaveCount - Count Down 3, 2, 1, START!
                 if monstersLeftThisWave == 0:
@@ -554,6 +564,7 @@ class Extreme():
     #########################
 
         while True:
+            # 바로 점수 저장되게
             clock.tick(clockTime)
 
         # Event Handling
@@ -573,7 +584,7 @@ class Extreme():
                         font = pygame.font.Font(None, round(36*ratio))
                 elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
                     and event.key == pygame.K_RETURN # 엔터키
-                    ): # 
+                    ): 
                     Database().setScore_extreme(Var.user_id,score)
                     Database().setCoins(Var.user_id,score)
                     return True
