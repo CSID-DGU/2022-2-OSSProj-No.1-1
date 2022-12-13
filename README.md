@@ -11,13 +11,9 @@ Pygame을 활용한 슈팅게임
 <img width="500" alt="스크린샷 2022-12-13 오후 6 27 25" src="https://user-images.githubusercontent.com/108131226/207305003-3f3b272a-1f43-4c1b-80fe-874c822221a3.png">
 
 ### 팀원 소개
-* **팀장 : 동국대학교 정보통신공학과** [**김정혜**](https://github.com/junghye01)
-* **팀원 : 동국대학교 경제학과** [**김한서**](https://github.com/seueooo)
-* **팀원 : 동국대학교 산업시스템공학과** [**백채연**](https://github.com/codusl100)
-
-
-## Original source
-https://github.com/CSID-DGU/2021-2-OSSProj-BATONG-01
+* **팀장 : 동국대학교 정보통신공학과** [**김정혜**](https://github.com/junghye01) yejjungxye@gmail.com
+* **팀원 : 동국대학교 경제학과** [**김한서**](https://github.com/seueooo) yds06206@gamail.com
+* **팀원 : 동국대학교 산업시스템공학과** [**백채연**](https://github.com/codusl100) codusl0422@gmail.com
 
 
 ## 실행 방법
@@ -42,11 +38,6 @@ cd 2022-2-OSSProj-No.1-1
 python3 shooting_game.py
 ```
 
-## Sign up, Sign in
-<img width="600" alt="스크린샷 2022-12-13 오후 9 07 00" src="https://user-images.githubusercontent.com/108131226/207313760-9915bef6-279a-474e-920b-48bd74c16d1f.png">
-
-- 게임을 시작하기에 앞서, 회원가입 및 로그인을 진행합니다.
-
 
 ## Game Controls
 ### Default
@@ -54,6 +45,14 @@ python3 shooting_game.py
 
 ### For PVP
 ![pvp](https://user-images.githubusercontent.com/108131226/207036656-e912655e-3f30-4746-bbb5-b1c67fc22c5b.jpeg)
+
+
+## Sign up, Sign in
+<img width="500" alt="스크린샷 2022-12-13 오후 9 07 00" src="https://user-images.githubusercontent.com/108131226/207313760-9915bef6-279a-474e-920b-48bd74c16d1f.png">
+
+- 게임을 시작하기에 앞서, 회원가입 및 로그인을 진행합니다.
+
+
 
 ## In Game
 ### 1. Single Mode  
@@ -99,3 +98,10 @@ python3 shooting_game.py
 <img width="456" alt="스크린샷 2022-12-13 오후 8 39 57" src="https://user-images.githubusercontent.com/108131226/207308719-1c858a16-cb26-4f4d-93ed-ccaa8fb007d5.png">
 
  - 아이템은 다음과 같습니다.
+
+
+
+## Reference
+https://github.com/CSID-DGU/2021-2-OSSProj-BATONG-01
+https://github.com/CSID-DGU/2021-2-OSSProj-Lets_Kirin-8
+https://opengameart.org/
