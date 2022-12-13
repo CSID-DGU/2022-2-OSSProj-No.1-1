@@ -24,7 +24,6 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
-# 방향키
 direction = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
              pygame.K_LEFT: (-2, 0), pygame.K_RIGHT: (2, 0)}
 
@@ -42,8 +41,8 @@ class Single():
 
     # Prepare background image
         # Game field
-        field1, field1Rect = load_image("field.png") 
-        field2, field2Rect = load_image("field.png") 
+        field1, field1Rect = load_image("field.png") # skin
+        field2, field2Rect = load_image("field.png") #skin
         field1Rect.midtop = screen.get_rect().midtop
         field2Rect.midbottom = field1Rect.midtop
 
@@ -84,7 +83,6 @@ class Single():
         # font
         font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
         font2 = pygame.font.Font("LeeSeoyun.ttf", round(21*ratio))
-        
         # clock - 60 FPS game
         clockTime = 60  # maximum FPS
         clock = pygame.time.Clock()
@@ -98,9 +96,7 @@ class Single():
         miniplayer = FriendShip(screen_size)
         boss = Boss(screen_size)
         
-        # 초기 등장 몬스터
         initialMonsterTypes = (Green, Yellow)
-        # 아이템 종류
         powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
                         FriendPower, LifePower)
         bombs = pygame.sprite.Group()
@@ -111,7 +107,6 @@ class Single():
      # Score Function
         def kill_monster(monster, monstersLeftThisWave, score) :
             if wave == 5:
-                # 보스 외 다른 몬스터 점수 X
                 if monster.pType == 'green' or monster.pType == 'yellow' or monster.pType == 'blue' or monster.pType == 'pink':
                     score += 0
                 elif monster.pType == 'boss':
@@ -147,6 +142,7 @@ class Single():
                 topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
     
     # pause menu text  
+        
         blankText=font.render('            ',1,'white')
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
         continueText = font2.render('CONTINUE', 1, 'white')
@@ -200,14 +196,13 @@ class Single():
             player.speed = speed
         
             # Reset all time
-            Period = clockTime // speed
+            bearPeriod = clockTime // speed
             curTime = 0
             powerTime = 8 * clockTime
             powerTimeLeft = powerTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
-            # 아이템 지속 시간
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
             betweenTripleTime = 8 * clockTime
@@ -219,16 +214,13 @@ class Single():
             broccoliTime  = 8 * clockTime
             broccoliCount = broccoliTime
             
-            # 유저 목숨
             player.alive = True
             player.life = 3
             player.initializeKeys()
             
-            # 보스 체력
             boss.health = 10
             
             player.showChange_ship = False
-            
         # Start Game
             while player.alive:
                 clock.tick(clockTime)
@@ -267,18 +259,15 @@ class Single():
                     # Beam
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
-                        # doublebeam 위치 설정
                         if doublebeam :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
-                        # triplecupcake 위치 설정
                         elif triplecupcake :
                             Beam.position2(player.rect.left - 5)
                             Beam.position2(player.rect.top)
                             Beam.position2(player.rect.right + 5)
                             beamFired += 3
-                        # broccoli 위치 및 속도 변경
                         elif broccoli :
                             Beam.position(player.rect.midtop)
                             beam.speed = 1.5
@@ -305,6 +294,7 @@ class Single():
                         pauseMenuDict={1:continuePos,2:gotoMenuPos}
                         selection=1
                         while pauseMenu:
+                            #clock.tick(clockTime)
                             clock.tick(clockTime)
                             pause_size = (round(pause.get_width() * ratio), round(pause.get_height() * ratio))
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
@@ -328,7 +318,6 @@ class Single():
                                     ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
                                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
-                                    # selection에 따라 정지 혹은 종료 
                                     if selection == 1:
                                         pauseMenu = False
                                     elif selection == 2:
@@ -352,6 +341,7 @@ class Single():
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
                             selectText = font2.render('*', 1, 'white')
                             pauseMenuDict={1:continuePos,2:gotoMenuPos}
+
                             
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
@@ -367,13 +357,13 @@ class Single():
             # Collision Detection
                 # monster
                 for monster in Monster.active:
-                    for bomb in bombs:  # Bomb
+                    for bomb in bombs:
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster.active:
-                            if monster.pType != 'grey' :    # 회색 몬스터 아니면
-                                if monster.pType == 'boss': # 보스면
+                            if monster.pType != 'grey' :
+                                if monster.pType == 'boss':
                                     if boss.health >= 1 :
-                                        boss.health -= 1    # 보스 체력 감소
+                                        boss.health -= 1
                                     else :
                                         monster.table() 
                                         Explosion.position(monster.rect.center)
@@ -384,29 +374,28 @@ class Single():
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             
-                    for beam in Beam.active:    # Beam
+                    for beam in Beam.active:
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
                             beam.table()
-                            if monster.pType != 'grey' :    # 회색 몬스터가 아니면
-                                beam.table()    # beam 적용
+                            if monster.pType != 'grey' :
+                                beam.table()
                                 if monster.pType == 'boss':
                                     if boss.health >= 1 :
-                                        boss.health -= 1    # 보스 체력 감소                    
+                                        boss.health -= 1                        
                                     else :         
                                         monster.table()                  
-                                        Explosion.position(monster.rect.center) # 폭발 위치
+                                        Explosion.position(monster.rect.center)
                                         monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else:
                                     monster.table()
-                                    Explosion.position(monster.rect.center) # 폭발 위치
+                                    Explosion.position(monster.rect.center)
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             
-                    # player monster 충돌
                     if pygame.sprite.collide_rect(monster, player) :
-                        if player.shieldUp: # 쉴드일 때
+                        if player.shieldUp:
                             monster.table()
-                            Explosion.position(monster.rect.center) # 폭발 위치
+                            Explosion.position(monster.rect.center)
                             monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             player.shieldUp = False
@@ -416,18 +405,18 @@ class Single():
                             monstersLeftThisWave -= 1
                             score += 1
                             if monster.pType == 'boss':
-                                player.life = 0 # 보스랑 충돌시 life 0
+                                player.life = 0
                             else:
                                 player.life -= 1
                         else:
                             restart = False
                             player.alive = False
                             player.remove(allsprites)
-                            Explosion.position(player.rect.center)  # 폭발 위치
+                            Explosion.position(player.rect.center)
                             if soundFX:
-                                alien_explode_sound.play() 
+                                alien_explode_sound.play() #
                 
-                # Powers
+                # PowerUps
                 for power in powers:
                     if pygame.sprite.collide_circle(power, player):
                         if power.pType == 'bomb':
@@ -455,7 +444,7 @@ class Single():
             # Update Monsters
                 if curTime <= 0 and monstersLeftThisWave > 0 :
                     Monster.position()
-                    curTime = Period
+                    curTime = bearPeriod
                 elif curTime > 0:
                     curTime -= 1
 
@@ -541,7 +530,6 @@ class Single():
                         else:
                             monstersThisWave *= 2
                             monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
-                        # wave별로 몬스터 추가
                         if wave == 1:            
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
@@ -627,7 +615,7 @@ class Single():
         while True:
             # 바로 점수 저장되게
             clock.tick(clockTime)
-            
+        # name 입력받는 부분 지우기
         # Event Handling
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT and event.type == pygame.KEYDOWN
@@ -645,7 +633,7 @@ class Single():
                         font = pygame.font.Font(None, round(36*ratio))
                 elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
                     and event.key == pygame.K_RETURN # 엔터키
-                    ): #
+                    ): # 
                     Database().setScore(Var.user_id,score)
                     Database().setCoins(Var.user_id,score)
                     return True
