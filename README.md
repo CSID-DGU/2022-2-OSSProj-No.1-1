@@ -8,7 +8,7 @@ Pygame을 활용한 슈팅게임
 ![badges](https://img.shields.io/badge/pygame-2.1.2-yellow)
 ![badges](https://img.shields.io/badge/license-MIT-green)
 
-<img width="592" alt="스크린샷 2022-12-13 오후 6 27 25" src="https://user-images.githubusercontent.com/108131226/207305003-3f3b272a-1f43-4c1b-80fe-874c822221a3.png">
+<img width="500" alt="스크린샷 2022-12-13 오후 6 27 25" src="https://user-images.githubusercontent.com/108131226/207305003-3f3b272a-1f43-4c1b-80fe-874c822221a3.png">
 
 ### 팀원 소개
 * **팀장 : 동국대학교 정보통신공학과** [**김정혜**](https://github.com/junghye01)
