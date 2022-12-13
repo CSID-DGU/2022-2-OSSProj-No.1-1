@@ -32,10 +32,6 @@ cd 2022-2-OSSProj-No.1-1
 python3 shooting_game.py
 ```
 
-<<<<<<< HEAD
-
-=======
->>>>>>> upstream/main
 ## Game Controls
 ### Default
 ![default](https://user-images.githubusercontent.com/108131226/207036631-58cd3f2d-e7c0-4342-b452-fd6b7068d40e.jpeg)
@@ -68,7 +64,6 @@ python3 shooting_game.py
   - 2명이서 플레이할 수 있는 PVP 모드를 추가하였습니다. 
   - 해당 모드는 랭킹 모드가 적용되지 않으며 2명이서 게임을 진행 후 최종 결과를 비교해 승자를 가립니다.   
 
-<<<<<<< HEAD
 
 ## High Score
 <img width="712" alt="스크린샷 2022-12-13 오후 9 08 58" src="https://user-images.githubusercontent.com/108131226/207314495-43461280-5baf-420f-b10d-ea2e91ced133.png">
@@ -92,8 +87,6 @@ python3 shooting_game.py
 
 
 ## Reference
-https://github.com/CSID-DGU/2021-2-OSSProj-BATONG-01
-https://github.com/CSID-DGU/2021-2-OSSProj-Lets_Kirin-8
-https://opengameart.org/
-=======
->>>>>>> upstream/main
+- https://github.com/CSID-DGU/2021-2-OSSProj-BATONG-01
+- https://github.com/CSID-DGU/2021-2-OSSProj-Lets_Kirin-8
+- https://opengameart.org/
