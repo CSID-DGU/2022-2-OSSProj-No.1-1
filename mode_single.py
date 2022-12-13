@@ -7,7 +7,7 @@ from sprites import (MasterSprite,
                      Player, FriendShip, Monster, Beam, Explosion,
                      BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
                      BroccoliBeamfast,
-                     Green, Yellow, Grey, Blue, Pink)
+                     Green, Yellow, Grey, Blue, Pink, Boss)
 from database import Database
 from load import load_image, load_sound, load_music,Var
 from menu import *
@@ -24,41 +24,52 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
+# 방향키
 direction = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
              pygame.K_LEFT: (-2, 0), pygame.K_RIGHT: (2, 0)}
 
 class Single():
+
     def playGame(screen_size):
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
         ratio = (screen_size / 400)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's Player!")
+        pygame.display.set_caption("Let's Play!")
         pygame.mouse.set_visible(0)
 
     # Prepare background image
         # Game field
-        field1, field1Rect = load_image("field.png")
-        field2, field2Rect = load_image("field.png")
+        field1, field1Rect = load_image("field.png") 
+        field2, field2Rect = load_image("field.png") 
         field1Rect.midtop = screen.get_rect().midtop
         field2Rect.midbottom = field1Rect.midtop
 
-        # Menu - pause menu Highscore & help
-        menu, menuRect = load_image("menu.png")
-        menuRect.midtop = screen.get_rect().midtop
+        # # Menu - pause menu Highscore & help
+        # menu, menuRect = load_image("menu.png")
+        # menuRect.midtop = screen.get_rect().midtop
 
         # pause
         pause,pauseRect = load_image('pause.png')
-        pause = pygame.transform.scale(pause, (500, 500))
+        pause = pygame.transform.scale(pause, (600, 600))
         pauseRect.midtop = screen.get_rect().midtop
-        pauseMenu = False 
+        pauseMenu = False
+
 
     # Prepare game contents
         # life
         life1, life1Rect = load_image('heart1.png')
         life2, life2Rect = load_image('heart2.png')
         life3, life3Rect = load_image('heart3.png')
+
+        # boss life       
+        Bosslife0, Bosslife0Rect = load_image('bossheart0.png')
+        Bosslife1, Bosslife1Rect = load_image('bossheart2.png')
+        Bosslife2, Bosslife2Rect = load_image('bossheart4.png')
+        Bosslife3, Bosslife3Rect = load_image('bossheart6.png')
+        Bosslife4, Bosslife4Rect = load_image('bossheart8.png')
+        Bosslife5, Bosslife5Rect = load_image('bossheart10.png')
 
         # Sounds
         missile_sound = load_sound('missile.ogg')
@@ -72,8 +83,9 @@ class Single():
          #   pygame.mixer.music.play(loops=-1)
 
         # font
-        font = pygame.font.Font(None, round(36*ratio))
-
+        font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
+        font2 = pygame.font.Font("LeeSeoyun.ttf", round(21*ratio))
+        
         # clock - 60 FPS game
         clockTime = 60  # maximum FPS
         clock = pygame.time.Clock()
@@ -85,28 +97,42 @@ class Single():
         # object
         player = Player(screen_size)
         miniplayer = FriendShip(screen_size)
+        boss = Boss(screen_size)
         
+        # 초기 등장 몬스터
         initialMonsterTypes = (Green, Yellow)
+        # 아이템 종류
         powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, BroccoliBeamfast,
                         FriendPower, LifePower)
         bombs = pygame.sprite.Group()
         powers = pygame.sprite.Group()
 
         ship_selection = Ship_selection_check() 
-
-        # Score Function
-        def kill_bear(monster, monstersLeftThisWave, score) :
-            monstersLeftThisWave -= 1
-            if monster.pType == 'green':
-                score += 1
-            elif monster.pType == 'yellow':
-                score += 2
-            elif monster.pType == 'blue':
-                score += 4
-            elif monster.pType == 'pink':
-                score += 8
+        
+     # Score Function
+        def kill_monster(monster, monstersLeftThisWave, score) :
+            if wave == 5:
+                # 보스 외 다른 몬스터 점수 X
+                if monster.pType == 'green' or monster.pType == 'yellow' or monster.pType == 'blue' or monster.pType == 'pink':
+                    score += 0
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 160
+                    score += 20
+            else:
+                monstersLeftThisWave -= 1
+                if monster.pType == 'green':
+                    score += 1
+                elif monster.pType == 'yellow':
+                    score += 2
+                elif monster.pType == 'blue':
+                    score += 4
+                elif monster.pType == 'pink':
+                    score += 8
+                elif monster.pType == 'boss':
+                    monstersLeftThisWave -= 159
+                    score += 20
             return monstersLeftThisWave, score
-
+        
     # High Score
         hiScores=Database().getScores()
         highScoreTexts = [font.render("NAME", 1, RED),
@@ -116,39 +142,23 @@ class Single():
                         highScoreTexts[1].get_rect(
                         midtop=screen.get_rect().inflate(-100, -100).midtop)]
         for hs in hiScores:
-            highScoreTexts.extend([font.render(str(hs[x]), 1, BLACK)
+            highScoreTexts.extend([font.render(str(hs[x]), 1, 'WHITE')
                                 for x in range(2)])
             highScorePos.extend([highScoreTexts[x].get_rect(
                 topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
     
     # pause menu text  
-        blankText=font.render('            ',1,BLACK)
+        blankText=font.render('            ',1,'white')
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
-        restartText = font.render('RESTART GAME', 1, BLACK)
-        restartPos = restartText.get_rect(topleft=blankPos.bottomleft)   
-        hiScoreText = font.render('HIGH SCORES', 1, BLACK)
-        hiScorePos = hiScoreText.get_rect(topleft=restartPos.bottomleft)
-        fxText = font.render('SOUND FX ', 1, BLACK)
-        fxPos = fxText.get_rect(topleft=hiScorePos.bottomleft)
-        fxOnText = font.render('ON', 1, RED)
-        fxOffText = font.render('OFF', 1, RED)
-        fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
-        fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
-        musicText = font.render('MUSIC', 1, BLACK)
-        musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
-        musicOnText = font.render('ON', 1, RED)
-        musicOffText = font.render('OFF', 1, RED)
-        musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
-        musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
-        helpText=font.render('HELP',1,BLACK)
-        helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
-        quitText = font.render('QUIT', 1, BLACK)
-        quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
-        selectText = font.render('*', 1, BLACK)
-        selectPos = selectText.get_rect(topright=restartPos.topleft)
+        continueText = font.render('CONTINUE', 1, 'white')
+        continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
+        gotoMenuText = font.render('GO TO MAIN', 1, 'white')
+        gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
+        selectText = font.render('*', 1, 'white')
+        pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
         selection = 1
-        showHiScores = False
-        showHelp=False 
+        selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
+        
 
 
     #########################
@@ -177,11 +187,12 @@ class Single():
             doublebeam = False
             triplecupcake = False
             broccoli = False
-            pepper_chili = False
+            pepper_chili = False 
             bombsHeld = 3
             score = 0
             beamFired = 0
             wave = 1
+            health = 3
 
             # speed
             speed = 1.5 * ratio
@@ -190,15 +201,14 @@ class Single():
             player.speed = speed
         
             # Reset all time
-            bearPeriod = clockTime // speed
+            Period = clockTime // speed
             curTime = 0
             powerTime = 8 * clockTime
             powerTimeLeft = powerTime
-            powerdownTime = 8 * clockTime
-            powerdownTimeLeft = powerdownTime
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
+            # 아이템 지속 시간
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
             betweenTripleTime = 8 * clockTime
@@ -209,22 +219,23 @@ class Single():
             friendshipBeamCount = friendshipBeamTime
             broccoliTime  = 8 * clockTime
             broccoliCount = broccoliTime
-            pepper_chiliTime  = 8 * clockTime
-            pepper_chiliCount = pepper_chiliTime
             
+            # 유저 목숨
             player.alive = True
             player.life = 3
             player.initializeKeys()
             
+            # 보스 체력
+            boss.health = 10
             
             player.showChange_ship = False
+            
         # Start Game
             while player.alive:
                 clock.tick(clockTime)
                 
             # Drop Items
                 powerTimeLeft -= 1
-                powerdownTimeLeft -= 1
                 if powerTimeLeft <= 0:
                     powerTimeLeft = powerTime
                     random.choice(powerTypes)(screen_size).add(powers, allsprites)
@@ -238,10 +249,12 @@ class Single():
                     # Resize windowSize
                     elif (event.type == pygame.VIDEORESIZE):
                         screen_size = min(event.w, event.h)
-                        if screen_size <= 300:
-                            screen_size = 300
+                        if screen_size <= 400:
+                            screen_size = 400
+                        if screen_size >= 900:
+                            screen_size = 900
                         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                        ratio = (screen_size / 400)
+                        ratio = (screen_size / 600)
                         font = pygame.font.Font(None, round(36*ratio))
                     # Player Moving
                     elif (event.type == pygame.KEYDOWN
@@ -255,26 +268,22 @@ class Single():
                     # Beam
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
+                        # doublebeam 위치 설정
                         if doublebeam :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
+                        # triplecupcake 위치 설정
                         elif triplecupcake :
-                            Beam.position(player.rect.topleft)
-                            Beam.position(player.rect.midtop)
-                            Beam.position(player.rect.topright)
+                            Beam.position2(player.rect.left - 5)
+                            Beam.position2(player.rect.top)
+                            Beam.position2(player.rect.right + 5)
                             beamFired += 3
+                        # broccoli 위치 및 속도 변경
                         elif broccoli :
                             Beam.position(player.rect.midtop)
                             beam.speed = 1.5
                             beamFired += 1
-                            
-                        # elif pepper_chili:
-                        #     Beam.position(player.rect.midtop)
-                        #     speed = newspeed
-                        #     player.speed = speed
-                        #     player.speedUp()
-                        #     beamFired += 1
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
@@ -294,13 +303,15 @@ class Single():
                         and event.key == pygame.K_p):
                         pauseMenu = True
                         cnt=0
-                        
+                        pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                        selection=1
                         while pauseMenu:
                             clock.tick(clockTime)
-
                             pause_size = (round(pause.get_width() * ratio), round(pause.get_height() * ratio))
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
-
+                            pause = pygame.transform.scale(pause, (600, 600))
+                            pauseRect.midtop = screen.get_rect().midtop
+                            
                             for event in pygame.event.get():
                                 if (event.type == pygame.QUIT
                                     or event.type == pygame.KEYDOWN
@@ -310,121 +321,71 @@ class Single():
                                 # Resize windowSize
                                 elif (event.type == pygame.VIDEORESIZE):
                                     screen_size = min(event.w, event.h)
-                                    if screen_size <= 300:
-                                        screen_size = 300
+                                    if screen_size <= 400:
+                                        screen_size = 400
+                                    if screen_size >= 900:
+                                        screen_size = 900
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                                    ratio = (screen_size / 500)
+                                    ratio = (screen_size / 600)
                                     font = pygame.font.Font(None, round(36*ratio))
-                                elif (event.type == pygame.KEYDOWN  # unpause
-                                    and event.key == pygame.K_p):
-                                    pauseMenu = False
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_RETURN):
-                                    if showHiScores:
-                                        showHiScores = False
-                                    elif showHelp:
-                                        cnt+=1
-                                        if cnt%3!=0:
-                                            showHelp=True
-                                        else:
-                                            showHelp=False
-                                    elif selection == 1:    
+                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
+                                    # selection에 따라 정지 혹은 종료 
+                                    if selection == 1:
                                         pauseMenu = False
-                                        player.alive = False
                                     elif selection == 2:
-                                        showHiScores = True
-                                    elif selection == 3:
-                                        soundFX = not soundFX
-                                        if soundFX:
-                                            missile_sound.play()
-                                        Database.setSound(int(soundFX))
-                                    elif selection == 4 and pygame.mixer:
-                                        music = not music
-                                        if music:
-                                            pygame.mixer.music.play(loops=-1)
-                                        else:
-                                            pygame.mixer.music.stop()
-                                        Database.setSound(int(music), music=True)
-                                    elif selection == 5:
-                                        cnt+=1
-                                        showHelp=True
-                                    elif selection == 6:
-                                        pygame.quit()
-                                        sys.exit()
+                                        inMenu =True
+                                        return inMenu, screen_size
                                 elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_UP
-                                    and selection > 1
-                                    and not showHiScores):
-                                    selection -= 1
+                                        and event.key == pygame.K_DOWN
+                                        and selection < len(pauseMenuDict)):
+                                        selection += 1
                                 elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_DOWN
-                                    and selection < len(pauseMenuDict)
-                                    and not showHiScores):
-                                    selection += 1
+                                        and event.key == pygame.K_UP
+                                        and selection > 1):
+                                        selection -= 1
+                                
                                 
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
-                            restartText = font.render(' ', 1, BLACK)
-                            restartPos = restartText.get_rect(topleft=blankPos.bottomleft)   
-                            hiScoreText = font.render(' ', 1, BLACK)
-                            hiScorePos = hiScoreText.get_rect(topleft=restartPos.bottomleft)
-                            fxText = font.render('  ', 1, BLACK)
-                            fxPos = fxText.get_rect(topleft=hiScorePos.bottomleft)
-                            fxOnText = font.render(' ', 1, RED)
-                            fxOffText = font.render(' ', 1, RED)
-                            fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
-                            fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
-                            musicText = font.render(' ', 1, BLACK)
-                            musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
-                            musicOnText = font.render(' ', 1, RED)
-                            musicOffText = font.render(' ', 1, RED)
-                            musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
-                            musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
-                            helpText=font.render(' ',1,BLACK)
-                            helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
-                            quitText = font.render(' ', 1, BLACK)
-                            quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
-                            pauseMenuDict = {1: restartPos, 2: hiScorePos, 3: fxPos, 
-                                    4: musicPos, 5: helpPos, 6: quitPos}
-                            selectText = font.render(' ', 1, BLACK)
+                            continueText = font.render('CONTINUE', 1, 'white')
+                            continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
+                            gotoMenuText = font.render('GO TO MAIN', 1, 'white')
+                            gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
+                            selectText = font.render('*', 1, 'white')
+                            pauseMenuDict={1:continuePos,2:gotoMenuPos}
+                            
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
-                            highScoreTexts = [font.render("NAME", 1, RED),
-                                            font.render("SCORE", 1, RED)]
-                            highScorePos = [highScoreTexts[0].get_rect(
-                                            topleft=screen.get_rect().inflate(-100, -100).topleft),
-                                            highScoreTexts[1].get_rect(
-                                            midtop=screen.get_rect().inflate(-100, -100).midtop)]
-                            for hs in hiScores:
-                                highScoreTexts.extend([font.render(str(hs[x]), 1, BLACK)
-                                                    for x in range(2)])
-                                highScorePos.extend([highScoreTexts[x].get_rect(
-                                    topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
+                            # highScoreTexts = [font.render("NAME", 1, RED),
+                            #                 font.render("SCORE", 1, RED)]
+                            # highScorePos = [highScoreTexts[0].get_rect(
+                            #                 topleft=screen.get_rect().inflate(-100, -100).topleft),
+                            #                 highScoreTexts[1].get_rect(
+                            #                 midtop=screen.get_rect().inflate(-100, -100).midtop)]
+                            # for hs in hiScores:
+                            #     highScoreTexts.extend([font.render(str(hs[x]), 1, BLACK)
+                            #                         for x in range(2)])
+                            #     highScorePos.extend([highScoreTexts[x].get_rect(
+                            #         topleft=highScorePos[x].bottomleft) for x in range(-2, 0)])
 
-                            if showHiScores:
-                                menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                                screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                
-                                textOverlays = zip(highScoreTexts, highScorePos)
-                            elif showHelp:
-                                if cnt%3==1:
-                                    menu, menuRect = load_image("help1.png")
-                                    menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
-                                elif cnt%3==2:
-                                    menu, menuRect = load_image("help2.png") 
-                                    menuRect.midtop = screen.get_rect().midtop
-                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
-                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                  
-                            else:
-                                textOverlays = zip([blankText,restartText, hiScoreText, helpText, fxText,
-                                                    musicText, quitText, selectText,
-                                                    fxOnText if soundFX else fxOffText,
-                                                    musicOnText if music else musicOffText],
-                                                    [blankPos,restartPos, hiScorePos, helpPos, fxPos,
-                                                    musicPos, quitPos, selectPos,
-                                                    fxOnPos if soundFX else fxOffPos,
-                                                    musicOnPos if music else musicOffPos])
+                            # if showHiScores:
+                            #     menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                            #     screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                
+                            #     textOverlays = zip(highScoreTexts, highScorePos)
+                            # elif showHelp:
+                            #     if cnt%3==1:
+                            #         menu, menuRect = load_image("help1.png")
+                            #         menuRect.midtop = screen.get_rect().midtop
+                            #         menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                            #         screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                            #     elif cnt%3==2:
+                            #         menu, menuRect = load_image("help2.png") 
+                            #         menuRect.midtop = screen.get_rect().midtop
+                            #         menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                            #         screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                                  
+                            # else:
+                            textOverlays = zip([blankText,continueText, gotoMenuText, selectText],
+                                                    [blankPos,continuePos, gotoMenuPos, selectPos])
                             for txt, pos in textOverlays:
                                 screen.blit(txt, pos)
 
@@ -433,33 +394,49 @@ class Single():
                     
 
             # Collision Detection
-                # Bears
+                # monster
                 for monster in Monster.active:
-                    for bomb in bombs:
+                    for bomb in bombs:  # Bomb
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster.active:
-                            if monster.pType != 'grey' :
-                                monster.table()
-                                Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
+                            if monster.pType != 'grey' :    # 회색 몬스터 아니면
+                                if monster.pType == 'boss': # 보스면
+                                    if boss.health >= 1 :
+                                        boss.health -= 1    # 보스 체력 감소
+                                    else :
+                                        monster.table() 
+                                        Explosion.position(monster.rect.center)
+                                        monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                else:
+                                    monster.table()
+                                    Explosion.position(monster.rect.center)
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-                            if soundFX:
-                                bear_explode_sound.play()
-                    for beam in Beam.active:
+                            
+                    for beam in Beam.active:    # Beam
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
                             beam.table()
-                            if monster.pType != 'grey' :
-                                monster.table()
-                                Explosion.position(monster.rect.center)
-                                monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
-                            if soundFX:
-                                bear_explode_sound.play()
-                    if pygame.sprite.collide_rect(monster, player):
-                        if player.shieldUp:
+                            if monster.pType != 'grey' :    # 회색 몬스터가 아니면
+                                beam.table()    # beam 적용
+                                if monster.pType == 'boss':
+                                    if boss.health >= 1 :
+                                        boss.health -= 1    # 보스 체력 감소                    
+                                    else :         
+                                        monster.table()                  
+                                        Explosion.position(monster.rect.center) # 폭발 위치
+                                        monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                                else:
+                                    monster.table()
+                                    Explosion.position(monster.rect.center) # 폭발 위치
+                                    monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
+                            
+                    # player monster 충돌
+                    if pygame.sprite.collide_rect(monster, player) :
+                        if player.shieldUp: # 쉴드일 때
                             monster.table()
-                            Explosion.position(monster.rect.center)
-                            monstersLeftThisWave, score = kill_bear(monster, monstersLeftThisWave, score)
+                            Explosion.position(monster.rect.center) # 폭발 위치
+                            monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
                             player.shieldUp = False
                         elif player.life > 1:   # life
@@ -467,16 +444,19 @@ class Single():
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave -= 1
                             score += 1
-                            player.life -= 1
+                            if monster.pType == 'boss':
+                                player.life = 0 # 보스랑 충돌시 life 0
+                            else:
+                                player.life -= 1
                         else:
                             restart = False
                             player.alive = False
                             player.remove(allsprites)
-                            Explosion.position(player.rect.center)
+                            Explosion.position(player.rect.center)  # 폭발 위치
                             if soundFX:
-                                kirin_explode_sound.play() ## 변경사항
-
-                # PowerUps
+                                alien_explode_sound.play() 
+                
+                # Powers
                 for power in powers:
                     if pygame.sprite.collide_circle(power, player):
                         if power.pType == 'bomb':
@@ -502,28 +482,30 @@ class Single():
                         power.kill()
 
             # Update Monsters
-                if curTime <= 0 and monstersLeftThisWave > 0:
+                if curTime <= 0 and monstersLeftThisWave > 0 :
                     Monster.position()
-                    curTime = bearPeriod
+                    curTime = Period
                 elif curTime > 0:
                     curTime -= 1
 
             # Update text overlays
-                waveText = font.render("Wave: " + str(wave), 1, BLACK)
-                leftText = font.render("Bears Left: " + str(monstersLeftThisWave), 1, BLACK)
-                scoreText = font.render("Score: " + str(score), 1, BLACK)
-                bombText = font.render("Fart Bombs: " + str(bombsHeld), 1, BLACK)
+                waveText = font.render("Wave: " + str(wave), 1, 'WHITE')
+                leftText = font.render("Monsters Left: " + str(monstersLeftThisWave), 1, 'WHITE')
+                scoreText = font.render("Score: " + str(score), 1, 'WHITE')
+                bHealthText = font.render("Boss Health: ", 1, 'WHITE')
+                beamText = font.render("Fart Beams: " + str(bombsHeld), 1, 'WHITE')
 
                 wavePos = waveText.get_rect(topleft=screen.get_rect().topleft)
                 leftPos = leftText.get_rect(midtop=screen.get_rect().midtop)
                 scorePos = scoreText.get_rect(topright=screen.get_rect().topright)
-                bombPos = bombText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bHealthPos = bHealthText.get_rect(bottomleft=screen.get_rect().bottomleft)
+                bombPos = beamText.get_rect(bottomright=screen.get_rect().bottomright)
 
-                text = [waveText, leftText, scoreText, bombText]
-                textposition = [wavePos, leftPos, scorePos, bombPos]
+                text = [waveText, leftText, scoreText, bHealthText, beamText]
+                textposition = [wavePos, leftPos, scorePos, bHealthPos, bombPos]
 
             # Update using items
-                # item - doublebeam
+                # item - doublebeam, triplecupcake, broccoli
                 if doublebeam:
                     if betweenDoubleCount > 0:
                         betweenDoubleCount -= 1
@@ -543,15 +525,6 @@ class Single():
                         beam.speed = 1
                         broccoli = False
                         broccoliCount = broccoliTime
-                # if pepper_chili:
-                #     if pepper_chiliCount > 0:
-                #         pepper_chiliCount -= 1
-                #     elif pepper_chiliCount == 0:
-                #         speed = org_speed
-                #         player.speed = speed
-                #         player.speedUp()
-                #         pepper_chili = False
-                #         pepper_chiliCount = pepper_chiliTime
                 # item - friendship
                 miniplayer.rect.bottomright = player.rect.bottomleft
                 if friendship:
@@ -570,41 +543,45 @@ class Single():
                         Beam.position(miniplayer.rect.midtop)
 
             # betweenWaveCount - Detertmine when to move to next wave
-                if monstersLeftThisWave <= 0:
+                if monstersLeftThisWave <= 0 :
                     if betweenWaveCount > 0:
                         betweenWaveCount -= 1
                         nextWaveText = font.render(
-                            'Wave ' + str(wave + 1) + ' in', 1, BLACK)
+                            'Wave ' + str(wave + 1) + ' in', 1, 'WHITE')
                         nextWaveNum = font.render(
-                            str((betweenWaveCount // clockTime) + 1), 1, BLACK)
+                            str((betweenWaveCount // clockTime) + 1), 1, 'WHITE')
                         text.extend([nextWaveText, nextWaveNum])
                         nextWavePos = nextWaveText.get_rect(
                             center=screen.get_rect().center)
                         nextWaveNumPos = nextWaveNum.get_rect(
                             midtop=nextWavePos.midbottom)
                         textposition.extend([nextWavePos, nextWaveNumPos])
-                        if wave % 4 == 0:
+                        if wave % 5 == 0:
                             speedUpText = font.render('SPEED UP!', 1, RED)
                             speedUpPos = speedUpText.get_rect(
                                 midtop=nextWaveNumPos.midbottom)
                             text.append(speedUpText)
                             textposition.append(speedUpPos)
                     elif betweenWaveCount == 0:
-                        if wave % 4 == 0:
+                        if wave % 5 == 0:
                             speed += 0.5
-                            MasterSprite.speed = speed
-                            player.initializeKeys()
                             monstersThisWave = 10
-                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
+                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
                         else:
                             monstersThisWave *= 2
-                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave
-                        if wave == 1:
+                            monstersLeftThisWave = Monster.numOffScreen = monstersThisWave 
+                        # wave별로 몬스터 추가
+                        if wave == 1:            
                             Monster.pool.add([Grey(screen_size) for _ in range(5)])
                         if wave == 2:
                             Monster.pool.add([Blue(screen_size) for _ in range(5)])
                         if wave == 3:
                             Monster.pool.add([Pink(screen_size) for _ in range(5)])
+                        if wave == 4:
+                            Monster.pool.add(boss)                 
+                        if wave >= 5:
+                            monstersThisWave = 10
+                            Monster.pool.remove(boss)
                         wave += 1
                         betweenWaveCount = betweenWaveTime
 
@@ -641,16 +618,33 @@ class Single():
                     screen.blit(pygame.transform.scale(life2, life_size), life2Rect)
                 elif player.life == 1:
                     screen.blit(pygame.transform.scale(life1, life_size), life1Rect)
+                        
+            # Update Boss life 
+                Bosslife0Rect.topleft = bHealthPos.topright
+                Bosslife1Rect.topleft = bHealthPos.topright
+                Bosslife2Rect.topleft = bHealthPos.topright
+                Bosslife3Rect.topleft = bHealthPos.topright
+                Bosslife4Rect.topleft = bHealthPos.topright
+                Bosslife5Rect.topleft = bHealthPos.topright               
+                
+                boss_life_size = (round(Bosslife0.get_width() * ratio * 0.3), round(Bosslife0.get_height() * ratio * 0.5))  
+                
+                if boss.health <= 10 and boss.health > 8:
+                    screen.blit(pygame.transform.scale(Bosslife5, boss_life_size), Bosslife5Rect)
+                elif boss.health <= 8 and boss.health > 6:
+                    screen.blit(pygame.transform.scale(Bosslife4, boss_life_size), Bosslife4Rect)
+                elif boss.health <= 6 and boss.health > 4:
+                    screen.blit(pygame.transform.scale(Bosslife3, boss_life_size), Bosslife3Rect)
+                elif boss.health <= 4 and boss.health > 2:
+                    screen.blit(pygame.transform.scale(Bosslife2, boss_life_size), Bosslife2Rect)
+                elif boss.health <= 2 and boss.health > 0:
+                    screen.blit(pygame.transform.scale(Bosslife1, boss_life_size), Bosslife1Rect)
+                elif boss.health == 0:
+                    screen.blit(pygame.transform.scale(Bosslife0, boss_life_size), Bosslife0Rect)     
+   
 
                 pygame.display.flip()
 
-        # Data for Highscore
-            # accuracy = round(score / leafFired, 4) if leafFired > 0 else 0.0
-            # accuracy 지우기
-            # setScore 수정하고 isHiScore 지우기
-           # isHiScore = len(hiScores) < Database().numScores or score > hiScores[-1][1]
-            # 랭킹보드가 꽉 차지 않았거나, 점수가 맨 하위점수보다 높으면 
-            # 입력한 아이디가 
             name = ''
             nameBuffer = []
 
@@ -662,23 +656,25 @@ class Single():
         while True:
             # 바로 점수 저장되게
             clock.tick(clockTime)
-        # name 입력받는 부분 지우기
+            
         # Event Handling
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT and event.type == pygame.KEYDOWN
                         and event.key == pygame.K_ESCAPE): # 게임 창 끔
                         return False
                 # Resize windowSize
-                elif (event.type == pygame.VIDEORESIZE): # 사용자가 창 크기 조절
-                    screen_size = min(event.w, event.h)
-                    if screen_size <= 300:
-                        screen_size = 300
-                    screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                    ratio = (screen_size / 500)
-                    font = pygame.font.Font(None, round(36*ratio))
+                elif (event.type == pygame.VIDEORESIZE):
+                        screen_size = min(event.w, event.h)
+                        if screen_size <= 400:
+                            screen_size = 400
+                        if screen_size >= 900:
+                            screen_size = 900
+                        screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
+                        ratio = (screen_size / 600)
+                        font = pygame.font.Font(None, round(36*ratio))
                 elif (event.type == pygame.KEYDOWN # 키보드를 눌렀다 떼고
                     and event.key == pygame.K_RETURN # 엔터키
-                    ): # 
+                    ): #
                     Database().setScore(Var.user_id,score)
                     Database().setCoins(Var.user_id,score)
                     return True

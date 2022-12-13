@@ -6,6 +6,7 @@ from pygame.locals import *
 from sprites import (MasterSprite, 
                      Player, FriendShip, Player2, Player3, Monster, Beam, Explosion,
                      BombPower, ShieldPower, DoublebeamPower, FriendPower, LifePower, TriplecupcakePower,
+                     BroccoliBeamfast,
                      Green, Yellow, Grey, Pink, Blue)
 from database import Database
 from load import load_image, load_sound, load_music
@@ -22,14 +23,18 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 
+# 유저 1 방향키
 direction = {None: (0, 0), pygame.K_w: (0, -2), pygame.K_s: (0, 2),
              pygame.K_a: (-2, 0), pygame.K_d: (2, 0)}
 
+# 유저 2 방향키
 direction2 = {None: (0, 0), pygame.K_UP: (0, -2), pygame.K_DOWN: (0, 2),
              pygame.K_LEFT: (-2, 0), pygame.K_RIGHT: (2, 0)}
 
 class Pvp() :
+    
     def playGame(screen_size): 
+        load_music('music_loop.ogg')
     # Initialize everything
         pygame.mixer.pre_init(11025, -16, 2, 512)
         pygame.init()
@@ -52,6 +57,8 @@ class Pvp() :
         # pause
         pause,pauseRect = load_image('pause.png')
         pauseRect.midtop = screen.get_rect().midtop
+        pause = pygame.transform.scale(pause, (600, 600))
+        pauseRect.midtop = screen.get_rect().midtop
         pauseMenu = False 
 
     # Prepare game objects
@@ -73,7 +80,7 @@ class Pvp() :
         soundFX = Database().getSound()
         music = Database().getSound(music=True)
         if music and pygame.mixer: 
-            pygame.mixer.music.play(loops=-1)
+             pygame.mixer.music.play(loops=-1)
 
         # font
         font = pygame.font.Font(None, round(36*ratio))
@@ -91,8 +98,10 @@ class Pvp() :
         player2 = Player3(screen_size) 
         miniPlayer = FriendShip(screen_size)
 
+        # 초기 등장 몬스터
         initialmonsterTypes = (Green, Yellow)
-        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, FriendPower, LifePower)
+        # 아이템 종류
+        powerTypes = (BombPower, ShieldPower, DoublebeamPower, TriplecupcakePower, FriendPower, LifePower, BroccoliBeamfast)
 
         bombs = pygame.sprite.Group()
         bombs2 = pygame.sprite.Group()
@@ -162,12 +171,14 @@ class Pvp() :
             monstersThisWave, monstersLeftThisWave, Monster.numOffScreen = 10, 10, 10
             friendShip1 = False
             doublebeam = False
-            triplecandy = False
+            triplecupcake = False
+            broccoli = False
             bombsHeld = 3
             score = 0
             friendShip2 = False
             doublebeam2 = False
-            triplecandy2 = False
+            triplecupcake2 = False
+            broccoli2 = False
             bombsHeld2 = 3
             score2 = 0
             beamFired = 0
@@ -185,6 +196,7 @@ class Pvp() :
             betweenWaveTime = 3 * clockTime
             betweenWaveCount = betweenWaveTime
             
+            # 아이템 지속 시간
             betweenDoubleTime = 8 * clockTime
             betweenDoubleCount = betweenDoubleTime
             betweenDoubleCount2 = betweenDoubleTime
@@ -195,7 +207,11 @@ class Pvp() :
             friendShipCount = friendShipTime
             friendShipbeamTime = 0.2 * clockTime
             friendShipbeamCount = friendShipbeamTime
+            broccoliTime  = 8 * clockTime
+            broccoliCount = broccoliTime
+            broccoliCount2 = broccoliTime
             
+            # 유저 1, 2 목숨
             player.alive = True
             player.life = 3
             player.initializeKeys()
@@ -240,21 +256,27 @@ class Pvp() :
                     # beam1
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_SPACE):
+                        # doublebeam 위치 설정
                         if doublebeam :
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.topright)
                             beamFired += 2
-                        elif triplecandy:
+                        # triplecupcake 위치 설정
+                        elif triplecupcake:
                             Beam.position(player.rect.topleft)
                             Beam.position(player.rect.midtop)
                             Beam.position(player.rect.topright)
                             beamFired += 3
-                            
+                        # broccoli 위치 및 속도 변경
+                        elif broccoli :
+                            Beam.position(player.rect.midtop)
+                            beam.speed = 1.5
+                            beamFired += 1
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
-                        if soundFX:
-                            beam_sound.play()
+                        # if soundFX:
+                        #     beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_b):
@@ -262,8 +284,8 @@ class Pvp() :
                             bombsHeld -= 1
                             newBomb = player.bomb()
                             newBomb.add(bombs, alldrawings)
-                            if soundFX:
-                                bomb_sound.play()
+                            # if soundFX:
+                            #     bomb_sound.play()
                     # Player2 Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction2.keys()):
@@ -276,20 +298,27 @@ class Pvp() :
                     # beam2
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_m):
+                        # doublebeam2 위치 설정
                         if doublebeam2 :
                             beam.position(player2.rect.topleft)
                             beam.position(player2.rect.topright)
                             beamFired += 2
-                        elif triplecandy2 :
+                        # triplecupcake2 위치 설정
+                        elif triplecupcake2 :
                             beam.position(player2.rect.topleft)
                             beam.position(player2.rect.midtop)
                             beam.position(player2.rect.topright)
                             beamFired += 3
+                        # broccoli2 위치 및 속도 변경
+                        elif broccoli2 :
+                            Beam.position(player2.rect.midtop)
+                            beam.speed = 1.5
+                            beamFired += 1
                         else : 
                             beam.position(player2.rect.midtop)
                             beamFired += 1
-                        if soundFX:
-                            beam_sound.play()
+                        # if soundFX:
+                        #     beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_l):
@@ -299,7 +328,7 @@ class Pvp() :
                             newBomb.add(bombs2, alldrawings)
                             if soundFX:
                                 bomb_sound.play()
-                    # Pause
+                    # Pause Menu
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_p):
                         pauseMenu = True
@@ -325,25 +354,16 @@ class Pvp() :
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                                     ratio = (screen_size / 500)
                                     font = pygame.font.Font(None, round(36*ratio))
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_p): 
-                                    pauseMenu = False
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_RETURN):
-                                    if showHelp:
-                                        cnt+=1
-                                        if cnt%3!=0:
-                                            showHelp=True
-                                        else:
-                                            showHelp=False
-                                    elif selection == 1:    
+                                elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
+                                    # selection에 따라 정지 혹은 종료
+                                    if selection == 1:
                                         pauseMenu = False
                                         player.alive = False
-                                    elif selection == 2:
-                                        soundFX = not soundFX
-                                        if soundFX:
-                                            beam_sound.play()
-                                        Database.setSound(int(soundFX))
+                                    # elif selection == 2:
+                                        # soundFX = not soundFX
+                                        # if soundFX:
+                                        #     beam_sound.play()
+                                        # Database.setSound(int(soundFX))
                                     elif selection == 3 and pygame.mixer:
                                         music = not music
                                         if music:
@@ -428,23 +448,24 @@ class Pvp() :
                     for bomb in bombs:
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster.active:
-                            if monster.pType != 'grey' :
+                            if monster.pType != 'grey' :    # 회색 몬스터가 아니면
                                 monster.table()
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-                            if soundFX:
-                                monster_explode_sound.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
+
                     for bomb in bombs2:
                         if pygame.sprite.collide_circle(
                                 bomb, monster) and monster in Monster.active:
-                            if monster.pType != 'grey' :
+                            if monster.pType != 'grey' :    # 회색 몬스터가 아니면
                                 monster.table()
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
                             beamFired += 1
-                            if soundFX:
-                                monster_explode_sound.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
                     for beam in Beam.active:
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
@@ -456,11 +477,12 @@ class Pvp() :
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else :
                                     monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
-                            if soundFX:
-                                monster_explode_sound.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
 
+                    # player monster 충돌
                     if pygame.sprite.collide_rect(monster, player):
-                        if player.shieldUp:
+                        if player.shieldUp: # 쉴드일 때
                             monster.table()
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
@@ -475,12 +497,12 @@ class Pvp() :
                         else:
                             restart = False
                             player.alive = False
-                            player.remove(allsprites)
+                            player.remove(allsprites)   # life 소진 player 삭제
                             Explosion.position(player.rect.center)
-                            if soundFX:
-                                player_explode_sound.play()
+                            # if soundFX:
+                            #     player_explode_sound.play()
                     if pygame.sprite.collide_rect(monster, player2):
-                        if player2.shieldUp:
+                        if player2.shieldUp:    # 쉴드일 때
                             monster.table()
                             Explosion.position(monster.rect.center)
                             monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
@@ -495,12 +517,12 @@ class Pvp() :
                         else:
                             restart = False
                             player2.alive = False
-                            player2.remove(allsprites)
+                            player2.remove(allsprites)  # life 소진 player2 삭제
                             Explosion.position(player2.rect.center)
-                            if soundFX:
-                                player_explode_sound.play()
+                            # if soundFX:
+                            #     player_explode_sound.play()
 
-                # PowerUps
+                # Powers
                 for power in powers:
                     if pygame.sprite.collide_circle(power, player):
                         if power.pType == 'bomb':
@@ -509,8 +531,10 @@ class Pvp() :
                             player.shieldUp = True
                         elif power.pType == 'doublebeam':
                             doublebeam = True
-                        elif power.pType == 'triplecandy' :
-                            triplecandy = True
+                        elif power.pType == 'triplecupcake' :
+                            triplecupcake = True
+                        elif power.pType == 'broccoli' :
+                            broccoli = True
                         elif power.pType == 'life':
                             if player.life < 3:
                                 player.life += 1 
@@ -530,8 +554,10 @@ class Pvp() :
                             player2.shieldUp = True
                         elif power.pType == 'doublebeam' :
                             doublebeam2 = True
-                        elif power.pType == 'triplecandy' :
-                            triplecandy2 = True
+                        elif power.pType == 'triplecupcake' :
+                            triplecupcake2 = True
+                        elif power.pType == 'broccoli' :
+                            broccoli2 = True
                         elif power.pType == 'life':
                             if player2.life < 3:
                                 player2.life += 1 
@@ -588,21 +614,39 @@ class Pvp() :
                         doublebeam2 = False
                         betweenDoubleCount = betweenDoubleTime
                 
-                # item - triplecandy
-                if triplecandy:
+                # item - triplecupcake
+                if triplecupcake:
                     if betweenTripleCount > 0:
                         betweenTripleCount -= 1
                     elif betweenTripleCount == 0:
-                        triplecandy = False
+                        triplecupcake = False
                         betweenTripleCount = betweenTripleTime
                 
-                # item - triplecandy2
-                if triplecandy2:
+                # item - triplecupcake2
+                if triplecupcake2:
                     if betweenTripleCount2 > 0:
                         betweenTripleCount2 -= 1
                     elif betweenTripleCount2 == 0:
-                        triplecandy2 = False
+                        triplecupcake2 = False
                         betweenTripleCount = betweenTripleTime
+                
+                # item - broccoli
+                if broccoli:
+                    if broccoliCount > 0:
+                        broccoliCount -= 1
+                    elif broccoliCount == 0:
+                        beam.speed = 1
+                        broccoli = False
+                        broccoliCount = broccoliTime
+                
+                # item - broccoli2
+                if broccoli2:
+                    if broccoliCount2 > 0:
+                        broccoliCount2 -= 1
+                    elif broccoliCount2 == 0:
+                        beam.speed = 1
+                        broccoli2 = False
+                        broccoliCount2 = broccoliTime
                 
                 # item - friendShip
                 if friendShip1 :

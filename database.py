@@ -4,7 +4,7 @@ import bcrypt
 import pygame
 import os
 
-pygame.mixer.init()
+#pygame.mixer.init()
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
 #커서는 한 번만 부르..
@@ -71,7 +71,7 @@ class Database(object):
         self.score_db.commit()  #commit으로 데이터베이스에 반영
         # coin initialize
         curs = self.score_db.cursor()
-        sql = "UPDATE users SET user_coin= %s WHERE user_id=%s"
+        sql = "UPDATE user_info SET user_coin= %s WHERE user_id=%s"
         curs.execute(sql, (initial_coin, user_id))
         self.score_db.commit()
         curs.close()
@@ -127,6 +127,44 @@ class Database(object):
             
 
         curs.close()
+    # extreme score
+    def getScores_extreme(self):
+
+        curs=self.score_db.cursor()
+        sql='SELECT * FROM extreme_score ORDER BY user_score DESC'
+        curs.execute(sql)
+        data=curs.fetchall()
+        if len(data)>self.numScores:
+            data=[data[i] for i in range(self.numScores)]
+        
+        return data
+        curs.close()
+    # 
+    
+    def setScore_extreme(self,user_id,score): # 기존에 저장되어 있던 점수랑 비교해야될듯 user_id가 pk라서 같은 아이디가 중복 저장되지x
+        # data가 null일때랑 아닐때
+        curs=self.score_db.cursor()
+        sql="SELECT * FROM extreme_score WHERE user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data:
+            if score > data[1]:
+                curs=self.score_db.cursor()
+                sql="UPDATE extreme_score SET user_score=%s WHERE user_id=%s"
+                curs.execute(sql,(score,user_id))
+                self.score_db.commit()
+            else:
+                curs.close()
+                return
+        else:
+            curs=self.score_db.cursor()
+            sql = "INSERT INTO extreme_score (user_id, user_score) VALUES (%s, %s)"
+            curs.execute(sql,(user_id,score))
+            self.score_db.commit()
+            
+
+        curs.close()
+
 
     def getSound(music=False):
         conn = sqlite3.connect(Database.path)
@@ -157,47 +195,105 @@ class Database(object):
     def setCoins(self,user_id,score):
         newcoins=0
         curs=self.score_db.cursor()
-        sql="SELECT * FROM users WHERE user_id=%s"
+        sql="SELECT * FROM user_info WHERE user_id=%s"
         curs.execute(sql,user_id)
         data=curs.fetchone()
-        newcoins=data[2]+score
-
-        curs=self.score_db.cursor()
-        sql="UPDATE users SET user_coin=%s WHERE user_id=%s"
+        newcoins=data[1]+score
+        sql="UPDATE user_info SET user_coin=%s WHERE user_id=%s"
         curs.execute(sql,(newcoins,user_id))
         self.score_db.commit()
 
         curs.close()
+
+
+    def load_coin(self,user_id):
+        curs=self.score_db.cursor()
+        sql="SELECT * FROM user_info where user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        curs.close()
+        return data[1]
+    
+    def buy_char(self,user_id,price):
+        curs=self.score_db.cursor()
+        sql="select * from user_info where user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        result=data[1]-price
         
-    def update_char_data(self,user_char,user_id): # 캐릭터 추가
-        curs = self.score_db.cursor()
-        sql = "UPDATE users SET user_character= %s WHERE user_id=%s"
-        print("user_char>>>>>>>>> : ",user_char)
-        curs.execute(sql, (user_char, user_id))
+        #바뀐 코인으로 업데이트
+        sql="update user_info set user_coin=%s where user_id=%s"
+        curs.execute(sql,(result,user_id))
         self.score_db.commit()
+
+        
+        curs.close()
+        return result
+        
+    
+        
+    def update_char_data(self,user_char,user_id): # 캐릭터 추가/변경
+        curs = self.score_db.cursor()
+        sql="SELECT * FROM user_info WHERE user_id=%s"
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data: # 이미 등록한 유저라면
+            sql="UPDATE user_info SET user_character=%s WHERE user_id=%s"
+            print("user_char>>>>>>>>> : ",user_char)
+            curs.execute(sql,(user_char,user_id))
+            self.score_db.commit()
+        else:
+            sql="INSERT INTO user_info(user_id,user_character) VALUES (%s,%s)"
+            print("user_char>>>>>>>>> : ",user_char)
+            curs.execute(sql,(user_id,user_char))
+            self.score_db.commit()
+        
         curs.close()
 
     def load_char_data(self,user_id): #캐릭터정보 불러오기
         curs = self.score_db.cursor(pymysql.cursors.DictCursor)
-        sql = "SELECT * FROM users WHERE user_id=%s"
+        sql = "SELECT * FROM user_info WHERE user_id=%s"
         curs.execute(sql, user_id)
         data = curs.fetchone()  # 리스트 안에 딕셔너리가 있는 형태
         curs.close()
-        print("ID : ",data['user_id'])
+        #print("ID : ",data['user_id'])
         
-        print("CHAR : ",data['user_character'])
+        #print("CHAR : ",data['user_character'])
         return data['user_character']
-        
-
-                    
-
-
-        
-           
-        
- 
-   
 
     
 
+    def load_shipprice(self,name):
+        curs=self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql="SELECT * FROM ship WHERE name=%s"
+        curs.execute(sql,name)
+        data=curs.fetchone()
+        curs.close()
 
+        return data['price']
+        
+    def update_char_have(self,user_id,type): #char_have 테이블 업데이트
+        curs=self.score_db.cursor()
+        sql='select * from char_have where user_id=%s'
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        if data: # update함
+            sql='update char_have set {0}=1 where user_id=%s'.format(type)
+            curs.execute(sql,user_id)
+            self.score_db.commit()
+            curs.close()
+            
+        else: # 처음일경우
+            sql='insert into char_have(user_id,{0}) values(%s,1)'.format(type)
+            curs.execute(sql,user_id)
+            self.score_db.commit()
+            curs.close()
+
+    def check_char_have(self,user_id,ship_type): # 있으면 1
+        curs=self.score_db.cursor(pymysql.cursors.DictCursor)
+        sql='select * from char_have where user_id=%s'
+        curs.execute(sql,user_id)
+        data=curs.fetchone()
+        data=data[ship_type]
+        return data
+        
