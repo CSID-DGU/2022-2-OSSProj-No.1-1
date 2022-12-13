@@ -461,6 +461,14 @@ class Beam(MasterSprite):
             beam.remove(cls.pool)
             beam.rect.midbottom = loc
     
+    @classmethod
+    def position2(cls, loc):
+        if len(cls.pool) > 0:
+            beam = cls.pool.sprites()[0]
+            beam.add(cls.allsprites, cls.active)
+            beam.remove(cls.pool)
+            beam.rect.bottom = loc
+    
     def table(self):
         self.add(self.pool)
         self.remove(self.allsprites, self.active)
