@@ -87,7 +87,14 @@ python3 shooting_game.py
 ### 게임 시연 영상
 - https://youtu.be/NsPBna2KnSA
 
-## Reference
+## References
 - https://github.com/CSID-DGU/2021-2-OSSProj-BATONG-01
 - https://github.com/CSID-DGU/2021-2-OSSProj-Lets_Kirin-8
+
+## Image credit
 - https://opengameart.org/
+- https://textcraft.net/
+
+## Sound credit
+- https://opengameart.org/art-search-advanced?keys=&field_art_type_tid%5B%5D=12&sort_by=count&sort_order=DESC
+
