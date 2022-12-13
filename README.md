@@ -30,7 +30,7 @@ sudo apt install python3.8
 2. 필요한 모듈 설치
 ```
 sudo apt-get update
-sudo apt install python3.8
+pip3 install -r requirements.txt
 
 ```
 
@@ -41,6 +41,12 @@ git clone https://github.com/CSID-DGU/2022-2-OSSProj-No.1-1
 cd 2022-2-OSSProj-No.1-1
 python3 shooting_game.py
 ```
+
+## Sign up, Sign in
+<img width="600" alt="스크린샷 2022-12-13 오후 9 07 00" src="https://user-images.githubusercontent.com/108131226/207313760-9915bef6-279a-474e-920b-48bd74c16d1f.png">
+
+- 게임을 시작하기에 앞서, 회원가입 및 로그인을 진행합니다.
+
 
 ## Game Controls
 ### Default
@@ -72,9 +78,17 @@ python3 shooting_game.py
 <img width="500" alt="스크린샷 2022-12-13 오후 8 27 17" src="https://user-images.githubusercontent.com/108131226/207305964-48034a9d-e158-4956-b635-252b71ad3451.png">
 
   - 2명이서 플레이할 수 있는 PVP 모드를 추가하였습니다. 
-  - 해당 모드는 랭킹 모드가 적용되지 않으며 2명이서 게임을 진행 후 최종 결과를 비교해 승자를 가립니다.   
+  - 해당 모드는 랭킹 모드가 적용되지 않으며 2명이서 게임을 진행 후 최종 결과를 비교해 승자를 가립니다.  
 
-### Ship shop
+
+## High Score
+<img width="712" alt="스크린샷 2022-12-13 오후 9 08 58" src="https://user-images.githubusercontent.com/108131226/207314495-43461280-5baf-420f-b10d-ea2e91ced133.png">
+
+ - high score 메뉴를 통해 모드 별 점수 기록을 볼 수 있습니다. 게임 플레이가 끝나고 ENTER 키 입력 후 메뉴로 돌아가면 high score 메뉴에서 본인의 점수가 기록에 반영된 것을 확인할 수 있습니다.
+
+
+
+## Ship shop
 
 <img width="500" alt="스크린샷 2022-12-13 오후 8 36 09" src="https://user-images.githubusercontent.com/108131226/207307734-935c7302-8dcb-45ee-b9b2-589bbf4b6e60.png">
 
