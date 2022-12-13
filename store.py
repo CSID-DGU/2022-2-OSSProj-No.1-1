@@ -178,11 +178,9 @@ class CharStore(Store):
         text_offset=0.07
         coin_offset=0.07
         coin_text_offset=0.07
-        #ship_color=(120,120,230)
-        #ship_price_color=(0,255,0)
-        #buy_color=(120,120,120)
-        back_color=(0,0,0)
        
+        back_color=(0,0,0)
+       #ship1,2,3 display
         self.ship1_image=transform.scale(self.ship1_image,(CHAR_SIZE,CHAR_SIZE))
         
         self.ship2_image=transform.scale(self.ship2_image,(CHAR_SIZE,CHAR_SIZE))
@@ -199,7 +197,8 @@ class CharStore(Store):
             ship_offset+=0.2
 
             self.screen.blit(img,ship_rect)
-        #ship5,6,7
+
+        #ship5,6,7 display
         ship_offset=0
         self.ship5_image=transform.scale(self.ship5_image,(CHAR_SIZE,CHAR_SIZE))
         
@@ -207,8 +206,7 @@ class CharStore(Store):
         
         self.ship7_image=transform.scale(self.ship7_image,(CHAR_SIZE,CHAR_SIZE))
         
-        #(self.ship5_rect.centerx,self.ship5_rect.centery)=(self.width*(0.65+ship_offset),self.height)
-        #self.screen.blit(self.ship5_image,self.ship5_rect)
+       
         self.ship_zips2=zip([self.ship5_image,self.ship6_image,self.ship7_image],[self.ship5_rect,self.ship6_rect,self.ship7_rect])
         for img,ship_rect in self.ship_zips2:
             img.set_colorkey((0,0,0))
@@ -217,7 +215,7 @@ class CharStore(Store):
 
             self.screen.blit(img,ship_rect)
 
-        # show price
+        # ship 1,2,3,4 price
         ship_offset=0
         
         self.coin1_image,self.coin1_rect=load_image('coin.png')
@@ -255,7 +253,7 @@ class CharStore(Store):
             self.screen.blit(img,coin_img_rect)
 
 
-        # coin price text
+        # coin price  text 1,2,3
         ship_offset=0
         self.coin1_text=self.font.render(f'X{self.s1_price}',True,ship_price_color)
         self.coin2_text=self.font.render(f'X{self.s2_price}',True,ship_price_color)
@@ -324,7 +322,7 @@ class CharStore(Store):
         self.screen.blit(self.buy_text,self.buy_pos)
 
     def char_store(self):
-        #print('열기')
+       
         super().open()
         main_menu, main_menuRect = load_image("shopback.png")
         main_menu = pygame.transform.scale(main_menu, (500, 500))
@@ -546,7 +544,7 @@ class CharStore(Store):
             self.clock.tick(self.clockTime)#delay문제
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0)) 
-            #self.disp_setting()
+            
 
             for event in pygame.event.get():
                 if (event.type== pygame.QUIT or event.type==pygame.KEYDOWN

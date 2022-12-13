@@ -95,9 +95,6 @@ def load_image(name,sizex=-1,sizey=-1, colorkey=None):
     return image, image.get_rect()
 
 
-# for skin store
-field1, field1Rect = load_image("field.png") # skin
-field2, field2Rect = load_image("field.png") #skin
 
 class Var:
     user_id=''
