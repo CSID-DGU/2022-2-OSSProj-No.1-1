@@ -16,21 +16,9 @@ from database import Database
 
 
 
-#scr_size=(width,height)=(600,600) # default
-#resized_screen = display.set_mode((scr_size), RESIZABLE)
-#screen=resized_screen.copy()
-#width_offset=0.3
-#resized_screen_center = (0, 0)
 FPS=75
 BACK=0
-#CHAR_SIZE = 60
-#USER_ITEM_SIZE=20
-#showstore=False
-#Black=(0,0,0)
-#clock=time.Clock()
-#instore=False
-#global selection
-#selection=1
+
 
 class Store(object):
     def __init__(self,screen_size):
@@ -399,6 +387,7 @@ class CharStore(Store):
         ship_color=(120,120,230)
         back_color=(0,0,0)
         SET_color=(120,120,120)
+        
         #갖고있으면 1
         self.ship1_have=Database().check_char_have(self.user_id,'ship1')
         self.ship2_have=Database().check_char_have(self.user_id,'ship2')
