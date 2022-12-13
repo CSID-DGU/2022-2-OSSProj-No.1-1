@@ -84,4 +84,4 @@ python3 shooting_game.py
  ### Items
 <img width="456" alt="스크린샷 2022-12-13 오후 8 39 57" src="https://user-images.githubusercontent.com/108131226/207308719-1c858a16-cb26-4f4d-93ed-ccaa8fb007d5.png">
 
- - 아이템은 다음과 같다.
+ - 아이템은 다음과 같습니다.
