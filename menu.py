@@ -5,7 +5,7 @@ import sys
 from pygame.locals import *
 from load import load_image, load_sound, load_music,Var # id, 점수 자동저장을 위한 var
 from database import Database
-from coin import *
+
 from sprites import *
 from load import * 
 from store import Store,CharStore
@@ -198,24 +198,11 @@ class Menu:
         self.selectText = self.font.render('*', 1, 'YELLOW')
         self.selectPos =self.selectText.get_rect(topright=self.singlePos.topleft)
         
-        #FOR Store setting
-        self.coin_Have = CoinData.load()
         
         # ship change 
         self.ship1, self.ship1Rect = load_image('ship.png')
         self.ship1Rect.bottomleft = self.screen.get_rect().inflate(-112, -300).bottomleft
 
-        if ShipData.load_unlock(2) : self.ship2, self.ship2Rect = load_image('ship2.png')
-        else : self.ship2, self.ship2Rect = load_image('ship2_lock.png')
-        self.ship2Rect.bottomleft = self.screen.get_rect().inflate(-337, -290).bottomleft 
-
-        if ShipData.load_unlock(3) : self.ship3, self.ship3Rect = load_image('ship3.png')
-        else : self.ship3, self.ship3Rect = load_image('ship3_lock.png')
-        self.ship3Rect.bottomleft = self.screen.get_rect().inflate(-562, -300).bottomleft 
-
-        if ShipData.load_unlock(4) : self.ship4, self.ship4Rect = load_image('ship4.png')
-        else : self.ship4, self.ship4Rect = load_image('ship4_lock.png')
-        self.ship4Rect.bottomleft = self.screen.get_rect().inflate(-787, -300).bottomleft 
 
         self.shipCoin, self.shipCoinRect = load_image('coin.png')      #기체변경 창에서 코인 이미지
         self.shipCoinRect.bottomleft = self.screen.get_rect().inflate(-112, -100).bottomleft 
@@ -226,17 +213,13 @@ class Menu:
         self.ship3Text = self.font.render('', 1, BLACK)
         self.ship4Text = self.font.render('', 1, BLACK)
         self.ship_selectText = self.font.render('SELECT', 1, BLACK)
-        self.shipUI_coinText = self.font.render(f'        : {self.coin_Have}',1 , (255,215,0))
-        self.shipUnlockText = self.font.render("UNLOCK : P", 1, RED)
-
+       
         self.ship1Pos = self.ship1Text.get_rect(midbottom=self.ship1Rect.inflate(0, 0).midbottom)
         self.ship2Pos = self.ship2Text.get_rect(midbottom=self.ship2Rect.inflate(0, 0).midbottom)
         self.ship3Pos = self.ship3Text.get_rect(midbottom=self.ship3Rect.inflate(0, 0).midbottom)
         self.ship4Pos = self.ship4Text.get_rect(midbottom=self.ship4Rect.inflate(0, 0).midbottom)
         self.ship_selectPos = self.ship_selectText.get_rect(midbottom=self.ship1Rect.inflate(0, 60).midbottom)
-        self.shipUI_coinPos = self.shipUI_coinText.get_rect(midbottom=self.ship1Rect.inflate(0, 200).midbottom)
-        self.shipUnlockPos = self.ship4Text.get_rect(midbottom=self.ship3Rect.inflate(0, 200).midbottom)
-
+      
         self.ship_menuDict = {1: self.ship1Pos, 2: self.ship2Pos, 3: self.ship3Pos, 4: self.ship4Pos}
             
         ## 상점 이미지나 배경 추가할 거면 여기 수정
