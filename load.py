@@ -102,12 +102,7 @@ field2, field2Rect = load_image("field.png") #skin
 class Var:
     user_id=''
     initial_id=0
-    ## mode_single.py에서 게임이 종료되었음을 어떻게 알릴것인지
-    # 게임이 종료됐을 때 무조건 setScore 함수가 호출되게 해야함
-    # pygame.event로 알릴것인가? or game_over() 함수를 사용..? 
-    # tongsan 에서 game_over() 함수는 board. py에저장 어떻게 작성했는지 확인
-
-     #메뉴 기본 테마 만들기
+ 
    
     path='data/'
 
@@ -119,18 +114,12 @@ class Var:
     char6_lst=['ship6.png']
     char7_lst=['ship7.png']
     
-    
 
     char=1
     lst=char1_lst # char img 초기화 
     # 메뉴 전환을 위한 변수
     go_menu=False
-    # 상점기능
-    #char1_price=50
-    #char2_price=70
-    #char3_price=100
-    #char4_price=200
-    # for char_setting
+    
     char_have=[]
 
     coin=0

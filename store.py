@@ -7,7 +7,7 @@ from pygame import time
 from pygame import Surface
 from pygame.locals import RESIZABLE, RLEACCEL
 from load import load_image,Var
-from load import * #skin store
+from load import * 
 from menu import *
 from database import Database
 
