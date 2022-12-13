@@ -134,3 +134,4 @@ class Var:
     char_have=[]
 
     coin=0
+
