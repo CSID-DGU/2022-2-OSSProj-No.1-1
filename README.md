@@ -84,7 +84,8 @@ python3 shooting_game.py
 
  - 아이템은 다음과 같습니다.
 
-
+### 게임 시연 영상
+- https://youtu.be/NsPBna2KnSA
 
 ## Reference
 - https://github.com/CSID-DGU/2021-2-OSSProj-BATONG-01
