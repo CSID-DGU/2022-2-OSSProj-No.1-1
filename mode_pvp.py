@@ -74,15 +74,9 @@ class Pvp() :
         ship_explode_sound = load_sound('ship_explode.ogg')
         load_music('music_loop.ogg')
         soundFX = Database().getSound()
-<<<<<<< HEAD
         music = Database().getSound()
         if music and pygame.mixer: 
            pygame.mixer.music.play(loops=-1)
-=======
-        #music = Database().getSound(music=True)
-        #if music and pygame.mixer: 
-        #    pygame.mixer.music.play(loops=-1)
->>>>>>> feature/DB
 
         # font
         font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
