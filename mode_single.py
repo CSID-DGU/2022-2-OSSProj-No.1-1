@@ -83,13 +83,9 @@ class Single():
          #   pygame.mixer.music.play(loops=-1)
 
         # font
-<<<<<<< HEAD
-        font = pygame.font.Font("LeeSeoyun.ttf", round(20*ratio))
-=======
         font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
         font2 = pygame.font.Font("LeeSeoyun.ttf", round(21*ratio))
         
->>>>>>> 8051a909d5fa67b3506de812e4cfe654c8f3451e
         # clock - 60 FPS game
         clockTime = 60  # maximum FPS
         clock = pygame.time.Clock()
@@ -357,12 +353,6 @@ class Single():
                             gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
                             selectText = font.render('*', 1, 'white')
                             pauseMenuDict={1:continuePos,2:gotoMenuPos}
-<<<<<<< HEAD
-                            
-
-                         
-=======
->>>>>>> 8051a909d5fa67b3506de812e4cfe654c8f3451e
                             
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
 
@@ -422,14 +412,8 @@ class Single():
                                     Explosion.position(monster.rect.center)
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-<<<<<<< HEAD
-                            if soundFX:
-                                bear_explode_sound.play()
-                    for beam in Beam.active:
-=======
                             
                     for beam in Beam.active:    # Beam
->>>>>>> 8051a909d5fa67b3506de812e4cfe654c8f3451e
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
                             beam.table()
@@ -446,15 +430,8 @@ class Single():
                                     monster.table()
                                     Explosion.position(monster.rect.center) # 폭발 위치
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
-<<<<<<< HEAD
-                            if soundFX:
-                                bear_explode_sound.play()
-                            if soundFX:
-                                bear_explode_sound.play()
-=======
                             
                     # player monster 충돌
->>>>>>> 8051a909d5fa67b3506de812e4cfe654c8f3451e
                     if pygame.sprite.collide_rect(monster, player) :
                         if player.shieldUp: # 쉴드일 때
                             monster.table()
@@ -477,11 +454,7 @@ class Single():
                             player.remove(allsprites)
                             Explosion.position(player.rect.center)  # 폭발 위치
                             if soundFX:
-<<<<<<< HEAD
-                                kirin_explode_sound.play() ## 변경사항
-=======
                                 alien_explode_sound.play() 
->>>>>>> 8051a909d5fa67b3506de812e4cfe654c8f3451e
                 
                 # Powers
                 for power in powers:

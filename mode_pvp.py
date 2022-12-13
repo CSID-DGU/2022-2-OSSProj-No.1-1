@@ -72,15 +72,15 @@ class Pvp() :
         life_c, life_cRect = load_image('heart3.png')
 
         # Sounds
-        # missile_sound = load_sound('missile.ogg')
-        # bomb_sound = load_sound('bomb.ogg')
-        # alien_explode_sound = load_sound('alien_explode.ogg')
-        # ship_explode_sound = load_sound('ship_explode.ogg')
-        # load_music('music_loop.ogg')
-        # soundFX = Database().getSound()
-        # music = Database().getSound(music=True)
-        # if music and pygame.mixer: 
-        #     pygame.mixer.music.play(loops=-1)
+        missile_sound = load_sound('missile.ogg')
+        bomb_sound = load_sound('bomb.ogg')
+        alien_explode_sound = load_sound('alien_explode.ogg')
+        ship_explode_sound = load_sound('ship_explode.ogg')
+        load_music('music_loop.ogg')
+        soundFX = Database().getSound()
+        music = Database().getSound(music=True)
+        if music and pygame.mixer: 
+             pygame.mixer.music.play(loops=-1)
 
         # font
         font = pygame.font.Font(None, round(36*ratio))
@@ -354,24 +354,9 @@ class Pvp() :
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
                                     ratio = (screen_size / 500)
                                     font = pygame.font.Font(None, round(36*ratio))
-<<<<<<< HEAD
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_p): 
-                                    pauseMenu = False
-                                elif (event.type == pygame.KEYDOWN
-                                    and event.key == pygame.K_RETURN):
-                                    if showHelp:
-                                        cnt+=1
-                                        if cnt%3!=0:
-                                            showHelp=True
-                                        else:
-                                            showHelp=False
-                                    elif selection == 1:    
-=======
                                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
                                     # selection에 따라 정지 혹은 종료
                                     if selection == 1:
->>>>>>> 8051a909d5fa67b3506de812e4cfe654c8f3451e
                                         pauseMenu = False
                                         player.alive = False
                                     # elif selection == 2:
