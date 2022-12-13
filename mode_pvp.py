@@ -40,7 +40,7 @@ class Pvp() :
         pygame.init()
         ratio = (screen_size / 500)
         screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-        pygame.display.set_caption("Let's Play!")
+        pygame.display.set_caption("Let's Player!")
         pygame.mouse.set_visible(0)    
 
     # Prepare background image
@@ -78,13 +78,12 @@ class Pvp() :
         ship_explode_sound = load_sound('ship_explode.ogg')
         load_music('music_loop.ogg')
         soundFX = Database().getSound()
-        music = Database().getSound()
+        music = Database().getSound(music=True)
         if music and pygame.mixer: 
-           pygame.mixer.music.play(loops=-1)
+             pygame.mixer.music.play(loops=-1)
 
         # font
-        font = pygame.font.Font("LeeSeoyun.ttf", round(15*ratio))
-        font2 = pygame.font.Font("LeeSeoyun.ttf", round(21*ratio))
+        font = pygame.font.Font(None, round(36*ratio))
 
         # clock - 60 FPS game
         clockTime = 60  # maximum FPS
@@ -122,24 +121,39 @@ class Pvp() :
             return monstersLeftThisWave, score
 
     # pause menu text
-        blankText=font.render('            ',1,'white')
+        blankText=font.render('            ',1,BLACK)
         blankPos=blankText.get_rect(topright=screen.get_rect().center)
-        continueText = font2.render('CONTINUE', 1, 'white')
-        continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
-        gotoMenuText = font2.render('GO TO MAIN', 1, 'white')
-        gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
-        selectText = font2.render('*', 1, 'white')
-        pauseMenuDict = {1: continuePos, 2: gotoMenuPos}
+        restartText = font.render('RESTART GAME', 1, BLACK)
+        restartPos = restartText.get_rect(topleft=blankPos.bottomleft)  
+        fxText = font.render('SOUND FX ', 1, BLACK)
+        fxPos = fxText.get_rect(topleft=restartPos.bottomleft)
+        fxOnText = font.render('ON', 1, RED)
+        fxOffText = font.render('OFF', 1, RED)
+        fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
+        fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
+        musicText = font.render('MUSIC', 1, BLACK)
+        musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
+        musicOnText = font.render('ON', 1, RED)
+        musicOffText = font.render('OFF', 1, RED)
+        musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
+        musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
+        helpText=font.render('HELP',1,BLACK)
+        helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
+        quitText = font.render('QUIT', 1, BLACK)
+        quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
+        selectText = font.render('*', 1, BLACK)
+        selectPos = selectText.get_rect(topright=restartPos.topleft)
         selection = 1
-        selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
-        
+        showHiScores = False 
+        showHelp=False
+
 
     #########################
     #    Start Pvp Loop    #
     #########################
         restart = True
         while restart == True:
-            
+
         # Prepare game objects : reset
             # Reset Sprite groups
             alldrawings = pygame.sprite.Group()
@@ -208,7 +222,6 @@ class Pvp() :
         # Start Game
             while player.alive and player2.alive :
                 clock.tick(clockTime)
-                load_music('music_loop.ogg')
 
             # Drop Items
                 powerTimeLeft -= 1
@@ -262,8 +275,8 @@ class Pvp() :
                         else : 
                             Beam.position(player.rect.midtop)
                             beamFired += 1
-                        if soundFX:
-                            missile_sound.play()
+                        # if soundFX:
+                        #     beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_b):
@@ -271,8 +284,8 @@ class Pvp() :
                             bombsHeld -= 1
                             newBomb = player.bomb()
                             newBomb.add(bombs, alldrawings)
-                            if soundFX:
-                                bomb_sound.play()
+                            # if soundFX:
+                            #     bomb_sound.play()
                     # Player2 Moving
                     elif (event.type == pygame.KEYDOWN
                         and event.key in direction2.keys()):
@@ -304,8 +317,8 @@ class Pvp() :
                         else : 
                             beam.position(player2.rect.midtop)
                             beamFired += 1
-                        if soundFX:
-                            missile_sound.play()
+                        # if soundFX:
+                        #     beam_sound.play()
                     # Bomb
                     elif (event.type == pygame.KEYDOWN
                         and event.key == pygame.K_l):
@@ -320,15 +333,13 @@ class Pvp() :
                         and event.key == pygame.K_p):
                         pauseMenu = True
                         cnt=0
-                        pauseMenuDict={1:continuePos,2:gotoMenuPos}
-                        selection=1
+                        
                         while pauseMenu:
                             clock.tick(clockTime)
+
                             pause_size = (round(pause.get_width() * ratio), round(pause.get_height() * ratio))
                             screen.blit(pygame.transform.scale(pause, pause_size), (0,0))
-                            pause = pygame.transform.scale(pause, (600, 600))
-                            pauseRect.midtop = screen.get_rect().midtop
-                            
+
                             for event in pygame.event.get():
                                 if (event.type == pygame.QUIT
                                     or event.type == pygame.KEYDOWN
@@ -338,42 +349,92 @@ class Pvp() :
                                 # Resize windowSize
                                 elif (event.type == pygame.VIDEORESIZE):
                                     screen_size = min(event.w, event.h)
-                                    if screen_size <= 400:
-                                        screen_size = 400
-                                    if screen_size >= 900:
-                                        screen_size = 900
+                                    if screen_size <= 300:
+                                        screen_size = 300
                                     screen = pygame.display.set_mode((screen_size, screen_size), HWSURFACE|DOUBLEBUF|RESIZABLE)
-                                    ratio = (screen_size / 600)
+                                    ratio = (screen_size / 500)
                                     font = pygame.font.Font(None, round(36*ratio))
                                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN) :  #pause menu (continue, go)
                                     # selection에 따라 정지 혹은 종료
                                     if selection == 1:
                                         pauseMenu = False
-                                    elif selection == 2:
-                                        inMenu =True
-                                        return inMenu, screen_size
+                                        player.alive = False
+                                    # elif selection == 2:
+                                        # soundFX = not soundFX
+                                        # if soundFX:
+                                        #     beam_sound.play()
+                                        # Database.setSound(int(soundFX))
+                                    elif selection == 3 and pygame.mixer:
+                                        music = not music
+                                        if music:
+                                            pygame.mixer.music.play(loops=-1)
+                                        else:
+                                            pygame.mixer.music.stop()
+                                        Database.setSound(int(music), music=True)
+                                    elif selection == 4:
+                                        cnt+=1
+                                        showHelp=True
+                                    elif selection == 5:
+                                        pygame.quit()
+                                        sys.exit()
                                 elif (event.type == pygame.KEYDOWN
-                                        and event.key == pygame.K_DOWN
-                                        and selection < len(pauseMenuDict)):
-                                        selection += 1
+                                    and event.key == pygame.K_UP
+                                    and selection > 1
+                                    and not showHiScores):
+                                    selection -= 1
                                 elif (event.type == pygame.KEYDOWN
-                                        and event.key == pygame.K_UP
-                                        and selection > 1):
-                                        selection -= 1
-                                
-                                
+                                    and event.key == pygame.K_DOWN
+                                    and selection < len(pauseMenuDict)
+                                    and not showHiScores):
+                                    selection += 1
+
+                            # pause menu text
                             blankText=font.render('            ',1,BLACK)
                             blankPos=blankText.get_rect(topright=screen.get_rect().center)
-                            continueText = font2.render('CONTINUE', 1, 'white')
-                            continuePos = continueText.get_rect(topleft=blankPos.bottomleft)   
-                            gotoMenuText = font2.render('GO TO MAIN', 1, 'white')
-                            gotoMenuPos = gotoMenuText.get_rect(topleft=continuePos.bottomleft)
-                            selectText = font2.render('*', 1, 'white')
-                            pauseMenuDict={1:continuePos,2:gotoMenuPos}
-                            
+                            restartText = font.render('RESTART GAME', 1, BLACK)
+                            restartPos = restartText.get_rect(topleft=blankPos.bottomleft)  
+                            fxText = font.render('SOUND FX ', 1, BLACK)
+                            fxPos = fxText.get_rect(topleft=restartPos.bottomleft)
+                            fxOnText = font.render('ON', 1, RED)
+                            fxOffText = font.render('OFF', 1, RED)
+                            fxOnPos = fxOnText.get_rect(topleft=fxPos.topright)
+                            fxOffPos = fxOffText.get_rect(topleft=fxPos.topright)
+                            musicText = font.render('MUSIC', 1, BLACK)
+                            musicPos = fxText.get_rect(topleft=fxPos.bottomleft)
+                            musicOnText = font.render('ON', 1, RED)
+                            musicOffText = font.render('OFF', 1, RED)
+                            musicOnPos = musicOnText.get_rect(topleft=musicPos.topright)
+                            musicOffPos = musicOffText.get_rect(topleft=musicPos.topright)
+                            helpText=font.render('HELP',1,BLACK)
+                            helpPos=helpText.get_rect(topleft=musicPos.bottomleft)
+                            quitText = font.render('QUIT', 1, BLACK)
+                            quitPos = quitText.get_rect(topleft=helpPos.bottomleft)
+
+                            pauseMenuDict = {1: restartPos, 2: fxPos, 3: musicPos, 4: helpPos, 5: quitPos}
+                            selectText = font.render('*', 1, BLACK)
                             selectPos = selectText.get_rect(topright=pauseMenuDict[selection].topleft)
-                            textOverlays = zip([blankText,continueText, gotoMenuText, selectText],
-                                                    [blankPos,continuePos, gotoMenuPos, selectPos])
+
+                            if showHelp:
+                                if cnt%3==1:
+                                    menu, menuRect = load_image("help3.png") 
+                                    menuRect.midtop = screen.get_rect().midtop
+                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))
+                                elif cnt%3==2:
+                                    menu, menuRect = load_image("help2.png") 
+                                    menuRect.midtop = screen.get_rect().midtop
+                                    menu_size = (round(menu.get_width() * ratio), round(menu.get_height() * ratio))
+                                    screen.blit(pygame.transform.scale(menu, menu_size), (0,0))                             
+                            else:
+                                textOverlays = zip([blankText,restartText, helpText, fxText,
+                                                    musicText, quitText, selectText,
+                                                    fxOnText if soundFX else fxOffText,
+                                                    musicOnText if music else musicOffText],
+                                                    [blankPos,restartPos, helpPos, fxPos,
+                                                    musicPos, quitPos, selectPos,
+                                                    fxOnPos if soundFX else fxOffPos,
+                                                    musicOnPos if music else musicOffPos])
+
                             for txt, pos in textOverlays:
                                 screen.blit(txt, pos)
 
@@ -392,8 +453,8 @@ class Pvp() :
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                             beamFired += 1
-                            if soundFX:
-                                alien_explode_sound .play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
 
                     for bomb in bombs2:
                         if pygame.sprite.collide_circle(
@@ -403,8 +464,8 @@ class Pvp() :
                                 Explosion.position(monster.rect.center)
                                 monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
                             beamFired += 1
-                            if soundFX:
-                                alie_explode.play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
                     for beam in Beam.active:
                         if pygame.sprite.collide_rect(
                                 beam, monster) and monster in Monster.active:
@@ -416,8 +477,8 @@ class Pvp() :
                                     monstersLeftThisWave, score = kill_monster(monster, monstersLeftThisWave, score)
                                 else :
                                     monstersLeftThisWave, score2 = kill_monster(monster, monstersLeftThisWave, score2)
-                            if soundFX:
-                                alien_explode_sound .play()
+                            # if soundFX:
+                            #     monster_explode_sound.play()
 
                     # player monster 충돌
                     if pygame.sprite.collide_rect(monster, player):
@@ -438,8 +499,8 @@ class Pvp() :
                             player.alive = False
                             player.remove(allsprites)   # life 소진 player 삭제
                             Explosion.position(player.rect.center)
-                            if soundFX:
-                                alien_explode_sound .play()
+                            # if soundFX:
+                            #     player_explode_sound.play()
                     if pygame.sprite.collide_rect(monster, player2):
                         if player2.shieldUp:    # 쉴드일 때
                             monster.table()
@@ -458,8 +519,8 @@ class Pvp() :
                             player2.alive = False
                             player2.remove(allsprites)  # life 소진 player2 삭제
                             Explosion.position(player2.rect.center)
-                            if soundFX:
-                                alien_explode_sound .play()
+                            # if soundFX:
+                            #     player_explode_sound.play()
 
                 # Powers
                 for power in powers:
@@ -517,13 +578,13 @@ class Pvp() :
                     curTime -= 1
 
             # Update text overlays
-                waveText = font.render("Wave: " + str(wave), 1, 'YELLOW')
-                leftText = font.render("monsters: " + str(monstersLeftThisWave), 1, 'white')
-                bombText = font.render("Bombs: " + str(bombsHeld), 1, 'white')
-                bombText2 = font.render("Bombs: " + str(bombsHeld2), 1, 'white')
-                Player1winText = font2.render('PLAYER 1 WIN!', 1, 'RED')
-                Player2winText = font2.render('PLAYER 2 WIN!', 1, 'RED')
-                drawText = font2.render('DRAW!', 1, 'RED')
+                waveText = font.render("Wave: " + str(wave), 1, BLACK)
+                leftText = font.render("monsters: " + str(monstersLeftThisWave), 1, BLACK)
+                bombText = font.render("Bombs: " + str(bombsHeld), 1, BLACK)
+                bombText2 = font.render("Bombs: " + str(bombsHeld2), 1, BLACK)
+                Player1winText = font.render('PLAYER 1 WIN!', 1, BLACK)
+                Player2winText = font.render('PLAYER 2 WIN!', 1, BLACK)
+                drawText = font.render('DRAW!', 1, BLACK)
         
                 wavePos = waveText.get_rect(topright=screen.get_rect().midtop)
                 leftPos = leftText.get_rect(topleft=screen.get_rect().midtop)
@@ -614,9 +675,9 @@ class Pvp() :
                     if betweenWaveCount > 0:
                         betweenWaveCount -= 1
                         nextWaveText = font.render(
-                            'Wave ' + str(wave + 1) + ' in', 1, 'white')
+                            'Wave ' + str(wave + 1) + ' in', 1, BLACK)
                         nextWaveNum = font.render(
-                            str((betweenWaveCount // clockTime) + 1), 1, 'white')
+                            str((betweenWaveCount // clockTime) + 1), 1, BLACK)
                         text.extend([nextWaveText, nextWaveNum])
                         nextWavePos = nextWaveText.get_rect(
                             center=screen.get_rect().center)
@@ -681,7 +742,7 @@ class Pvp() :
                 life_bRect.topleft = leftPos.topright
                 life_cRect.topleft = leftPos.topright
 
-                life_size = (round(life1.get_width() * ratio * 0.8), round(life1.get_height() * ratio * 0.8))
+                life_size = (round(life1.get_width() * ratio), round(life1.get_height() * ratio))
                 if player.life == 3:
                     screen.blit(pygame.transform.scale(life3, life_size), life3Rect)
                 elif player.life == 2:

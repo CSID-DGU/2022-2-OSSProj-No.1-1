@@ -49,26 +49,6 @@ def check_scr_size(eventw, eventh): # resized screen
             resized_screen = display.set_mode((eventw, adjusted_height), RESIZABLE)
 
 
-def disp_store_buttons(btn_restart, btn_save, btn_back): #button display
-    btn_restart_rect = btn_restart.get_rect()
-    btn_save_rect = btn_save.get_rect()
-   # btn_exit_rect = btn_exit.get_rect()
-    btn_back_rect = btn_back.get_rect()
-
-    btn_restart_rect.centerx = width * 0.2
-    btn_save_rect.centerx = width * (0.2 + width_offset)
-   # btn_exit_rect.centerx = width * (0.2 + 2 * width_offset)
-    btn_back_rect.centerx = width * 0.1
-
-    btn_restart_rect.centery = height * 0.5
-    btn_save_rect.centery = height * 0.5
-   # btn_exit_rect.centery = height * 0.5
-    btn_back_rect.centery = height * 0.1
-
-    screen.blit(btn_restart, btn_restart_rect)
-    screen.blit(btn_save, btn_save_rect)
-   #screen.blit(btn_exit, btn_exit_rect)
-    screen.blit(btn_back, btn_back_rect)
 
 
 
