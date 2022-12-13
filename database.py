@@ -4,7 +4,7 @@ import bcrypt
 import pygame
 import os
 
-pygame.mixer.init()
+#pygame.mixer.init()
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
 #커서는 한 번만 부르..
