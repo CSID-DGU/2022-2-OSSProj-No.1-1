@@ -643,26 +643,7 @@ class Menu:
                     elif self.selection == 5:
                         self.store=True
                         return 5, self.screen_size
-                        # if ship_selection.get_ship_selection() == 1:
-                        #     player.image, player.rect = load_image('ship.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship_shield.png', -1)
-                
-                        # elif ship_selection.get_ship_selection() == 2:
-                        #     player.image, player.rect = load_image('ship2.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship2_shield.png', -1)
-            
-                        # elif ship_selection.get_ship_selection() == 3:
-                        #     player.image, player.rect = load_image('ship3.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship3_shield.png', -1)
-
-                        # elif ship_selection.get_ship_selection() == 4:
-                        #     player.image, player.rect = load_image('ship4.png', -1)
-                        #     player.original = player.image
-                        #     player.shield, player.rect = load_image('ship4_shield.png', -1)
-                        #self.showShop = True
+                        
                     elif self.selection==6: # character setting page 
                         self.char_setting=True
                         return 6,self.screen_size
