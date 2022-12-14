@@ -49,26 +49,6 @@ def check_scr_size(eventw, eventh): # resized screen
             resized_screen = display.set_mode((eventw, adjusted_height), RESIZABLE)
 
 
-def disp_store_buttons(btn_restart, btn_save, btn_back): #button display
-    btn_restart_rect = btn_restart.get_rect()
-    btn_save_rect = btn_save.get_rect()
-   # btn_exit_rect = btn_exit.get_rect()
-    btn_back_rect = btn_back.get_rect()
-
-    btn_restart_rect.centerx = width * 0.2
-    btn_save_rect.centerx = width * (0.2 + width_offset)
-   # btn_exit_rect.centerx = width * (0.2 + 2 * width_offset)
-    btn_back_rect.centerx = width * 0.1
-
-    btn_restart_rect.centery = height * 0.5
-    btn_save_rect.centery = height * 0.5
-   # btn_exit_rect.centery = height * 0.5
-    btn_back_rect.centery = height * 0.1
-
-    screen.blit(btn_restart, btn_restart_rect)
-    screen.blit(btn_save, btn_save_rect)
-   #screen.blit(btn_exit, btn_exit_rect)
-    screen.blit(btn_back, btn_back_rect)
 
 
 
@@ -115,19 +95,11 @@ def load_image(name,sizex=-1,sizey=-1, colorkey=None):
     return image, image.get_rect()
 
 
-# for skin store
-field1, field1Rect = load_image("field.png") # skin
-field2, field2Rect = load_image("field.png") #skin
 
 class Var:
     user_id=''
     initial_id=0
-    ## mode_single.py에서 게임이 종료되었음을 어떻게 알릴것인지
-    # 게임이 종료됐을 때 무조건 setScore 함수가 호출되게 해야함
-    # pygame.event로 알릴것인가? or game_over() 함수를 사용..? 
-    # tongsan 에서 game_over() 함수는 board. py에저장 어떻게 작성했는지 확인
-
-     #메뉴 기본 테마 만들기
+ 
    
     path='data/'
 
@@ -139,18 +111,12 @@ class Var:
     char6_lst=['ship6.png']
     char7_lst=['ship7.png']
     
-    
 
     char=1
     lst=char1_lst # char img 초기화 
     # 메뉴 전환을 위한 변수
     go_menu=False
-    # 상점기능
-    #char1_price=50
-    #char2_price=70
-    #char3_price=100
-    #char4_price=200
-    # for char_setting
+    
     char_have=[]
 
     coin=0

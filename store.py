@@ -7,7 +7,7 @@ from pygame import time
 from pygame import Surface
 from pygame.locals import RESIZABLE, RLEACCEL
 from load import load_image,Var
-from load import * #skin store
+from load import * 
 from menu import *
 from database import Database
 
@@ -16,21 +16,9 @@ from database import Database
 
 
 
-#scr_size=(width,height)=(600,600) # default
-#resized_screen = display.set_mode((scr_size), RESIZABLE)
-#screen=resized_screen.copy()
-#width_offset=0.3
-#resized_screen_center = (0, 0)
 FPS=75
 BACK=0
-#CHAR_SIZE = 60
-#USER_ITEM_SIZE=20
-#showstore=False
-#Black=(0,0,0)
-#clock=time.Clock()
-#instore=False
-#global selection
-#selection=1
+
 
 class Store(object):
     def __init__(self,screen_size):
@@ -78,8 +66,7 @@ class Store(object):
         self.coin_image,self.coin_rect=load_image('gold_coin.png')
         self.coin_image=transform.scale(self.coin_image,(COIN_HAVE_SIZE,COIN_HAVE_SIZE))
         self.coin_image.set_colorkey((0,0,0))
-        #self.coin_rect.centerx=self.width *0.68
-        #self.coin_rect.centery=self.height*0.39
+        
         self.coin_rect.topright=(self.width*0.89,self.height*0.03)
 
         
@@ -191,11 +178,9 @@ class CharStore(Store):
         text_offset=0.07
         coin_offset=0.07
         coin_text_offset=0.07
-        #ship_color=(120,120,230)
-        #ship_price_color=(0,255,0)
-        #buy_color=(120,120,120)
-        back_color=(0,0,0)
        
+        back_color=(0,0,0)
+       #ship1,2,3 display
         self.ship1_image=transform.scale(self.ship1_image,(CHAR_SIZE,CHAR_SIZE))
         
         self.ship2_image=transform.scale(self.ship2_image,(CHAR_SIZE,CHAR_SIZE))
@@ -212,7 +197,8 @@ class CharStore(Store):
             ship_offset+=0.2
 
             self.screen.blit(img,ship_rect)
-        #ship5,6,7
+
+        #ship5,6,7 display
         ship_offset=0
         self.ship5_image=transform.scale(self.ship5_image,(CHAR_SIZE,CHAR_SIZE))
         
@@ -220,8 +206,7 @@ class CharStore(Store):
         
         self.ship7_image=transform.scale(self.ship7_image,(CHAR_SIZE,CHAR_SIZE))
         
-        #(self.ship5_rect.centerx,self.ship5_rect.centery)=(self.width*(0.65+ship_offset),self.height)
-        #self.screen.blit(self.ship5_image,self.ship5_rect)
+       
         self.ship_zips2=zip([self.ship5_image,self.ship6_image,self.ship7_image],[self.ship5_rect,self.ship6_rect,self.ship7_rect])
         for img,ship_rect in self.ship_zips2:
             img.set_colorkey((0,0,0))
@@ -230,7 +215,7 @@ class CharStore(Store):
 
             self.screen.blit(img,ship_rect)
 
-        # show price
+        # ship 1,2,3,4 price
         ship_offset=0
         
         self.coin1_image,self.coin1_rect=load_image('coin.png')
@@ -268,7 +253,7 @@ class CharStore(Store):
             self.screen.blit(img,coin_img_rect)
 
 
-        # coin price text
+        # coin price  text 1,2,3
         ship_offset=0
         self.coin1_text=self.font.render(f'X{self.s1_price}',True,ship_price_color)
         self.coin2_text=self.font.render(f'X{self.s2_price}',True,ship_price_color)
@@ -337,7 +322,7 @@ class CharStore(Store):
         self.screen.blit(self.buy_text,self.buy_pos)
 
     def char_store(self):
-        #print('열기')
+       
         super().open()
         main_menu, main_menuRect = load_image("shopback.png")
         main_menu = pygame.transform.scale(main_menu, (500, 500))
@@ -399,6 +384,7 @@ class CharStore(Store):
         ship_color=(120,120,230)
         back_color=(0,0,0)
         SET_color=(120,120,120)
+        
         #갖고있으면 1
         self.ship1_have=Database().check_char_have(self.user_id,'ship1')
         self.ship2_have=Database().check_char_have(self.user_id,'ship2')
@@ -423,30 +409,7 @@ class CharStore(Store):
         self.lock1_image.set_colorkey((255,255,255)) # 흰색 배경 제거
         self.lock1_image=transform.scale(self.lock1_image,(LOCK_SIZE,LOCK_SIZE)) 
 
-        self.lock2_image,self.lock2_rect=load_image('lock_icon.png')
-        self.lock2_image.set_colorkey((255,255,255))
-        self.lock2_image=transform.scale(self.lock2_image,(LOCK_SIZE,LOCK_SIZE)) 
         
-        self.lock3_image,self.lock3_rect=load_image('lock_icon.png')
-        self.lock3_image.set_colorkey((255,255,255))
-        self.lock3_image=transform.scale(self.lock3_image,(LOCK_SIZE,LOCK_SIZE)) 
-        
-        self.lock4_image,self.lock4_rect=load_image('lock_icon.png')
-        self.lock4_image.set_colorkey((255,255,255))
-        self.lock4_image=transform.scale(self.lock4_image,(LOCK_SIZE,LOCK_SIZE)) 
-
-        self.lock5_image,self.lock5_rect=load_image('lock_icon.png')
-        self.lock5_image.set_colorkey((255,255,255))
-        self.lock5_image=transform.scale(self.lock5_image,(LOCK_SIZE,LOCK_SIZE)) 
-
-        self.lock6_image,self.lock6_rect=load_image('lock_icon.png')
-        self.lock6_image.set_colorkey((255,255,255))
-        self.lock6_image=transform.scale(self.lock6_image,(LOCK_SIZE,LOCK_SIZE)) 
-
-        self.lock7_image,self.lock7_rect=load_image('lock_icon.png')
-        self.lock7_image.set_colorkey((255,255,255))
-        self.lock7_image=transform.scale(self.lock7_image,(LOCK_SIZE,LOCK_SIZE)) 
-
 
         #ship 1,2,3,4 display
         self.ship_zips=zip([self.ship1_image,self.ship2_image,self.ship3_image,self.ship4_image],[self.ship1_rect,self.ship2_rect,self.ship3_rect,self.ship4_rect],
@@ -581,7 +544,7 @@ class CharStore(Store):
             self.clock.tick(self.clockTime)#delay문제
             main_menu_size = (round(main_menu.get_width() * self.ratio), round(main_menu.get_height() * self.ratio))
             self.screen.blit(pygame.transform.scale(main_menu, main_menu_size), (0,0)) 
-            #self.disp_setting()
+            
 
             for event in pygame.event.get():
                 if (event.type== pygame.QUIT or event.type==pygame.KEYDOWN
@@ -648,4 +611,3 @@ class CharStore(Store):
         
 
             
-
